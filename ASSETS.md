@@ -2,6 +2,10 @@
 
 The game looks for images in the `assets/` folder. Anything missing falls back to an emoji, so you can add images one by one.
 
+## The look: "the hidden Vienna"
+
+The heroes live in today's Vienna. Frau Huber's word cards reveal a hidden, storybook layer of the city, where words come alive as monsters. So backgrounds and monsters look timeless and magical (gas lamps, brass, steam, old wood), while the heroes and their things stay modern.
+
 ## How to make them
 
 1. Open Gemini (gemini.google.com) and start **one chat for all images**, so the style stays consistent.
@@ -16,7 +20,7 @@ Squares (1:1) work best for characters. Backgrounds should be tall (9:16).
 
 ## Style message (send this first)
 
-> I'm making a card game called "Satzschmiede" about a newcomer learning German in Vienna. Please create all images in ONE consistent style: **painterly digital illustration in a whimsical European storybook style**, visible soft brush strokes, warm lantern light, muted palette of deep teal, moss green, amber and burnt orange, gentle paper grain, cosy but slightly mysterious mood. Characters are centred, shown from the waist or chest up, with a simple softly blurred background in the scene's colours. No text, no letters, no logos, no frames, no watermarks. Reply "ready" and then I'll send the images one by one.
+> I'm making a card game called "Satzschmiede" about a newcomer learning German in Vienna. Please create all images in ONE consistent style: **painterly digital illustration in a whimsical European storybook style**, visible soft brush strokes, warm lantern light, muted palette of deep teal, moss green, amber and burnt orange, gentle paper grain, cosy but slightly mysterious mood. The world is "the hidden Vienna": a magical storybook version of the city with gas lamps, brass and steam, but the heroes are modern people with modern clothes and gadgets (phones, tablets, laptops), which can glow with a little magic. Characters are centred, shown from the waist or chest up, with a simple softly blurred background in the scene's colours. No text, no letters, no logos, no frames, no watermarks. Reply "ready" and then I'll send the images one by one.
 
 ---
 

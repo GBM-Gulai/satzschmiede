@@ -4,13 +4,16 @@
 const HEROES = {
   rafa:  { name: "Rafa", from: "Brasilien", fromEn: "Brazil", role: "Koch", roleEn: "Cook", e: "🧑🏽‍🍳",
            bonus: "Kochtalent: Sätze mit Essen oder Getränken heilen +3.", bonusEn: "Kitchen talent: sentences with food or drinks heal +3.",
-           story: "Ich möchte in Wien ein Restaurant eröffnen.", storyEn: "I want to open a restaurant in Vienna." },
+           story: "Ich möchte in Wien ein Restaurant eröffnen.", storyEn: "I want to open a restaurant in Vienna.",
+           magic: "Mein Kochlöffel … leuchtet ja! Okay … Ich schaffe das!", magicEn: "My wooden spoon … it's glowing! Okay … I can do this!" },
   mei:   { name: "Mei", from: "Taiwan", fromEn: "Taiwan", role: "Programmiererin", roleEn: "Programmer", e: "👩🏻‍💻",
            bonus: "Struktur: Ziehe jede Runde 1 Karte mehr.", bonusEn: "Structure: draw 1 extra card every turn.",
-           story: "Ich habe einen neuen Job in einer Wiener Firma.", storyEn: "I have a new job at a Viennese company." },
+           story: "Ich habe einen neuen Job in einer Wiener Firma.", storyEn: "I have a new job at a Viennese company.",
+           magic: "Mein Tablet … ist jetzt ein Zauberbuch! Okay … Ich schaffe das!", magicEn: "My tablet … it's a spellbook now! Okay … I can do this!" },
   amara: { name: "Amara", from: "Ghana", fromEn: "Ghana", role: "Krankenpflegerin", roleEn: "Nurse", e: "👩🏿‍⚕️",
            bonus: "Ausdauer: +12 max. Leben, nach jedem Kampf +3.", bonusEn: "Stamina: +12 max HP and +3 HP after every fight.",
-           story: "Ich möchte hier im Krankenhaus arbeiten.", storyEn: "I want to work here in the hospital." }
+           story: "Ich möchte hier im Krankenhaus arbeiten.", storyEn: "I want to work here in the hospital.",
+           magic: "Meine Tasche … sie glüht! Okay … Ich schaffe das!", magicEn: "My bag … it's glowing! Okay … I can do this!" }
 };
 
 // Non-player characters in the story
@@ -72,7 +75,10 @@ const STORY = {
       ["hero", "Ich habe einen Koffer, einen Traum … und fast kein Deutsch.", "I have a suitcase, a dream … and almost no German."],
       ["huber", "Grüß Gott! Sie sind neu hier, oder? Vorsicht – in Wien sind die Wörter gefährlich.", "Hello! You're new here, right? Careful – in Vienna, words are dangerous."],
       ["huber", "Nehmen Sie diese Karten. Mit guten Sätzen kommen Sie überall durch!", "Take these cards. With good sentences you'll get through anything!"],
-      ["hero", "Okay … Ich schaffe das!", "Okay … I can do this!"]
+      ["narr", "Als {name} die Karten berührt, verändert sich der Bahnhof. Gaslaternen flackern, Dampf steigt auf – und die Wörter werden lebendig.", "As {name} touches the cards, the station changes. Gas lamps flicker, steam rises – and the words come alive."],
+      ["huber", "Willkommen im versteckten Wien. Jeder, der hier Deutsch lernt, sieht es irgendwann.", "Welcome to the hidden Vienna. Everyone who learns German here sees it sooner or later."],
+      ["huber", "Ihre Sachen kommen mit – aber hier sind sie ein bisschen … magisch.", "Your things come with you – but here they're a little … magical."],
+      ["hero", "{magic}", "{magicEn}"]
     ],
     boss: [
       ["narr", "Am Ende des Bahnhofs wartet er: der Fahrkartenautomat.", "At the end of the station he's waiting: the ticket machine."],
@@ -81,6 +87,7 @@ const STORY = {
     ],
     outro: [
       ["automat", "FAHRKARTE … GÜLTIG.", "TICKET … VALID."],
+      ["narr", "Der Dampf verzieht sich. Für einen Moment ist der Westbahnhof wieder ganz normal – Glas, Züge, Menschen mit Handys.", "The steam clears. For a moment the Westbahnhof is completely normal again – glass, trains, people with phones."],
       ["huber", "Bravo, {name}! Aber jetzt kommt das Schwierigste: das Amt.", "Bravo, {name}! But now comes the hardest part: the registration office."],
       ["hero", "Das Amt? Wie schlimm kann das sein?", "The office? How bad can it be?"],
       ["narr", "Neue Leiter freigeschaltet: A2 – Das Amt.", "New ladder unlocked: A2 – The Office."]

@@ -199,7 +199,7 @@ function newRun(ladderId) {
 // ---------- story scenes ----------
 function fill(s) {
   const h = run && hero();
-  return h ? s.replace(/\{name\}/g, h.name).replace(/\{fromEn\}/g, h.fromEn).replace(/\{from\}/g, h.from).replace(/\{storyEn\}/g, h.storyEn).replace(/\{story\}/g, h.story) : s;
+  return h ? s.replace(/\{name\}/g, h.name).replace(/\{fromEn\}/g, h.fromEn).replace(/\{from\}/g, h.from).replace(/\{storyEn\}/g, h.storyEn).replace(/\{story\}/g, h.story).replace(/\{magicEn\}/g, h.magicEn).replace(/\{magic\}/g, h.magic) : s;
 }
 function speaker(who) {
   if (who === "narr") return { name: "", pic: "" };

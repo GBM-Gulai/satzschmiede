@@ -43,15 +43,20 @@ def djb2(s: str) -> str:
 def parse():
     src = (ROOT / "story.js").read_text(encoding="utf-8")
     heroes = {}
-    for m in re.finditer(r'(\w+):\s*\{ name: "([^"]+)", from: "([^"]+)".*?story: "([^"]+)"', src, re.S):
-        heroes[m.group(1)] = {"name": m.group(2), "from": m.group(3), "story": m.group(4)}
+    block = src[src.index("const HEROES"):src.index("const NPCS")]
+    for m in re.finditer(r'(\w+):\s*\{(.*?)\}', block, re.S):
+        fields = dict(re.findall(r'(\w+): "([^"]*)"', m.group(2)))
+        if "name" in fields:
+            heroes[m.group(1)] = fields
     story = src[src.index("const STORY"):]
     lines = re.findall(r'\["(\w+)",\s*"((?:[^"\\]|\\.)*)",\s*"(?:[^"\\]|\\.)*"\]', story)
     return heroes, lines
 
 
 def fill(text, h):
-    return text.replace("{name}", h["name"]).replace("{from}", h["from"]).replace("{story}", h["story"])
+    for field in ("name", "from", "story", "magic"):
+        text = text.replace("{" + field + "}", h.get(field, ""))
+    return text
 
 
 def jobs():
