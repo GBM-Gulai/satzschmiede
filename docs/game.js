@@ -40,11 +40,34 @@ const weakLabel = w => ({ dat: L("Dativ", "Dativ"), akk: L("Akkusativ", "Akkusat
 // Optional looping videos (assets/video/<id>.mp4, e.g. made with Google Flow) play over the picture; if missing, the picture stays.
 const ASSET = window.ASSET_DATA || {};
 const src = p => ASSET[p] || p;
-const VIDEO = ["automat", "hydra", "huber"];   // ids that may have a clip in assets/video/
+const VIDEO = ["automat", "hydra", "huber", "drache", "hausmeister"];   // ids that may have a clip in assets/video/
 window.artFail = img => img.parentNode.classList.add("noimg");
-window.vidFail = v => v.classList.add("dead");
+// Screens are redrawn often (every card tap). Videos are kept in a cache and moved into each new screen,
+// so they keep playing instead of restarting: renders only contain <video data-src> placeholders.
+const vidCache = new Map();
+function vidFail(v) {
+  v.classList.add("dead");
+  const t = v.closest(".title-vid"); if (t) t.outerHTML = `<div class="anvil">⚒️</div>`;
+}
+function wireVideos() {
+  document.querySelectorAll("video[data-src]").forEach(ph => {
+    const s = ph.dataset.src;
+    let v = vidCache.get(s);
+    if (!v) {
+      v = document.createElement("video");
+      v.muted = true; v.loop = true; v.autoplay = true; v.playsInline = true;
+      v.setAttribute("playsinline", ""); v.preload = "auto"; v.src = s;
+      v.addEventListener("error", () => vidFail(v));
+      vidCache.set(s, v);
+    }
+    if (v.classList.contains("dead")) { ph.replaceWith(document.createComment("")); const t = ph.closest && ph.closest(".title-vid"); if (t) vidFail(v); return; }
+    ph.replaceWith(v);
+    v.play().catch(() => {});
+  });
+}
+new MutationObserver(wireVideos).observe(document.body, { childList: true, subtree: true });
 const art = (p, emoji, cls = "", video = "") => `<span class="pic ${cls}"><img src="${src(p)}" alt="" onerror="artFail(this)">` +
-  (video && !window.ASSET_DATA ? `<video src="${video}" autoplay muted loop playsinline preload="auto" onerror="vidFail(this)"></video>` : "") + `<span class="pic-e">${emoji}</span></span>`;
+  (video && !window.ASSET_DATA ? `<video data-src="${video}"></video>` : "") + `<span class="pic-e">${emoji}</span></span>`;
 const clip = id => VIDEO.includes(id) ? `assets/video/${id}.mp4` : "";
 const enemyArt = (id, cls) => art(`assets/enemies/${id}.jpg`, ENEMIES[id].e, cls, cls === "foe-pic" || cls === "portrait" ? clip(id) : "");
 const heroArt = (id, cls) => art(`assets/heroes/${id}.jpg`, HEROES[id].e, cls);
@@ -178,7 +201,7 @@ function showTitle() {
   view = "title"; fight = null; setScene("");
   app.innerHTML = `<main class="title"><div class="logo fraktur">Satzschmiede</div>
     <p class="tag">A deckbuilder where your <b>German sentences</b> are your weapons.<br><span class="en">Ein Deckbuilder, in dem deine deutschen Sätze deine Waffen sind.</span></p>
-    <div class="anvil">⚒️</div>
+    ${window.ASSET_DATA ? `<div class="anvil">⚒️</div>` : `<div class="title-vid"><video data-src="assets/video/title.mp4"></video></div>`}
     <div class="col-btns">${run ? `<button class="btn hot" data-act="continue">Continue · Weiter (${LADDERS.find(l => l.id === run.ladder).lvl}, ${run.floor + 1}/${LAYOUT.length})</button>` : ""}
       <button class="btn ${run ? "" : "hot"}" data-act="heroes">New adventure · Neues Abenteuer</button>
       <button class="btn ghost" data-act="help">How to play · Wie spielt man?</button></div>

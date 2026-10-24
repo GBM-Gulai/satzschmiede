@@ -1,5 +1,7 @@
 # Satzschmiede – animations with Google Flow 🎬
 
+✅ Done: automat, hydra, huber, drache, hausmeister and the title loop (title.mp4). `build.ps1` compresses clips automatically with ffmpeg (square 480 px, no audio).
+
 Every character already has a subtle "living portrait" effect (gentle breathing + lantern flicker), done in code. Flow videos are for a few **big moments**, where a real animation is worth the extra file size.
 
 ## How to make a clip

@@ -71,11 +71,24 @@ foreach ($rel in $images.Keys) {
   New-Item -ItemType Directory -Force (Split-Path $target) | Out-Null
   [IO.File]::WriteAllBytes($target, $images[$rel])
 }
+# Videos: compress for phones with ffmpeg (square 480 px for characters, 720 px wide for the title; no audio).
+# Compressed clips are cached in assets/video/web/ so only new or changed clips are re-encoded.
 $videos = @()
 $videoDir = Join-Path $assetDir "video"
+$ffmpeg = Get-Command ffmpeg -ErrorAction SilentlyContinue
 if (Test-Path $videoDir) {
-  New-Item -ItemType Directory -Force (Join-Path $docs "assets\video") | Out-Null
-  Get-ChildItem $videoDir -Filter *.mp4 | ForEach-Object { Copy-Item $_.FullName (Join-Path $docs "assets\video\$($_.Name)"); $videos += $_.Name }
+  $webDir = Join-Path $videoDir "web"
+  New-Item -ItemType Directory -Force $webDir, (Join-Path $docs "assets\video") | Out-Null
+  Get-ChildItem $videoDir -Filter *.mp4 | ForEach-Object {
+    $small = Join-Path $webDir $_.Name
+    if ($ffmpeg -and (-not (Test-Path $small) -or (Get-Item $small).LastWriteTime -lt $_.LastWriteTime)) {
+      $vf = if ($_.BaseName -eq "title") { "scale=720:-2" } else { "crop=ih:ih,scale=480:480" }
+      & $ffmpeg.Source -v error -y -i $_.FullName -an -vf $vf -c:v libx264 -preset slow -crf 27 -pix_fmt yuv420p -movflags +faststart $small
+    }
+    $from = if (Test-Path $small) { $small } else { $_.FullName }
+    Copy-Item $from (Join-Path $docs "assets\video\$($_.Name)")
+    $videos += "$($_.Name) $([math]::Round((Get-Item $from).Length / 1KB)) KB"
+  }
 }
 # Offline support: cache the game + images (videos stream from the web and are not cached)
 $version = "ss-" + (Get-Date -Format "yyyyMMddHHmmss")
@@ -103,3 +116,4 @@ self.addEventListener("fetch", e => {
 [IO.File]::WriteAllText((Join-Path $docs ".nojekyll"), "", $utf8)
 $size = (Get-ChildItem $docs -Recurse -File | Measure-Object Length -Sum).Sum
 "Built docs\ for GitHub Pages ($([math]::Round($size / 1MB, 1)) MB, $($images.Count) images, $($videos.Count) videos, cache $version)"
+$videos | ForEach-Object { "  video: $_" }
