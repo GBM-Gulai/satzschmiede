@@ -36,16 +36,21 @@ const TYPE_LABEL = () => ({ subj: L("Subjekt", "subject"), verb: L("Verb", "verb
 const weakLabel = w => ({ dat: L("Dativ", "Dativ"), akk: L("Akkusativ", "Akkusativ"), inv: L("Satz beginnt mit Zeitwort", "sentence starts with a time word"),
   perfect: L("perfekte Sätze", "perfect sentences"), long: L("lange Sätze (5+ Wörter)", "long sentences (5+ words)"), perf: L("Perfekt-Sätze ⏪", "Perfekt sentences ⏪") })[w];
 
-// ---------- images (assets/…png, embedded by build.ps1 for the one-file version) with emoji fallback ----------
+// ---------- images (assets/…jpg, embedded by build.ps1 for the one-file version) with emoji fallback ----------
+// Optional looping videos (assets/video/<id>.mp4, e.g. made with Google Flow) play over the picture; if missing, the picture stays.
 const ASSET = window.ASSET_DATA || {};
 const src = p => ASSET[p] || p;
+const VIDEO = ["automat", "hydra", "huber"];   // ids that may have a clip in assets/video/
 window.artFail = img => img.parentNode.classList.add("noimg");
-const art = (p, emoji, cls = "") => `<span class="pic ${cls}"><img src="${src(p)}" alt="" onerror="artFail(this)"><span class="pic-e">${emoji}</span></span>`;
-const enemyArt = (id, cls) => art(`assets/enemies/${id}.png`, ENEMIES[id].e, cls);
-const heroArt = (id, cls) => art(`assets/heroes/${id}.png`, HEROES[id].e, cls);
+window.vidFail = v => v.classList.add("dead");
+const art = (p, emoji, cls = "", video = "") => `<span class="pic ${cls}"><img src="${src(p)}" alt="" onerror="artFail(this)">` +
+  (video && !window.ASSET_DATA ? `<video src="${video}" autoplay muted loop playsinline preload="auto" onerror="vidFail(this)"></video>` : "") + `<span class="pic-e">${emoji}</span></span>`;
+const clip = id => VIDEO.includes(id) ? `assets/video/${id}.mp4` : "";
+const enemyArt = (id, cls) => art(`assets/enemies/${id}.jpg`, ENEMIES[id].e, cls, cls === "foe-pic" || cls === "portrait" ? clip(id) : "");
+const heroArt = (id, cls) => art(`assets/heroes/${id}.jpg`, HEROES[id].e, cls);
 function setScene(id) {   // background art per ladder
   document.body.dataset.ladder = id || "";
-  document.body.style.setProperty("--bg", id ? `url("${src(`assets/bg/${id}.png`)}")` : "none");
+  document.body.style.setProperty("--bg", id ? `url("${src(`assets/bg/${id}.jpg`)}")` : "none");
 }
 
 // ---------- sound & speech ----------
@@ -112,7 +117,7 @@ function fill(s) {
 function speaker(who) {
   if (who === "narr") return { name: "", pic: "" };
   if (who === "hero") return { name: hero().name, pic: heroArt(run.hero, "portrait") };
-  if (NPCS[who]) return { name: NPCS[who].name, pic: art(`assets/npc/${who}.png`, NPCS[who].e, "portrait") };
+  if (NPCS[who]) return { name: NPCS[who].name, pic: art(`assets/npc/${who}.jpg`, NPCS[who].e, "portrait", clip(who)) };
   return { name: ENEMIES[who].name, pic: enemyArt(who, "portrait") };
 }
 function playStory(lines, done) {
@@ -572,7 +577,7 @@ function showShop() {
 function showEvent() {
   view = "event";
   const [q, opts] = rnd(ladder().riddles), right = opts[0];
-  app.innerHTML = `${topbar()}<main class="panel"><h2 class="fraktur">Die Sphinx der Sprache</h2>${art("assets/npc/sphinx.png", "🦁", "event-pic")}
+  app.innerHTML = `${topbar()}<main class="panel"><h2 class="fraktur">Die Sphinx der Sprache</h2>${art("assets/npc/sphinx.jpg", "🦁", "event-pic")}
     <p class="sub">„Beantworte mein Rätsel – und ich belohne dich.“ <span class="en">(Answer my riddle and I'll reward you. A wrong answer costs 6 HP.)</span></p>
     <p class="riddle">${q}</p><div class="row-btns">${shuffle(opts).map(o => `<button class="btn opt-r">${o}</button>`).join("")}</div></main>`;
   app.querySelectorAll(".opt-r").forEach(b => b.onclick = () => {

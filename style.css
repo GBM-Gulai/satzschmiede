@@ -215,7 +215,7 @@ body[data-ladder="a2"] .foe-name, body[data-ladder="a2"] .map h2, body[data-ladd
 .hero-name { font-family: var(--display); font-size: 28px; color: var(--ember2); font-weight: 400; }
 .hero-role { font-size: 14px; font-weight: 700; display: flex; flex-direction: column; }
 .hero-bonus { font-size: 13.5px; color: #e8d6b0; display: flex; flex-direction: column; gap: 3px; }
-@media (max-width: 560px) { .heroes { grid-template-columns: 1fr; } .hero-card { flex-direction: row; text-align: left; align-items: center; } .hero-pic { width: 96px; flex: none; } .hero-card > :not(.pic) { flex: 1; } }
+@media (max-width: 560px) { .heroes { grid-template-columns: 1fr; } .hero-card { display: grid; grid-template-columns: 104px 1fr; column-gap: 14px; row-gap: 4px; text-align: left; align-items: start; } .hero-card .hero-pic { grid-row: 1 / span 3; width: 104px; } .hero-name { line-height: 1; } }
 .tower { display: flex; flex-direction: column; gap: 8px; width: 100%; }
 .rung { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: rgba(242, 230, 201, .05); border: 1px solid rgba(217, 164, 65, .25); text-align: left; }
 .rung.open { background: #3a2a1d; border-color: var(--ember2); }
@@ -227,3 +227,17 @@ body[data-ladder="a2"] .foe-name, body[data-ladder="a2"] .map h2, body[data-ladd
 .rung-txt b { font-size: 18px; } .rung-txt > span { font-size: 14px; color: #cdbb98; } .rung-txt em { font-size: 13px; color: #b9a37c; }
 .rung-state { font-size: 22px; }
 .help { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 8px; text-align: left; }
+
+/* ---------- living portraits: slight zoom hides painted paper edges, gentle breathing + lantern flicker ---------- */
+.pic:not(.noimg) img { transform: scale(1.1); transform-origin: 50% 45%; }
+.foe-pic:not(.noimg) img, .portrait:not(.noimg) img { animation: breathe 5s ease-in-out infinite; }
+.foe-pic:not(.noimg)::after, .portrait:not(.noimg)::after, .event-pic:not(.noimg)::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  background: radial-gradient(circle at 70% 18%, rgba(255, 190, 110, .28), transparent 55%); mix-blend-mode: screen; animation: flicker 3.7s infinite;
+}
+.boss .foe-pic { width: clamp(150px, 46vw, 230px); border-color: var(--ember); box-shadow: 0 0 34px rgba(255, 122, 47, .35), 0 12px 28px rgba(0, 0, 0, .6); }
+.pic video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.1); }
+.pic video.dead { display: none; }
+@keyframes breathe { 0%, 100% { transform: scale(1.1); } 50% { transform: scale(1.135) translateY(-1.5%); } }
+@keyframes flicker { 0%, 100% { opacity: .85; } 7% { opacity: .55; } 9% { opacity: .9; } 48% { opacity: .7; } 52% { opacity: 1; } 80% { opacity: .75; } }
+.foe.hit .pic img { filter: brightness(2.2) saturate(.4); transition: filter .1s; }

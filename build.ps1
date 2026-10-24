@@ -8,14 +8,17 @@ $utf8 = New-Object System.Text.UTF8Encoding($false)
 function Read-Text($rel) { [IO.File]::ReadAllText((Join-Path $root $rel), $utf8) }
 
 # Shrink an image and return it as a data: URI (JPEG, quality 82)
-function To-DataUri($file, $max) {
+function To-DataUri($file, $max, $trim) {
   $img = [System.Drawing.Image]::FromFile($file)
   try {
-    $scale = [Math]::Min(1, $max / [Math]::Max($img.Width, $img.Height))
-    $w = [int]($img.Width * $scale); $h = [int]($img.Height * $scale)
+    $cx = [int]($img.Width * $trim); $cy = [int]($img.Height * $trim)
+    $srcRect = New-Object System.Drawing.Rectangle $cx, $cy, ($img.Width - 2 * $cx), ($img.Height - 2 * $cy)
+    $scale = [Math]::Min(1.0, [double]$max / [Math]::Max($srcRect.Width, $srcRect.Height))
+    $w = [int]($srcRect.Width * $scale); $h = [int]($srcRect.Height * $scale)
     $bmp = New-Object System.Drawing.Bitmap $w, $h
     $g = [System.Drawing.Graphics]::FromImage($bmp)
-    $g.InterpolationMode = "HighQualityBicubic"; $g.DrawImage($img, 0, 0, $w, $h); $g.Dispose()
+    $g.InterpolationMode = "HighQualityBicubic"
+    $g.DrawImage($img, (New-Object System.Drawing.Rectangle 0, 0, $w, $h), $srcRect, [System.Drawing.GraphicsUnit]::Pixel); $g.Dispose()
     $codec = [System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() | Where-Object { $_.MimeType -eq "image/jpeg" }
     $params = New-Object System.Drawing.Imaging.EncoderParameters 1
     $params.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter ([System.Drawing.Imaging.Encoder]::Quality, [long]82)
@@ -30,9 +33,10 @@ $assetDir = Join-Path $root "assets"
 if (Test-Path $assetDir) {
   Get-ChildItem $assetDir -Recurse -Include *.png, *.jpg, *.jpeg | ForEach-Object {
     $rel = "assets/" + $_.FullName.Substring($assetDir.Length + 1).Replace("\", "/")
-    $rel = [IO.Path]::ChangeExtension($rel, ".png")   # the game always asks for .png
+    $rel = [IO.Path]::ChangeExtension($rel, ".jpg")   # the game always asks for .jpg
     $max = if ($rel -like "assets/bg/*") { 900 } else { 640 }
-    $assets[$rel] = To-DataUri $_.FullName $max
+    $trim = 0   # paper edges are hidden by a slight zoom in style.css instead
+    $assets[$rel] = To-DataUri $_.FullName $max $trim
   }
 }
 $assetJs = "window.ASSET_DATA = {" + (($assets.Keys | Sort-Object | ForEach-Object { '"' + $_ + '":"' + $assets[$_] + '"' }) -join ",") + "};"
