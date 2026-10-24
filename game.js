@@ -95,18 +95,82 @@ function sfx(kind) {
     else tone(500, t, .04, "triangle", .04);
   } catch {}
 }
-function speak(text) {
-  if (!("speechSynthesis" in window)) return;
+// The device's own voice, used for sentences forged in fights (they're different every time).
+// Picks the most natural-sounding German voice the device has.
+function bestGermanVoice() {
+  const score = v => (/natural|neural|online|premium|enhanced|wavenet/i.test(v.name) ? 10 : 0) + (/google/i.test(v.name) ? 5 : 0) + (v.localService ? 0 : 2) + (/AT/.test(v.lang) ? 1 : 0);
+  return speechSynthesis.getVoices().filter(v => v.lang.replace("_", "-").toLowerCase().startsWith("de")).sort((a, b) => score(b) - score(a))[0];
+}
+function speak(text, force) {
+  if (!("speechSynthesis" in window) || (!meta.voice && !force)) return;
   speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text.replace(/[⏪]/g, "")), v = speechSynthesis.getVoices().find(x => x.lang.replace("_", "-").startsWith("de"));
-  u.lang = v ? v.lang : "de-DE"; if (v) u.voice = v; u.rate = .9;
+  const u = new SpeechSynthesisUtterance(text.replace(/[⏪]/g, "")), v = bestGermanVoice();
+  u.lang = v ? v.lang : "de-DE"; if (v) u.voice = v; u.rate = .92;
   speechSynthesis.speak(u);
+}
+
+// ---------- music & story voice-over ----------
+// Music: CC0 tracks in assets/music (see CREDITS.md), crossfaded per screen. Story lines: recorded with Piper (tools/make-voices.py),
+// file name = djb2("<speaker>|<German text>"). The one-file version has no audio files and falls back to the device voice.
+const HAS_AUDIO = !window.ASSET_DATA;
+let wantTrack = null, current = null, master = null, voiceSrc = null;
+const buffers = {};
+const djb2 = str => { let x = 5381; for (let i = 0; i < str.length; i++) x = (x * 33 + str.charCodeAt(i)) >>> 0; return x.toString(16); };
+function audioCtx() { return ac = ac || new (window.AudioContext || window.webkitAudioContext)(); }
+function buffer(url) {
+  return buffers[url] = buffers[url] || fetch(url).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); }).then(b => audioCtx().decodeAudioData(b));
+}
+function music(name) {   // inn | battle | boss
+  wantTrack = name;
+  if (!HAS_AUDIO) return;
+  if (!meta.music) return stopMusic();
+  const ctx = audioCtx();
+  if (ctx.state !== "running" || (current && current.name === name)) return;
+  if (!master) { master = ctx.createGain(); master.gain.value = .32; master.connect(ctx.destination); }
+  stopMusic(1.2);
+  const g = ctx.createGain(), me = { name, gain: g, src: null };
+  g.gain.value = 0; g.connect(master); current = me;
+  buffer(`assets/music/${name}.mp3`).then(buf => {
+    if (current !== me) return;
+    const src = ctx.createBufferSource(); src.buffer = buf; src.loop = true; src.connect(g); src.start(); me.src = src;
+    g.gain.linearRampToValueAtTime(1, ctx.currentTime + 1.6);
+  }).catch(() => {});
+}
+function stopMusic(fade = .4) {
+  if (!current) return;
+  const old = current, t = ac.currentTime; current = null;
+  old.gain.gain.cancelScheduledValues(t); old.gain.gain.setValueAtTime(old.gain.gain.value, t); old.gain.gain.linearRampToValueAtTime(0, t + fade);
+  setTimeout(() => { try { if (old.src) old.src.stop(); } catch {} }, fade * 1000 + 100);
+}
+function duck(on) { if (master) master.gain.setTargetAtTime(on ? .1 : .32, ac.currentTime, .25); }
+function stopLine() { if (voiceSrc) { try { voiceSrc.stop(); } catch {} voiceSrc = null; } if ("speechSynthesis" in window) speechSynthesis.cancel(); duck(false); }
+function playLine(who, text) {   // story voice-over, starts automatically
+  stopLine();
+  if (!meta.voice) return;
+  if (!HAS_AUDIO) return speak(text);
+  const speakerId = who === "hero" ? "hero-" + run.hero : who, ctx = audioCtx();
+  buffer(`assets/voice/${djb2(speakerId + "|" + text)}.mp3`).then(buf => {
+    const src = ctx.createBufferSource(); src.buffer = buf; src.connect(ctx.destination);
+    src.onended = () => { if (voiceSrc === src) { voiceSrc = null; duck(false); } };
+    voiceSrc = src; duck(true); src.start();
+  }).catch(() => speak(text));
+}
+// Browsers only allow sound after the first tap – start the wanted track then
+document.addEventListener("pointerdown", () => { const ctx = audioCtx(); if (ctx.state !== "running") ctx.resume().then(() => { if (wantTrack) music(wantTrack); }); }, true);
+const soundBtn = kind => kind === "music" ? `<button class="pill" data-act="music" title="Music">${meta.music ? "🎵" : "🔇"}</button>`
+  : `<button class="pill" data-act="voice" title="Voices">${meta.voice ? "🗣️" : "🤐"}</button>`;
+function toggleSound(kind) {
+  meta[kind] = !meta[kind]; save();
+  if (kind === "music") { if (meta.music) music(wantTrack || "inn"); else stopMusic(); }
+  else if (!meta.voice) stopLine();
+  document.querySelectorAll(`[data-act="${kind}"]`).forEach(b => { b.outerHTML = soundBtn(kind); });
+  toast(kind === "music" ? (meta.music ? "🎵 Musik an" : "🔇 Musik aus") : (meta.voice ? "🗣️ Stimmen an" : "🤐 Stimmen aus"), 1200);
 }
 
 // ---------- saving ----------
 const SAVE = "satzschmiede-run", META = "satzschmiede-meta";
 const load = k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } };
-let meta = Object.assign({ runs: 0, wins: 0, sentences: 0, perfect: 0, unlocked: 1, cleared: [] }, load(META) || {});
+let meta = Object.assign({ runs: 0, wins: 0, sentences: 0, perfect: 0, unlocked: 1, cleared: [], music: true, voice: true }, load(META) || {});
 let run = load(SAVE), fight = null, view = "title";
 if (run && !run.ladder) run = null;   // save from an older version
 function save() {
@@ -148,16 +212,17 @@ function playStory(lines, done) {
   const ov = document.createElement("div");
   ov.className = "story";
   const show = () => {
-    if (i >= lines.length) { ov.remove(); return done(); }
+    if (i >= lines.length) { stopLine(); ov.remove(); return done(); }
     const [who, de, en] = lines[i], s = speaker(who);
     ov.innerHTML = `<div class="story-pic ${who === "hero" ? "left" : "right"}">${s.pic}</div>
       <div class="story-box ${who === "narr" ? "narr" : ""}">${s.name ? `<div class="story-name">${s.name}</div>` : ""}
         <div class="story-de">${fill(de)} <button class="say" data-say aria-label="Anhören">🔊</button></div><div class="story-en">${fill(en)}</div>
         <div class="story-foot"><span>${i + 1} / ${lines.length}</span><span>${L("Tippen zum Weiterlesen", "Tap to continue")} ▸</span></div></div>
       <button class="story-skip" data-skip>${L("Überspringen", "Skip")} ⏭</button>`;
+    playLine(who, fill(de));
   };
   ov.onclick = e => {
-    if (e.target.closest("[data-say]")) return speak(fill(lines[i][1]));
+    if (e.target.closest("[data-say]")) return playLine(lines[i][0], fill(lines[i][1]));
     if (e.target.closest("[data-skip]")) i = lines.length; else i++;
     sfx("tap"); show();
   };
@@ -173,7 +238,7 @@ function topbar() {
     <span class="pill">💰 ${run.gold}</span>
     <span class="relics">${run.relics.map(r => `<button class="relic" data-act="relic" data-r="${r}" title="${esc(RELICS[r].name + ": " + RELICS[r].text)}">${RELICS[r].e}</button>`).join("")}</span>
     <span class="pill floor">${ladder().lvl} · ${Math.min(run.floor + 1, LAYOUT.length)}/${LAYOUT.length}</span>
-    <button class="pill" data-act="deck" title="Deck">🂠 ${run.deck.length}</button>
+    <button class="pill" data-act="deck" title="Deck">🂠 ${run.deck.length}</button>${soundBtn("music")}${soundBtn("voice")}
   </header>`;
 }
 function toast(msg, ms = 2400) {
@@ -198,6 +263,7 @@ function cardHtml(c, extra = "") {
 
 // ---------- title, hero choice, ladder tower ----------
 function showTitle() {
+  music("inn");
   view = "title"; fight = null; setScene("");
   app.innerHTML = `<main class="title"><div class="logo fraktur">Satzschmiede</div>
     <p class="tag">A deckbuilder where your <b>German sentences</b> are your weapons.<br><span class="en">Ein Deckbuilder, in dem deine deutschen Sätze deine Waffen sind.</span></p>
@@ -205,6 +271,7 @@ function showTitle() {
     <div class="col-btns">${run ? `<button class="btn hot" data-act="continue">Continue · Weiter (${LADDERS.find(l => l.id === run.ladder).lvl}, ${run.floor + 1}/${LAYOUT.length})</button>` : ""}
       <button class="btn ${run ? "" : "hot"}" data-act="heroes">New adventure · Neues Abenteuer</button>
       <button class="btn ghost" data-act="help">How to play · Wie spielt man?</button></div>
+    <div class="sound-row">${soundBtn("music")} ${soundBtn("voice")}</div>
     <div class="stats"><div><b>${meta.runs}</b>Runs</div><div><b>${meta.cleared.length}</b>Leitern</div><div><b>${meta.sentences}</b>Sätze</div><div><b>${meta.perfect}</b>perfekt</div></div></main>`;
 }
 function showHeroes() {
@@ -231,6 +298,7 @@ function showTower() {
 
 // ---------- map ----------
 function showMap() {
+  music("inn");
   view = "map"; fight = null; setScene(run.ladder);
   if (run.floor >= LAYOUT.length) return ladderCleared();
   const lad = ladder();
@@ -251,7 +319,7 @@ function enterNode(i) {
   run.path[run.floor] = i; save();
   if (n === "fight") startFight(rnd(run.floor < 2 ? lad.easy : lad.enemies));
   else if (n === "elite") startFight(lad.elite);
-  else if (n === "boss") playStory(STORY[run.ladder].boss, () => startFight(lad.boss));
+  else if (n === "boss") { music("boss"); playStory(STORY[run.ladder].boss, () => startFight(lad.boss)); }
   else if (n === "rest") showRest();
   else if (n === "shop") showShop();
   else showEvent();
@@ -260,6 +328,7 @@ function nextFloor() { run.floor++; save(); showMap(); }
 
 // ---------- combat ----------
 function startFight(eid) {
+  music(ENEMIES[eid].boss ? "boss" : "battle");
   const e = ENEMIES[eid], scale = e.boss ? 0 : run.floor * 2;
   fight = {
     eid, enemy: { hp: e.hp + scale, max: e.hp + scale, block: 0, str: 0, move: 0 },
@@ -497,7 +566,7 @@ function showResult(html, perfect, perf, line, notes) {
     <div class="r-s">${html} <button class="say" aria-label="Anhören">🔊</button></div>
     <div class="r-fx">${line}</div>${notes.length ? `<ul class="r-n">${notes.map(n => `<li>${n}</li>`).join("")}</ul>` : ""}
     <div class="r-legend"><span class="case-nom">Nominativ</span> <span class="case-akk">Akkusativ</span> <span class="case-dat">Dativ</span></div>`;
-  r.onclick = e => { if (e.target.closest(".say")) speak(plainSentence(html)); else r.remove(); };
+  r.onclick = e => { if (e.target.closest(".say")) speak(plainSentence(html), true); else r.remove(); };
   document.body.append(r);
   setTimeout(() => r.classList.add("fade"), notes.length ? 5500 : 3200);
   setTimeout(() => r.remove(), notes.length ? 6200 : 3900);
@@ -550,6 +619,7 @@ function gainRelic(r) { run.relics.push(r); if (r === "lederhose") { run.maxHp +
 
 // ---------- after-fight reward ----------
 function showReward(gold, relic) {
+  music("inn");
   view = "reward";
   const picks = sample(ladder().pool, 3).map(id => mk(id));
   app.innerHTML = `${topbar()}<main class="panel"><h2 class="fraktur">Sieg!</h2>
@@ -620,6 +690,7 @@ function summary() {
   return `<div class="stats"><div><b>${s.sentences}</b>${L("Sätze", "sentences")}</div><div><b>${s.perfect}</b>${L("perfekt", "perfect")}</div><div><b>${s.dmg}</b>${L("Schaden", "damage")}</div><div><b>${s.mistakes}</b>${L("Fehler", "mistakes")}</div></div>`;
 }
 function ladderCleared() {
+  music("inn");
   const lad = ladder(), idx = LADDERS.indexOf(lad);
   if (!meta.cleared.includes(lad.id)) meta.cleared.push(lad.id);
   meta.unlocked = Math.max(meta.unlocked, idx + 2); meta.wins++;
@@ -634,6 +705,7 @@ function ladderCleared() {
   });
 }
 function gameOver() {
+  stopMusic(1.5);
   view = "end";
   const html = `<main class="panel end"><h2 class="fraktur">Besiegt …</h2>${heroArt(run.hero, "end-pic dead")}
     <p class="sub">${L(`Gefallen auf Etage ${run.floor + 1} von ${ladder().lvl}. Jeder Satz zählt – versuch es noch einmal!`, `Defeated on floor ${run.floor + 1} of ${ladder().lvl}. Every sentence counts – try again!`)}</p>${summary()}
@@ -680,6 +752,8 @@ app.addEventListener("click", e => {
     help: showHelp,
     title: showTitle,
     deck: showDeck,
+    music: () => toggleSound("music"),
+    voice: () => toggleSound("voice"),
     relic: () => showRelic(el.dataset.r),
     node: () => enterNode(+el.dataset.i),
     clear: () => { fight.sentence = []; renderFight(); },

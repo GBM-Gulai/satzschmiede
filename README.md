@@ -18,3 +18,5 @@ Play: open `index.html` in a browser. `build.ps1` packs everything into `dist/sa
 Content: `data.js` (cards, enemies, relics), `story.js` (heroes, ladders, story scenes, riddles). Engine: `game.js`.
 
 `build.ps1` also writes `docs/`, the web version served by GitHub Pages (shrunk images, videos, offline support). Commit `docs/` after building to publish.
+
+**Music & voices:** CC0 music from OpenGameArt (`assets/music/CREDITS.md`). Story lines are recorded with Piper TTS and CC0 German voices: `python tools/make-voices.py` (needs `pip install piper-tts`, ffmpeg and the voice models in `tools/voices/`, see the script). Re-run it after changing story text.
