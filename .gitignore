@@ -2,3 +2,5 @@ dist/
 assets/video/web/
 assets/music/original/
 tools/voices/
+tools/gemini-key.txt
+tools/voice-cache/
