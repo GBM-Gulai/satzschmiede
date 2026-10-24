@@ -207,13 +207,27 @@ function speaker(who) {
   if (NPCS[who]) return { name: NPCS[who].name, pic: art(`assets/npc/${who}.jpg`, NPCS[who].e, "portrait", clip(who)) };
   return { name: ENEMIES[who].name, pic: enemyArt(who, "portrait") };
 }
+// The moment the hero steps into "the hidden Vienna": a golden light burst, or assets/video/portal.mp4 if it exists
+function portal() {
+  const ov = document.createElement("div");
+  ov.className = "portal";
+  ov.innerHTML = `<div class="portal-burst"></div>` + (HAS_AUDIO ? `<video src="assets/video/portal.mp4" autoplay muted playsinline></video>` : "");
+  document.body.append(ov); sfx("win");
+  const v = ov.querySelector("video"), close = () => { ov.classList.add("out"); setTimeout(() => ov.remove(), 700); };
+  if (v) { v.onplaying = () => ov.classList.add("has-video"); v.onended = close; v.onerror = () => setTimeout(close, 1900); }
+  else setTimeout(close, 1900);
+  ov.onclick = close;
+}
 function playStory(lines, done) {
   let i = 0;
+  const portalAt = lines.findIndex(l => l[3] === "portal");
   const ov = document.createElement("div");
   ov.className = "story";
   const show = () => {
     if (i >= lines.length) { stopLine(); ov.remove(); return done(); }
-    const [who, de, en] = lines[i], s = speaker(who);
+    const [who, de, en, fx] = lines[i], s = speaker(who);
+    ov.classList.toggle("modern", portalAt >= 0 && i < portalAt);   // the ordinary, modern city before the portal
+    if (fx === "portal") portal();
     ov.innerHTML = `<div class="story-pic ${who === "hero" ? "left" : "right"}">${s.pic}</div>
       <div class="story-box ${who === "narr" ? "narr" : ""}">${s.name ? `<div class="story-name">${s.name}</div>` : ""}
         <div class="story-de">${fill(de)} <button class="say" data-say aria-label="Anhören">🔊</button></div><div class="story-en">${fill(en)}</div>

@@ -75,7 +75,7 @@ const STORY = {
       ["hero", "Ich habe einen Koffer, einen Traum … und fast kein Deutsch.", "I have a suitcase, a dream … and almost no German."],
       ["huber", "Grüß Gott! Sie sind neu hier, oder? Vorsicht – in Wien sind die Wörter gefährlich.", "Hello! You're new here, right? Careful – in Vienna, words are dangerous."],
       ["huber", "Nehmen Sie diese Karten. Mit guten Sätzen kommen Sie überall durch!", "Take these cards. With good sentences you'll get through anything!"],
-      ["narr", "Als {name} die Karten berührt, verändert sich der Bahnhof. Gaslaternen flackern, Dampf steigt auf – und die Wörter werden lebendig.", "As {name} touches the cards, the station changes. Gas lamps flicker, steam rises – and the words come alive."],
+      ["narr", "Als {name} die Karten berührt, verändert sich der Bahnhof. Gaslaternen flackern, Dampf steigt auf – und die Wörter werden lebendig.", "As {name} touches the cards, the station changes. Gas lamps flicker, steam rises – and the words come alive.", "portal"],
       ["huber", "Willkommen im versteckten Wien. Jeder, der hier Deutsch lernt, sieht es irgendwann.", "Welcome to the hidden Vienna. Everyone who learns German here sees it sooner or later."],
       ["huber", "Ihre Sachen kommen mit – aber hier sind sie ein bisschen … magisch.", "Your things come with you – but here they're a little … magical."],
       ["hero", "{magic}", "{magicEn}"]

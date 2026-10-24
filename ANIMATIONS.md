@@ -29,6 +29,16 @@ The game crops videos to a square frame from the centre, so landscape (16:9) out
 |---|---|---|
 | `huber.mp4` | `assets/npc/huber.jpg` | Gentle idle animation of the elderly lady. She smiles warmly and nods slightly, the glowing word cards in her hands shimmer and pulse with soft golden light, the feather on her hat moves a little, warm café light flickers. The camera stays completely still. Painterly storybook style exactly like the image. Seamless loop, no text. |
 
+## Priority 3 – the portal into "the hidden Vienna" ✨
+
+Plays full-screen when the hero touches Frau Huber's cards (A1 intro). Without it, the game shows a golden light burst instead.
+
+1. **First make one extra still in Gemini** (same chat/style) and save it as `assets/bg/a1-modern.jpg`:
+   > Tall 9:16 background, same painterly storybook style but **modern and ordinary**: the real Westbahnhof in Vienna today – a bright modern glass-and-steel hall, red ÖBB trains, departure boards, a few blurred commuters with phones, cool daylight. No magic, no steam, no gas lamps, no text.
+2. **In Flow – Frames to Video:** first frame = `assets/bg/a1-modern.jpg`, last frame = `assets/bg/a1.jpg`. Prompt:
+   > A magical transformation of a train station. Golden light bursts from a deck of glowing cards in the centre and swirls outward like a portal; as the light sweeps across, the modern glass hall morphs into an old storybook station – steel becomes ornate iron, screens become gas lanterns, steam rises, colours turn warm amber and teal. The camera stays still. Painterly storybook style. No text.
+3. Save as `assets/video/portal.mp4`. It plays once (no loop needed), so it can be dramatic.
+
 ## Later (optional)
 
 - Elite enemies: `drache.mp4` (ink breath swirling), `hausmeister.mp4` (jangling keys, grumbling).

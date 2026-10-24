@@ -248,3 +248,25 @@ body[data-ladder="a2"] .foe-name, body[data-ladder="a2"] .map h2, body[data-ladd
 
 .sound-row { display: flex; gap: 8px; justify-content: center; }
 .sound-row .pill { font-size: 18px; padding: 6px 14px; }
+
+/* "the hidden Vienna": grey modern city before the portal, then the portal burst */
+.story { isolation: isolate; }
+.story::before { content: ""; position: absolute; inset: 0; z-index: -1; background: inherit; transition: filter 1.6s ease; }
+.story.modern::before { filter: grayscale(1) brightness(1.05) contrast(.85) sepia(.15) hue-rotate(170deg); }
+.portal { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; background: rgba(10, 6, 3, .35); overflow: hidden; cursor: pointer; }
+.portal-burst { width: 30vmax; height: 30vmax; border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent, rgba(255, 209, 102, .9), transparent 30%, rgba(255, 122, 47, .8), transparent 60%, rgba(255, 240, 200, .9), transparent);
+  filter: blur(6px); animation: portal 1.9s ease-in forwards; box-shadow: 0 0 120px 60px rgba(255, 190, 110, .5); }
+.portal video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .3s; }
+.portal.has-video video { opacity: 1; }
+.portal.has-video .portal-burst { display: none; }
+.portal.out { animation: fade-out .7s forwards; }
+@keyframes portal { 0% { transform: scale(.1) rotate(0); opacity: 0; } 30% { opacity: 1; } 100% { transform: scale(5) rotate(540deg); opacity: 1; } }
+@keyframes fade-out { to { opacity: 0; } }
+/* stronger portal: a screen-filling golden flash on top of the swirl */
+.portal-burst { width: 46vmax; height: 46vmax; animation-name: portal2; }
+.portal::after { content: ""; position: absolute; inset: 0; pointer-events: none; animation: flash 1.9s ease-out forwards;
+  background: radial-gradient(circle at 50% 55%, rgba(255, 248, 225, .95), rgba(255, 196, 110, .75) 30%, rgba(255, 122, 47, .25) 60%, transparent 80%); }
+.portal.has-video::after { display: none; }
+@keyframes portal2 { 0% { transform: scale(.3) rotate(0); opacity: 0; } 25% { opacity: 1; } 100% { transform: scale(4) rotate(600deg); opacity: 1; } }
+@keyframes flash { 0% { opacity: 0; } 35% { opacity: .2; } 60% { opacity: 1; } 100% { opacity: .85; } }

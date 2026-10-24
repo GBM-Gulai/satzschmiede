@@ -49,7 +49,7 @@ def parse():
         if "name" in fields:
             heroes[m.group(1)] = fields
     story = src[src.index("const STORY"):]
-    lines = re.findall(r'\["(\w+)",\s*"((?:[^"\\]|\\.)*)",\s*"(?:[^"\\]|\\.)*"\]', story)
+    lines = re.findall(r'\["(\w+)",\s*"((?:[^"\\]|\\.)*)",\s*"(?:[^"\\]|\\.)*"(?:,\s*"\w+")?\]', story)   # optional 4th item = effect marker
     return heroes, lines
 
 
