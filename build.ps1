@@ -1,5 +1,6 @@
-# Packs the game into one self-contained file: dist/satzschmiede.html
-# Images in assets/ are shrunk (max 640 px, JPEG) and embedded, so the file also works as a private claude.ai link.
+# Builds two versions of the game:
+#   dist/satzschmiede.html  one self-contained file (images embedded) for the private claude.ai link
+#   docs/                   the web version for GitHub Pages: shrunk images, videos, offline support
 # Run after changing anything:   powershell -ExecutionPolicy Bypass -File build.ps1
 $ErrorActionPreference = "Stop"
 Add-Type -AssemblyName System.Drawing
@@ -7,40 +8,38 @@ $root = $PSScriptRoot
 $utf8 = New-Object System.Text.UTF8Encoding($false)
 function Read-Text($rel) { [IO.File]::ReadAllText((Join-Path $root $rel), $utf8) }
 
-# Shrink an image and return it as a data: URI (JPEG, quality 82)
-function To-DataUri($file, $max, $trim) {
+# Shrink an image (longest side = $max px) and return JPEG bytes (quality 82)
+function Shrink($file, $max) {
   $img = [System.Drawing.Image]::FromFile($file)
   try {
-    $cx = [int]($img.Width * $trim); $cy = [int]($img.Height * $trim)
-    $srcRect = New-Object System.Drawing.Rectangle $cx, $cy, ($img.Width - 2 * $cx), ($img.Height - 2 * $cy)
-    $scale = [Math]::Min(1.0, [double]$max / [Math]::Max($srcRect.Width, $srcRect.Height))
-    $w = [int]($srcRect.Width * $scale); $h = [int]($srcRect.Height * $scale)
+    $scale = [Math]::Min(1.0, [double]$max / [Math]::Max($img.Width, $img.Height))
+    $w = [int]($img.Width * $scale); $h = [int]($img.Height * $scale)
     $bmp = New-Object System.Drawing.Bitmap $w, $h
     $g = [System.Drawing.Graphics]::FromImage($bmp)
-    $g.InterpolationMode = "HighQualityBicubic"
-    $g.DrawImage($img, (New-Object System.Drawing.Rectangle 0, 0, $w, $h), $srcRect, [System.Drawing.GraphicsUnit]::Pixel); $g.Dispose()
+    $g.InterpolationMode = "HighQualityBicubic"; $g.DrawImage($img, 0, 0, $w, $h); $g.Dispose()
     $codec = [System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() | Where-Object { $_.MimeType -eq "image/jpeg" }
     $params = New-Object System.Drawing.Imaging.EncoderParameters 1
     $params.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter ([System.Drawing.Imaging.Encoder]::Quality, [long]82)
     $ms = New-Object IO.MemoryStream
     $bmp.Save($ms, $codec, $params); $bmp.Dispose()
-    return "data:image/jpeg;base64," + [Convert]::ToBase64String($ms.ToArray())
+    return , $ms.ToArray()
   } finally { $img.Dispose() }
 }
 
-$assets = @{}
+# ---------- images: shrink once, use for both versions ----------
+$images = @{}   # "assets/enemies/taube.jpg" -> bytes
 $assetDir = Join-Path $root "assets"
 if (Test-Path $assetDir) {
   Get-ChildItem $assetDir -Recurse -Include *.png, *.jpg, *.jpeg | ForEach-Object {
     $rel = "assets/" + $_.FullName.Substring($assetDir.Length + 1).Replace("\", "/")
     $rel = [IO.Path]::ChangeExtension($rel, ".jpg")   # the game always asks for .jpg
     $max = if ($rel -like "assets/bg/*") { 900 } else { 640 }
-    $trim = 0   # paper edges are hidden by a slight zoom in style.css instead
-    $assets[$rel] = To-DataUri $_.FullName $max $trim
+    $images[$rel] = Shrink $_.FullName $max
   }
 }
-$assetJs = "window.ASSET_DATA = {" + (($assets.Keys | Sort-Object | ForEach-Object { '"' + $_ + '":"' + $assets[$_] + '"' }) -join ",") + "};"
 
+# ---------- 1) one-file version ----------
+$assetJs = "window.ASSET_DATA = {" + (($images.Keys | Sort-Object | ForEach-Object { '"' + $_ + '":"data:image/jpeg;base64,' + [Convert]::ToBase64String($images[$_]) + '"' }) -join ",") + "};"
 $index = Read-Text "index.html"
 $fonts = [regex]::Match($index, '<link href="https://fonts\.googleapis\.com[^>]*>').Value
 $out = @"
@@ -59,4 +58,48 @@ $(Read-Text "game.js")
 "@
 New-Item -ItemType Directory -Force (Join-Path $root "dist") | Out-Null
 [IO.File]::WriteAllText((Join-Path $root "dist\satzschmiede.html"), $out, $utf8)
-"Built dist\satzschmiede.html ($([math]::Round($out.Length / 1KB)) KB, $($assets.Count) images)"
+"Built dist\satzschmiede.html ($([math]::Round($out.Length / 1KB)) KB, $($images.Count) images)"
+
+# ---------- 2) web version for GitHub Pages ----------
+$docs = Join-Path $root "docs"
+if (Test-Path $docs) { Remove-Item $docs -Recurse -Force }
+New-Item -ItemType Directory -Force $docs | Out-Null
+$files = @("index.html", "style.css", "data.js", "story.js", "game.js", "manifest.webmanifest", "icon.svg")
+foreach ($f in $files) { Copy-Item (Join-Path $root $f) (Join-Path $docs $f) }
+foreach ($rel in $images.Keys) {
+  $target = Join-Path $docs $rel.Replace("/", "\")
+  New-Item -ItemType Directory -Force (Split-Path $target) | Out-Null
+  [IO.File]::WriteAllBytes($target, $images[$rel])
+}
+$videos = @()
+$videoDir = Join-Path $assetDir "video"
+if (Test-Path $videoDir) {
+  New-Item -ItemType Directory -Force (Join-Path $docs "assets\video") | Out-Null
+  Get-ChildItem $videoDir -Filter *.mp4 | ForEach-Object { Copy-Item $_.FullName (Join-Path $docs "assets\video\$($_.Name)"); $videos += $_.Name }
+}
+# Offline support: cache the game + images (videos stream from the web and are not cached)
+$version = "ss-" + (Get-Date -Format "yyyyMMddHHmmss")
+$cacheList = (@("./") + $files + ($images.Keys | Sort-Object) | ForEach-Object { '"' + $_ + '"' }) -join ", "
+$sw = @"
+/* Generated by build.ps1 - offline support for Satzschmiede. */
+const VERSION = "$version";
+const FILES = [$cacheList];
+self.addEventListener("install", e => { e.waitUntil(caches.open(VERSION).then(c => c.addAll(FILES.map(f => new Request(f, { cache: "reload" }))))); self.skipWaiting(); });
+self.addEventListener("activate", e => {
+  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== VERSION).map(k => caches.delete(k)))));
+  self.clients.claim();
+});
+self.addEventListener("fetch", e => {
+  const url = new URL(e.request.url);
+  if (e.request.method !== "GET" || url.pathname.endsWith(".mp4")) return;   // let videos stream normally
+  e.respondWith(caches.open(VERSION).then(async cache => {
+    const hit = await cache.match(e.request);
+    const fresh = fetch(e.request).then(r => { if (r.ok && url.origin === location.origin) cache.put(e.request, r.clone()); return r; }).catch(() => hit);
+    return hit || fresh;
+  }));
+});
+"@
+[IO.File]::WriteAllText((Join-Path $docs "sw.js"), $sw, $utf8)
+[IO.File]::WriteAllText((Join-Path $docs ".nojekyll"), "", $utf8)
+$size = (Get-ChildItem $docs -Recurse -File | Measure-Object Length -Sum).Sum
+"Built docs\ for GitHub Pages ($([math]::Round($size / 1MB, 1)) MB, $($images.Count) images, $($videos.Count) videos, cache $version)"

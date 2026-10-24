@@ -685,3 +685,13 @@ window.addEventListener("keydown", e => {
 
 showTitle();
 if ("speechSynthesis" in window) speechSynthesis.getVoices();
+
+// Installable app + offline mode on the hosted version (GitHub Pages); reload once when a new version is installed
+if ("serviceWorker" in navigator && location.protocol === "https:" && !window.ASSET_DATA) {
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+  if (navigator.serviceWorker.controller) {
+    let reloaded = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => { if (!reloaded) { reloaded = true; location.reload(); } });
+  }
+}
+if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});

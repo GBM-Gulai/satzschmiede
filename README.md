@@ -1,5 +1,7 @@
 # Satzschmiede ⚒️
 
+**Play:** https://gbm-gulai.github.io/satzschmiede/ (on a phone: *Add to Home Screen*)
+
 A deckbuilding roguelike (Slay the Spire style) where **German sentences are your spells**.
 
 - Your cards are words: pronouns, verbs, nouns and time words.
@@ -14,3 +16,5 @@ A deckbuilding roguelike (Slay the Spire style) where **German sentences are you
 Play: open `index.html` in a browser. `build.ps1` packs everything into `dist/satzschmiede.html`.
 
 Content: `data.js` (cards, enemies, relics), `story.js` (heroes, ladders, story scenes, riddles). Engine: `game.js`.
+
+`build.ps1` also writes `docs/`, the web version served by GitHub Pages (shrunk images, videos, offline support). Commit `docs/` after building to publish.
