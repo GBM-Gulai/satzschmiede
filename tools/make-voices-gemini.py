@@ -1,4 +1,4 @@
-"""Records every German story line in story.js with Gemini text-to-speech -> assets/voice/<key>.mp3
+"""Records every story line (German, or English where marked "en") in story.js with Gemini text-to-speech -> assets/voice/<key>.mp3
 
 Much more natural than the free offline voices: each character gets a voice and a description of how to speak.
 Needs: your Gemini API key in tools/gemini-key.txt (never uploaded – see .gitignore) and ffmpeg on PATH.
@@ -23,9 +23,9 @@ VOICES = {
     "narr":       ("Charon",   "a calm, warm storyteller reading a fairy tale aloud, unhurried, clear German"),
     "huber":      ("Sulafat",  "a warm, kind, slightly mischievous elderly Viennese lady with a gentle Austrian accent, speaking slowly and clearly"),
     "novak":      ("Algenib",  "a bored, tired Viennese civil servant who has said this a thousand times today, flat and monotone, with a small sigh"),
-    "hero-rafa":  ("Puck",     "a cheerful, warm young man, a little nervous but determined, speaking German clearly and a bit slowly like a learner"),
-    "hero-mei":   ("Leda",     "a curious, bright young woman, determined and upbeat, speaking German clearly and a bit slowly like a learner"),
-    "hero-amara": ("Kore",     "a calm, confident, kind young woman, speaking German clearly and a bit slowly like a learner"),
+    "hero-rafa":  ("Puck",     "a cheerful, warm young man, a little nervous but determined, speaking clearly and a bit slowly like a language learner"),
+    "hero-mei":   ("Leda",     "a curious, bright young woman, determined and upbeat, speaking clearly and a bit slowly like a language learner"),
+    "hero-amara": ("Kore",     "a calm, confident, kind young woman, speaking clearly and a bit slowly like a language learner"),
     "automat":    ("Alnilam",  "a grumpy old ticket machine: flat, mechanical and robotic, staccato, every word clipped and separate"),
     "hydra":      ("Gacrux",   "a huge menacing monster made of paperwork: deep, booming and theatrical, slow and threatening"),
 }

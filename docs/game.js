@@ -103,11 +103,11 @@ function bestGermanVoice() {
   const score = v => (/natural|neural|online|premium|enhanced|wavenet/i.test(v.name) ? 10 : 0) + (/google/i.test(v.name) ? 5 : 0) + (v.localService ? 0 : 2) + (/AT/.test(v.lang) ? 1 : 0);
   return speechSynthesis.getVoices().filter(v => v.lang.replace("_", "-").toLowerCase().startsWith("de")).sort((a, b) => score(b) - score(a))[0];
 }
-function speak(text, force) {
+function speak(text, force, english) {
   if (!("speechSynthesis" in window) || (!meta.voice && !force)) return;
   speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text.replace(/[⏪]/g, "")), v = bestGermanVoice();
-  u.lang = v ? v.lang : "de-DE"; if (v) u.voice = v; u.rate = .92;
+  const u = new SpeechSynthesisUtterance(text.replace(/[⏪]/g, "")), v = english ? null : bestGermanVoice();
+  u.lang = english ? "en-GB" : v ? v.lang : "de-DE"; if (v) u.voice = v; u.rate = .92;
   speechSynthesis.speak(u);
 }
 
@@ -146,16 +146,16 @@ function stopMusic(fade = .4) {
 }
 function duck(on) { if (master) master.gain.setTargetAtTime(on ? .1 : .32, ac.currentTime, .25); }
 function stopLine() { if (voiceSrc) { try { voiceSrc.stop(); } catch {} voiceSrc = null; } if ("speechSynthesis" in window) speechSynthesis.cancel(); duck(false); }
-function playLine(who, text) {   // story voice-over, starts automatically
+function playLine(who, text, english) {   // story voice-over, starts automatically
   stopLine();
   if (!meta.voice) return;
-  if (!HAS_AUDIO) return speak(text);
+  if (!HAS_AUDIO) return speak(text, false, english);
   const speakerId = who === "hero" ? "hero-" + run.hero : who, ctx = audioCtx();
   buffer(`assets/voice/${djb2(speakerId + "|" + text)}.mp3`).then(buf => {
     const src = ctx.createBufferSource(); src.buffer = buf; src.connect(ctx.destination);
     src.onended = () => { if (voiceSrc === src) { voiceSrc = null; duck(false); } };
     voiceSrc = src; duck(true); src.start();
-  }).catch(() => speak(text));
+  }).catch(() => speak(text, false, english));
 }
 // Browsers only allow sound after the first tap – start the wanted track then
 document.addEventListener("pointerdown", () => { const ctx = audioCtx(); if (ctx.state !== "running") ctx.resume().then(() => { if (wantTrack) music(wantTrack); }); }, true);
@@ -172,7 +172,7 @@ function toggleSound(kind) {
 // ---------- saving ----------
 const SAVE = "satzschmiede-run", META = "satzschmiede-meta";
 const load = k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } };
-let meta = Object.assign({ runs: 0, wins: 0, sentences: 0, perfect: 0, unlocked: 1, cleared: [], music: true, voice: true }, load(META) || {});
+let meta = Object.assign({ runs: 0, wins: 0, sentences: 0, perfect: 0, unlocked: 1, cleared: [], music: true, voice: true, tutorial: false }, load(META) || {});
 let run = load(SAVE), fight = null, view = "title";
 if (run && !run.ladder) run = null;   // save from an older version
 function save() {
@@ -195,7 +195,8 @@ function newRun(ladderId) {
   };
   meta.runs++; save();
   setScene(ladderId);
-  playStory(STORY[ladderId].intro, showMap);
+  const tutorial = !meta.tutorial && STORY[ladderId].tutorial;
+  playStory(STORY[ladderId].intro, tutorial ? () => playStory(STORY[ladderId].tutorial, startTutorial) : showMap);
 }
 
 // ---------- story scenes ----------
@@ -227,18 +228,18 @@ function playStory(lines, done) {
   ov.className = "story";
   const show = () => {
     if (i >= lines.length) { stopLine(); ov.remove(); return done(); }
-    const [who, de, en, fx] = lines[i], s = speaker(who);
+    const [who, de, en, fx] = lines[i], s = speaker(who), english = fx === "en";
     ov.classList.toggle("modern", portalAt >= 0 && i < portalAt);   // the ordinary, modern city before the portal
     if (fx === "portal") portal();
     ov.innerHTML = `<div class="story-pic ${who === "hero" ? "left" : "right"}">${s.pic}</div>
       <div class="story-box ${who === "narr" ? "narr" : ""}">${s.name ? `<div class="story-name">${s.name}</div>` : ""}
-        <div class="story-de">${fill(de)} <button class="say" data-say aria-label="Anhören">🔊</button></div><div class="story-en">${fill(en)}</div>
+        <div class="story-de">${fill(english ? en : de)} <button class="say" data-say aria-label="Anhören">🔊</button></div><div class="story-en">${english ? "🇩🇪 " : ""}${fill(english ? de : en)}</div>
         <div class="story-foot"><span>${i + 1} / ${lines.length}</span><span>${L("Tippen zum Weiterlesen", "Tap to continue")} ▸</span></div></div>
       <button class="story-skip" data-skip>${L("Überspringen", "Skip")} ⏭</button>`;
-    playLine(who, fill(de));
+    playLine(who, fill(english ? en : de), english);
   };
   ov.onclick = e => {
-    if (e.target.closest("[data-say]")) return playLine(lines[i][0], fill(lines[i][1]));
+    if (e.target.closest("[data-say]")) return playLine(lines[i][0], fill(lines[i][lines[i][3] === "en" ? 2 : 1]), lines[i][3] === "en");
     if (e.target.closest("[data-skip]")) i = lines.length; else i++;
     sfx("tap"); show();
   };
@@ -355,6 +356,61 @@ function startFight(eid) {
   view = "fight";
   startTurn();
 }
+// ---------- tutorial: Frau Huber coaches the very first fight ----------
+// Each step glows one card or button; other taps are ignored until the step is done.
+const TUT = [
+  { card: "ich", de: "Ein Satz beginnt mit dem Subjekt – wer? Tippe auf <b>ich</b>.", en: "A sentence starts with the subject – who? Tap <b>ich</b> (I)." },
+  { card: "sehen", de: "Jetzt das Verb – es steht immer an Position 2. Tippe auf <b>sehen</b>.", en: "Now the verb – it always goes in position 2. Tap <b>sehen</b> (to see)." },
+  { card: "Hund", de: "Was siehst du? „sehen“ braucht ein Objekt. Tippe auf <b>Hund</b>.", en: "What do you see? “sehen” needs an object. Tap <b>Hund</b> (dog)." },
+  { act: "cast", de: "Der Satz steht! Jetzt <b>schmieden</b>.", en: "Your sentence is ready! Now <b>forge</b> it." },
+  { card: "wir", de: "Super! Nicht jedes Verb greift an. Bau einen Schild: Tippe auf <b>wir</b>.", en: "Great! Not every verb attacks. Build a shield: tap <b>wir</b> (we)." },
+  { card: "laufen", de: "<b>laufen</b> gibt 🛡️ Schild und braucht kein Objekt.", en: "<b>laufen</b> (to run) gives 🛡️ shield and needs no object." },
+  { act: "cast", de: "Schmieden!", en: "Forge it!" },
+  { act: "end", de: "Keine Energie ⚡ mehr. Beende deinen Zug – die Assel greift an, aber dein Schild hält.", en: "No energy ⚡ left. End your turn – the woodlouse attacks, but your shield holds." },
+  { card: "heute", free: true, de: "Profi-Tipp: Beginne mit einem Zeitwort. Das Verb bleibt an Position 2, das Subjekt rückt dahinter: <b>Heute finde ich …</b> Jetzt du!",
+    en: "Pro tip: start with a time word. The verb stays in position 2 and the subject moves behind it: <b>Heute finde ich …</b> (Today I find …). Your turn!" }
+];
+function startTutorial() {
+  startFight("assel");
+  // fixed hands: turn 1 = ich sehen Hund wir laufen du, turn 2 = heute finden ich Katze … (a spare ich if needed)
+  const take = id => { const i = fight.draw.findIndex(c => c.id === id); return i < 0 ? mk(id) : fight.draw.splice(i, 1)[0]; };
+  fight.draw.push(...fight.hand); fight.hand = [];
+  const hand = ["ich", "sehen", "Hund", "wir", "laufen", "du"].map(take), next = ["heute", "finden", "ich", "Katze", "trinken", "Wasser"].map(take).reverse();
+  fight.hand = hand; fight.draw = [...fight.draw, ...next];
+  fight.tut = 0;
+  renderFight();
+}
+const tutStep = () => fight && fight.tut != null ? TUT[fight.tut] : null;
+function tutAdvance(kind, id) {
+  const st = tutStep();
+  if (st && !st.free && (st.card === id || st.act === kind)) fight.tut++;
+}
+// While a guided step is active, only its target may be tapped
+function tutBlocks(el, card) {
+  const st = tutStep();
+  if (!st || st.free) return false;
+  if (st.card) return !(card && !el && fight.hand.find(c => c.uid === +card.dataset.uid)?.id === st.card);
+  return !(el && el.dataset.act === st.act);
+}
+function tutHint(st) {
+  if (!tutStep()) return "";
+  if (st.kind === "conj") return L(`Mit <b>ich</b> endet das Verb auf <b>-e</b>: ich ${st.right}.`, `With <b>ich</b> (I) the verb ends in <b>-e</b>: ich ${st.right}.`);
+  if (st.kind === "art" && st.cas === "akk") return L(`<b>${CARDS[st.c.id].de}</b> ist ${CARDS[st.c.id].g}. Akkusativ (wen/was?): der → <b>den</b>, die und das bleiben.`,
+    `<b>${CARDS[st.c.id].de}</b> is ${CARDS[st.c.id].g}. Akkusativ (who/what?): der → <b>den</b>; die and das stay the same.`);
+  return "";
+}
+function tutCoach() {
+  const st = tutStep();
+  if (!st) return "";
+  return `<div class="coach">${art("assets/npc/huber.jpg", NPCS.huber.e, "coach-pic")}<div><b>${NPCS.huber.name}</b><div>${L(st.de, st.en)}</div></div></div>`;
+}
+function tutGlow() {
+  const st = tutStep();
+  if (!st) return;
+  const el = st.card ? (() => { const c = fight.hand.find(c => c.id === st.card && !fight.sentence.includes(c.uid)); return c && app.querySelector(`.hand .card[data-uid="${c.uid}"]`); })()
+    : app.querySelector(`[data-act="${st.act}"]`);
+  if (el) el.classList.add("tut-glow");
+}
 function drawCards(n) {
   for (let i = 0; i < n; i++) {
     if (!fight.draw.length) { fight.draw = shuffle(fight.discard); fight.discard = []; }
@@ -446,11 +502,12 @@ function renderFight() {
     <section class="actions"><button class="btn ghost" data-act="redraw" ${fight.energy - sentenceCost() >= 1 && !fight.busy ? "" : "disabled"}>↻ ${L("Neu ziehen", "Redraw")} (1⚡)</button>
       <button class="btn" data-act="end" ${fight.busy ? "disabled" : ""}>${L("Zug beenden", "End turn")} ⏭</button></section>
   </main>`;
+  if (fight.tut != null && !fight.busy) { app.querySelector(".fight").insertAdjacentHTML("afterbegin", tutCoach()); tutGlow(); }
 }
 function toggleCard(uid) {
   if (fight.busy) return;
   const i = fight.sentence.indexOf(uid);
-  if (i >= 0) fight.sentence.splice(i, 1); else fight.sentence.push(uid);
+  if (i >= 0) fight.sentence.splice(i, 1); else { fight.sentence.push(uid); tutAdvance("card", fight.hand.find(c => c.uid === uid).id); }
   sfx("tap"); renderFight();
 }
 
@@ -482,6 +539,7 @@ function cast() {
     }
   }
   fight.busy = true;
+  tutAdvance("cast");
   incant(cards, a, steps, 0, []);
 }
 // Builds the sentence word by word: blanks for pending choices, the player's answers (right/wrong), or the correct forms (final)
@@ -510,7 +568,7 @@ function incant(cards, a, steps, i, answers) {
   const st = steps[i];
   ov.innerHTML = `<div class="incant-in"><div class="incant-h">🔨 ${L("Beschwörung", "Incantation")} ${i + 1}/${steps.length}</div>
     <div class="incant-s">${sentenceWords(cards, a, steps, answers, i, false)}</div>
-    <div class="incant-q">${st.q}</div>
+    <div class="incant-q">${st.q}</div>${tutHint(st) ? `<div class="coach small">${art("assets/npc/huber.jpg", NPCS.huber.e, "coach-pic")}<div>${tutHint(st)}</div></div>` : ""}
     <div class="incant-opts">${st.opts.map(o => `<button class="opt">${o}</button>`).join("")}</div></div>`;
   ov.querySelectorAll(".opt").forEach(b => b.onclick = () => { sfx("forge"); incant(cards, a, steps, i + 1, [...answers, b.textContent]); });
 }
@@ -597,6 +655,7 @@ function redraw() {
 }
 function endTurn() {
   if (fight.busy) return;
+  tutAdvance("end");
   fight.busy = true; fight.sentence = [];
   fight.discard.push(...fight.hand); fight.hand = [];
   renderFight();
@@ -627,6 +686,7 @@ function winFight() {
   run.gold += gold;
   sfx("win");
   if (e.boss) { run.floor++; save(); return ladderCleared(); }
+  if (fight.tut != null) { meta.tutorial = true; save(); return playStory(STORY[run.ladder].tutorialEnd, showMap); }
   const relic = e.elite ? rnd(Object.keys(RELICS).filter(r => !run.relics.includes(r))) : null;
   if (relic) gainRelic(relic);
   save();
@@ -854,7 +914,9 @@ function showHelp() {
     <li><b>⏪ Perfekt</b> (from A2): put it at the end to cast in the past tense – <i>Ich habe den Hund gesehen</i>.</li>
     <li><b>🚪 Trials</b> (floors 4 and 8): Frau Huber's mini-games – you must pass them to go on. <b>🛒 Shop:</b> haggle with Herr Wotruba for 30 % off.</li>
     <li><b>Monsters have weaknesses</b> – tap ⓘ. <b>Energy ⚡:</b> verbs and nouns cost 1; pronouns, time words and ⏪ cost 0.</li>
-  </ol>`);
+  </ol>${meta.tutorial ? `<button class="btn ghost" data-replay-tut>🎓 Replay the tutorial on your next A1 run</button>` : ""}`);
+  const b = $("[data-replay-tut]");
+  if (b) b.onclick = () => { meta.tutorial = false; save(); b.disabled = true; b.textContent = "✓ Frau Huber will coach you again"; };
 }
 function showDeck() {
   const order = ["subj", "verb", "noun", "adv", "perf"];
@@ -864,6 +926,7 @@ function showDeck() {
 // ---------- input ----------
 app.addEventListener("click", e => {
   const el = e.target.closest("[data-act]"), act = el && el.dataset.act, card = e.target.closest(".card");
+  if (view === "fight" && (el || card) && act !== "music" && act !== "voice" && tutBlocks(el, card)) { const g = $(".tut-glow"); if (g) { g.classList.remove("nudge"); void g.offsetWidth; g.classList.add("nudge"); } return; }
   if (view === "fight" && card && !act) return toggleCard(+card.dataset.uid);
   if (!act) return;
   ({

@@ -5,15 +5,15 @@ const HEROES = {
   rafa:  { name: "Rafa", from: "Brasilien", fromEn: "Brazil", role: "Koch", roleEn: "Cook", e: "🧑🏽‍🍳",
            bonus: "Kochtalent: Sätze mit Essen oder Getränken heilen +3.", bonusEn: "Kitchen talent: sentences with food or drinks heal +3.",
            story: "Ich möchte in Wien ein Restaurant eröffnen.", storyEn: "I want to open a restaurant in Vienna.",
-           magic: "Mein Kochlöffel … leuchtet ja! Okay … Ich schaffe das!", magicEn: "My wooden spoon … it's glowing! Okay … I can do this!" },
+           magic: "Mein Kochlöffel … leuchtet ja!", magicEn: "My wooden spoon … it's glowing!" },
   mei:   { name: "Mei", from: "Taiwan", fromEn: "Taiwan", role: "Programmiererin", roleEn: "Programmer", e: "👩🏻‍💻",
            bonus: "Struktur: Ziehe jede Runde 1 Karte mehr.", bonusEn: "Structure: draw 1 extra card every turn.",
            story: "Ich habe einen neuen Job in einer Wiener Firma.", storyEn: "I have a new job at a Viennese company.",
-           magic: "Mein Tablet … ist jetzt ein Zauberbuch! Okay … Ich schaffe das!", magicEn: "My tablet … it's a spellbook now! Okay … I can do this!" },
+           magic: "Mein Tablet … ist jetzt ein Zauberbuch!", magicEn: "My tablet … it's a spellbook now!" },
   amara: { name: "Amara", from: "Ghana", fromEn: "Ghana", role: "Krankenpflegerin", roleEn: "Nurse", e: "👩🏿‍⚕️",
            bonus: "Ausdauer: +12 max. Leben, nach jedem Kampf +3.", bonusEn: "Stamina: +12 max HP and +3 HP after every fight.",
            story: "Ich möchte hier im Krankenhaus arbeiten.", storyEn: "I want to work here in the hospital.",
-           magic: "Meine Tasche … sie glüht! Okay … Ich schaffe das!", magicEn: "My bag … it's glowing! Okay … I can do this!" }
+           magic: "Meine Tasche … sie glüht!", magicEn: "My bag … it's glowing!" }
 };
 
 // Non-player characters in the story
@@ -89,21 +89,34 @@ const LADDERS = [
 
 // ---------- story scenes ----------
 // who: "narr" (narrator), "hero", an NPC id or an enemy id. {name} and {from} are replaced with the hero's name and country.
+// A 4th item "en" means the line is spoken in English (the German translation is shown small underneath).
 // Story: Frau Huber's word cards send newcomers into the Vienna of the past – a parallel world – to learn German (A1, A2).
 // From B1 on, the hero returns to today's Vienna and uses what they learned.
 const STORY = {
   a1: {
     intro: [
       ["narr", "Wien, Westbahnhof. 7:30 Uhr.", "Vienna, Westbahnhof. 7:30 a.m."],
-      ["hero", "Hallo! Ich bin {name}. Ich komme aus {from}.", "Hello! I'm {name}. I come from {fromEn}."],
-      ["hero", "{story}", "{storyEn}"],
-      ["hero", "Ich habe einen Koffer, einen Traum … und fast kein Deutsch.", "I have a suitcase, a dream … and almost no German."],
-      ["huber", "Grüß Gott! Sie sind neu hier, oder? Vorsicht – in Wien sind die Wörter gefährlich.", "Hello! You're new here, right? Careful – in Vienna, words are dangerous."],
+      ["hero", "Hallo! Ich bin {name} aus {from}.", "Hi! I'm {name}, from {fromEn}.", "en"],
+      ["hero", "{story}", "{storyEn}", "en"],
+      ["hero", "Ich habe einen Koffer, einen Traum … und fast kein Deutsch.", "I've got a suitcase, a dream … and almost no German.", "en"],
+      ["hero", "Entschuldigung … können Sie mir helfen? Wo ist … das Zentrum?", "Excuse me … could you help me? Where is … the city centre?", "en"],
+      ["huber", "Oh je – Sie sprechen kein Deutsch, oder? Na, das ändern wir!", "Oh dear – you don't speak German, do you? Well, we'll change that!"],
+      ["huber", "Aber Vorsicht: In Wien sind die Wörter gefährlich.", "But careful: in Vienna, words are dangerous."],
       ["huber", "Nehmen Sie diese Karten. Mit guten Sätzen kommen Sie überall durch!", "Take these cards. With good sentences you'll get through anything!"],
       ["narr", "Als {name} die Karten berührt, wirbelt goldenes Licht. Die Zeit dreht sich zurück: Gaslaternen, Dampf, Kutschen – und die Wörter werden lebendig.", "As {name} touches the cards, golden light swirls. Time turns back: gas lamps, steam, carriages – and the words come alive.", "portal"],
       ["huber", "Willkommen im Wien von früher – einer Parallelwelt. Hier lernen Sie, was Sie im Wien von heute brauchen.", "Welcome to the Vienna of the past – a parallel world. Here you'll learn what you need in today's Vienna."],
       ["huber", "Ihre Sachen kommen mit – aber hier sind sie ein bisschen … magisch.", "Your things come with you – but here they're a little … magical."],
-      ["hero", "{magic}", "{magicEn}"]
+      ["hero", "{magic}", "{magicEn}", "en"]
+    ],
+    // first-run tutorial fight, right after arriving in the past
+    tutorial: [
+      ["huber", "Schauen Sie – eine Artikel-Assel! Zeit für Ihre erste Lektion.", "Look – an article woodlouse! Time for your first lesson."],
+      ["huber", "Ich helfe Ihnen. Machen Sie einfach, was ich sage.", "I'll help you. Just do what I say."]
+    ],
+    tutorialEnd: [
+      ["huber", "Sehr gut! Mit jedem Satz werden Sie stärker.", "Very good! With every sentence you get stronger."],
+      ["hero", "Ich … schaffe … das!", "I … can … do this!"],
+      ["huber", "Na also! Und jetzt los – durch den Bahnhof.", "There you go! And now off you go – through the station."]
     ],
     boss: [
       ["narr", "Am Ende des Bahnhofs wartet er: der Fahrkartenautomat.", "At the end of the station he's waiting: the ticket machine."],
