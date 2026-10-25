@@ -84,7 +84,7 @@ const CARDS = {
   immer:   { type: "adv", de: "immer", en: "always", cost: 0, pow: 4 },
   gestern: { type: "adv", de: "gestern", en: "yesterday", cost: 0, pow: 3 },
 
-  perf:    { type: "perf", de: "⏪ Perfekt", en: "past tense – put it last", cost: 0, pow: 4 }
+  perf:    { type: "perf", de: "⏪ Perfekt", en: "past tense", cost: 0, pow: 4 }
 };
 
 // ---------- enemies ----------

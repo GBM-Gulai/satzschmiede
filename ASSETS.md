@@ -40,6 +40,8 @@ Squares (1:1) work best for characters. Backgrounds should be tall (9:16).
 | `novak.jpg` | Square portrait of Herr Novak, a tired Viennese civil servant in his fifties, moustache, reading glasses on his nose, beige cardigan, a mountain of paper forms and rubber stamps on his desk, deadpan expression, dim office with green walls. |
 | `sphinx.jpg` | Square portrait of a friendly sphinx made of old books and parchment, lion body with paper wings, wearing small reading glasses, sitting on a stack of dictionaries in a candle-lit library, mysterious smile. |
 
+| `wotruba.jpg` | Square portrait of Herr Wotruba, a jovial but shrewd Viennese corner-shop owner ("Greißler") in his sixties, round face, bushy grey moustache, flat cap, striped shirt with sleeve garters and a brown apron, leaning on a wooden counter full of jars, bread rolls and sausages, a sly haggling grin, warm lantern light. |
+
 ## A1 enemies – "Ankunft" (train station) → `assets/enemies/`
 
 | File | Prompt |
@@ -68,5 +70,17 @@ Squares (1:1) work best for characters. Backgrounds should be tall (9:16).
 |---|---|
 | `a1.jpg` | Tall 9:16 background: the grand hall of an old Viennese train station at dawn, iron and glass roof, warm light through steam, empty platforms, a sausage stand in the distance, no people. |
 | `a2.jpg` | Tall 9:16 background: a long, slightly eerie corridor inside an old Viennese government office, green-painted walls, numbered doors, waiting chairs, stacks of paper, a flickering lamp, no people. |
+
+## Card frames (optional) → `assets/cards/`
+
+Painted backgrounds for the word cards; the game draws the text on top. Make them **tall 2:3**, with a **plain, light parchment centre** (the text goes there) and decoration only around the edges.
+
+| File | Prompt |
+|---|---|
+| `subj.jpg` | Tall 2:3 empty playing-card frame on aged cream parchment, ornate engraved border in slate blue with small brass corner fittings, a tiny silhouette of a person at the top edge, plain light centre for text, painterly storybook style, no text. |
+| `verb.jpg` | Tall 2:3 empty playing-card frame on aged cream parchment, ornate engraved border in deep red with brass corner fittings and a small anvil-and-hammer emblem at the top edge, plain light centre for text, painterly storybook style, no text. |
+| `noun.jpg` | Tall 2:3 empty playing-card frame on aged cream parchment, ornate engraved border in warm brown with brass corner fittings and a small open-book emblem at the top edge, plain light centre for text, painterly storybook style, no text. |
+| `adv.jpg` | Tall 2:3 empty playing-card frame on aged cream parchment, ornate engraved border in gold with brass corner fittings and a small pocket-watch emblem at the top edge, plain light centre for text, painterly storybook style, no text. |
+| `perf.jpg` | Tall 2:3 empty playing-card frame on aged cream parchment, ornate engraved border in violet with brass corner fittings and a small hourglass emblem at the top edge, plain light centre for text, painterly storybook style, no text. |
 
 Optional, for later ladders: `b1.jpg` (a modern Viennese office), `b2.jpg` (University of Vienna lecture hall), `c1.jpg` (a newsroom on the Ringstraße), `c2.jpg` (a traditional Viennese coffee house).

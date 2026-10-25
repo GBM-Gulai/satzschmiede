@@ -18,9 +18,10 @@ const AUX = { haben: "habe hast hat haben habt haben".split(" "), sein: "bin bis
 const CASE_NAME = { nom: "Nominativ", akk: "Akkusativ", dat: "Dativ" };
 const FX = { atk: { icon: "⚔️" }, blk: { icon: "🛡️" }, heal: { icon: "❤️" } };
 const PERSON = ["ich", "du", "er/sie/es", "wir", "ihr", "sie/Sie"];
-const NODE = { fight: ["⚔️", "Kampf", "Fight"], elite: ["💀", "Elite", "Elite"], rest: ["🔥", "Lager", "Camp"], shop: ["🛒", "Laden", "Shop"], event: ["❓", "Rätsel", "Riddle"], boss: ["👑", "Boss", "Boss"] };
-const LAYOUT = [["fight", "fight"], ["fight", "event"], ["fight", "shop", "event"], ["rest", "fight"], ["elite", "fight", "event"],
-  ["event", "shop", "fight"], ["fight", "elite"], ["rest", "shop"], ["boss"]];
+const NODE = { fight: ["⚔️", "Kampf", "Fight"], elite: ["💀", "Elite", "Elite"], rest: ["🔥", "Lager", "Camp"], shop: ["🛒", "Laden", "Shop"], event: ["❓", "Rätsel", "Riddle"], gate: ["🚪", "Prüfung", "Trial"], boss: ["👑", "Boss", "Boss"] };
+// gate = a mandatory trial (mini-game) that everyone has to pass
+const LAYOUT = [["fight", "fight"], ["fight", "event"], ["fight", "shop", "event"], ["gate"], ["rest", "fight"], ["elite", "fight", "event"],
+  ["event", "shop", "fight"], ["gate"], ["rest", "shop", "fight"], ["boss"]];
 const forms = d => d.forms.split(" ");
 const nounForm = (d, cas) => cas !== "nom" && d.nForm ? d.nForm : d.de;
 const powOf = c => CARDS[c.id].pow + (c.up ? 2 : 0);
@@ -71,6 +72,7 @@ const art = (p, emoji, cls = "", video = "") => `<span class="pic ${cls}"><img s
 const clip = id => VIDEO.includes(id) ? `assets/video/${id}.mp4` : "";
 const enemyArt = (id, cls) => art(`assets/enemies/${id}.jpg`, ENEMIES[id].e, cls, cls === "foe-pic" || cls === "portrait" ? clip(id) : "");
 const heroArt = (id, cls) => art(`assets/heroes/${id}.jpg`, HEROES[id].e, cls);
+for (const t of ["subj", "verb", "noun", "adv", "perf"]) document.documentElement.style.setProperty(`--card-${t}`, `url("${src(`assets/cards/${t}.jpg`)}")`);
 function setScene(id) {   // background art per ladder
   document.body.dataset.ladder = id || "";
   document.body.style.setProperty("--bg", id ? `url("${src(`assets/bg/${id}.jpg`)}")` : "none");
@@ -336,6 +338,7 @@ function enterNode(i) {
   else if (n === "boss") { music("boss"); playStory(STORY[run.ladder].boss, () => startFight(lad.boss)); }
   else if (n === "rest") showRest();
   else if (n === "shop") showShop();
+  else if (n === "gate") showGate();
   else showEvent();
 }
 function nextFloor() { run.floor++; save(); showMap(); }
@@ -660,23 +663,129 @@ function pickFromDeck(title, filter, onPick) {
 }
 
 // ---------- shop ----------
-function showShop() {
+// Prices after haggling: solved → 30 % off, wrong answer → 10 % more
+const shopPrice = base => Math.round(base * (run.shop.mult || 1));
+function showShop(haggling) {
   view = "shop";
   if (!run.shop || run.shop.floor !== run.floor) {
     const relic = rnd(Object.keys(RELICS).filter(r => !run.relics.includes(r)));
-    run.shop = { floor: run.floor, cards: sample(ladder().pool, 4).map(id => ({ ...mk(id), price: between(35, 60) })), relic, relicPrice: 110, removed: false };
+    run.shop = { floor: run.floor, cards: sample(ladder().pool, 4).map(id => ({ ...mk(id), price: between(35, 60) })), relic, relicPrice: 110, removed: false, mult: 1, haggled: false };
   }
-  const s = run.shop;
-  app.innerHTML = `${topbar()}<main class="panel"><h2 class="fraktur">Wortladen</h2><p class="sub">„Grüß Gott! Was darf's sein?“ <span class="en">(Hello! What can I get you?)</span></p>
-    <div class="choice wrap">${s.cards.map(c => `<div class="ware">${cardHtml(c, c.sold ? "used" : "")}<span class="price">${c.sold ? L("verkauft", "sold") : "💰 " + c.price}</span></div>`).join("")}</div>
+  const s = run.shop, rm = shopPrice(60);
+  const mood = s.mult < 1 ? L("„Na gut, weil Sie so höflich sind: 30 % billiger!“", "“Alright, because you're so polite: 30 % off!”")
+    : s.mult > 1 ? L("„Also bitte! Jetzt kostet alles mehr.“", "“Excuse me! Now everything costs more.”") : L("„Grüß Gott! Was darf's sein?“", "“Grüß Gott! What can I get you?”");
+  let haggle = "";
+  if (haggling && !s.haggled) {
+    const [q, opts] = rnd(ladder().haggle);
+    haggle = `<div class="haggle"><p class="riddle">${q}</p><div class="row-btns">${shuffle(opts).map(o => `<button class="btn opt-h" data-ok="${o === opts[0] ? 1 : 0}">${o}</button>`).join("")}</div></div>`;
+  }
+  app.innerHTML = `${topbar()}<main class="panel"><h2 class="fraktur">Wotrubas Greißlerei</h2>
+    <div class="gate-host">${art("assets/npc/wotruba.jpg", NPCS.wotruba.e, "event-pic")}<p class="sub"><b>Herr Wotruba:</b> ${mood}</p></div>
+    ${s.haggled ? "" : haggle || `<button class="btn" data-act="haggle">🗣️ ${L("Feilschen – löse ein Rätsel für 30 % Rabatt", "Haggle – solve a riddle for 30 % off")}</button>`}
+    <div class="choice wrap">${s.cards.map(c => `<div class="ware">${cardHtml(c, c.sold ? "used" : "")}<span class="price">${c.sold ? L("verkauft", "sold") : "💰 " + shopPrice(c.price)}</span></div>`).join("")}</div>
     <div class="row-btns">
-      ${s.relic ? `<button class="btn" data-act="buy-relic" ${run.gold >= s.relicPrice ? "" : "disabled"}>${RELICS[s.relic].e} ${RELICS[s.relic].name} – 💰 ${s.relicPrice}<small>${RELICS[s.relic].text}</small></button>` : ""}
-      <button class="btn" data-act="buy-remove" ${run.gold >= 60 && !s.removed ? "" : "disabled"}>🗑️ ${L("Ein Wort entfernen", "Remove a word")} – 💰 60</button>
+      ${s.relic ? `<button class="btn" data-act="buy-relic" ${run.gold >= shopPrice(s.relicPrice) ? "" : "disabled"}>${RELICS[s.relic].e} ${RELICS[s.relic].name} – 💰 ${shopPrice(s.relicPrice)}<small>${RELICS[s.relic].text}</small></button>` : ""}
+      <button class="btn" data-act="buy-remove" ${run.gold >= rm && !s.removed ? "" : "disabled"}>🗑️ ${L("Ein Wort entfernen", "Remove a word")} – 💰 ${rm}</button>
     </div><button class="btn hot" data-act="leave">${L("Weiter", "Continue")} ➜</button></main>`;
+  app.querySelectorAll(".opt-h").forEach(b => b.onclick = () => {
+    const ok = b.dataset.ok === "1";
+    s.haggled = true; s.mult = ok ? .7 : 1.1; sfx(ok ? "win" : "bad"); save();
+    toast(ok ? L("✓ Gut gefeilscht! Alles 30 % billiger.", "✓ Well haggled! Everything 30 % off.") : L("✗ Herr Wotruba ist beleidigt: +10 %.", "✗ Herr Wotruba is offended: +10 %."), 2600);
+    showShop();
+  });
   app.querySelectorAll(".ware .card").forEach(b => b.onclick = () => {
-    const c = s.cards.find(x => x.uid === +b.dataset.uid);
-    if (c.sold || run.gold < c.price) return toast(L("Nicht genug Gold.", "Not enough gold."));
-    run.gold -= c.price; c.sold = true; run.deck.push(mk(c.id)); sfx("ok"); save(); showShop();
+    const c = s.cards.find(x => x.uid === +b.dataset.uid), price = shopPrice(c.price);
+    if (c.sold || run.gold < price) return toast(L("Nicht genug Gold.", "Not enough gold."));
+    run.gold -= price; c.sold = true; run.deck.push(mk(c.id)); sfx("ok"); save(); showShop();
+  });
+}
+
+// ---------- trials: mandatory mini-games, hosted by Frau Huber ----------
+const pickBy = (seed, list) => list[Math.floor(seed * list.length) % list.length];
+function shuffled(list) { let o = shuffle(list); for (let n = 0; n < 6 && o.join() === list.join(); n++) o = shuffle(list); return o; }
+let gateState = null;
+function showGate() {
+  view = "gate";
+  if (!run.gate || run.gate.floor !== run.floor) {
+    const types = ["puzzle", "sort"].concat("speechSynthesis" in window || HAS_AUDIO ? ["listen"] : []);
+    run.gate = { floor: run.floor, type: rnd(types), seed: Math.random(), done: false };
+    gateState = null; save();
+  }
+  if (run.gate.done) return gateReward();
+  ({ puzzle: gatePuzzle, sort: gateSort, listen: gateListen })[run.gate.type]();
+}
+function gateFrame(title, task, body) {
+  app.innerHTML = `${topbar()}<main class="panel gate"><h2 class="fraktur">${L("Prüfung", "Trial")}: ${title}</h2>
+    <div class="gate-host">${art("assets/npc/huber.jpg", NPCS.huber.e, "event-pic")}<p class="sub"><b>Frau Huber:</b> „${L("Bevor Sie weitergehen: Zeigen Sie mir, was Sie gelernt haben!", "Before you go on: show me what you've learned!")}“</p></div>
+    <p class="gate-task">${task}</p>${body}<p class="sub small">${L("Jeder Fehler kostet 3 ❤️ – aufgeben gilt nicht.", "Each mistake costs 3 ❤️ – no skipping.")}</p></main>`;
+}
+function gateMiss(msg) {
+  run.hp = Math.max(1, run.hp - 3); run.stats.mistakes++;
+  sfx("bad"); document.body.classList.add("shake"); setTimeout(() => document.body.classList.remove("shake"), 350);
+  toast(`✗ ${msg} −3 ❤️`, 2200); save();
+}
+function gateWin() { run.gate.done = true; sfx("win"); save(); setTimeout(gateReward, 700); }
+function gateReward() {
+  view = "gate";
+  app.innerHTML = `${topbar()}<main class="panel"><h2 class="fraktur">${L("Bestanden!", "Passed!")}</h2>${art("assets/npc/huber.jpg", NPCS.huber.e, "event-pic")}
+    <p class="sub"><b>Frau Huber:</b> „${L("Sehr gut! Nehmen Sie eine Belohnung.", "Very good! Take a reward.")}“</p>
+    <div class="row-btns"><button class="btn hot" data-act="gate-up">⚒️ ${L("Ein Wort schmieden (+2 Kraft)", "Upgrade a word (+2 power)")}</button>
+    <button class="btn" data-act="gate-gold">💰 +30 Gold</button></div></main>`;
+}
+// 1) Satz-Puzzle: rebuild a sentence from shuffled words
+function gatePuzzle() {
+  const target = pickBy(run.gate.seed, ladder().puzzles), punct = target.slice(-1), words = target.slice(0, -1).split(" ");
+  gateState = gateState || { order: shuffled(words.map((w, i) => i)), placed: [] };
+  const g = gateState, left = g.order.filter(i => !g.placed.includes(i));
+  gateFrame("Satz-Puzzle", L("Bring die Wörter in die richtige Reihenfolge.", "Put the words in the right order."),
+    `<div class="gate-line">${g.placed.map(i => `<button class="chip-w placed" data-i="${i}">${words[i]}</button>`).join("")}<span class="punct">${punct}</span></div>
+     <div class="gate-chips">${left.map(i => `<button class="chip-w" data-i="${i}">${words[i]}</button>`).join("")}</div>`);
+  app.querySelectorAll(".chip-w").forEach(b => b.onclick = () => {
+    const i = +b.dataset.i;
+    if (b.classList.contains("placed")) g.placed = g.placed.filter(x => x !== i); else g.placed.push(i);
+    sfx("tap");
+    if (g.placed.length === words.length) {
+      if (g.placed.map(x => words[x]).join(" ") === words.join(" ")) { speak(target, true); return gateWin(); }
+      gateMiss(L("Noch nicht ganz.", "Not quite.")); g.placed = [];
+    }
+    gatePuzzle();
+  });
+}
+// 2) Artikel-Sortierer: der / die / das
+function gateSort() {
+  if (!gateState) {
+    const nouns = [...new Set(ladder().start.concat(ladder().pool))].filter(id => CARDS[id] && CARDS[id].type === "noun");
+    gateState = { nouns: sample(nouns, 6), done: {}, sel: null };
+  }
+  const g = gateState, open = g.nouns.filter(id => !g.done[id]);
+  const bin = a => `<button class="bin g-${a}" data-a="${a}"><b>${a}</b>${g.nouns.filter(id => g.done[id] && CARDS[id].g === a).map(id => `<span>${CARDS[id].de}</span>`).join("")}</button>`;
+  gateFrame("Artikel-Sortierer", L("Tippe ein Wort an, dann den richtigen Artikel.", "Tap a word, then the right article."),
+    `<div class="gate-chips">${open.map(id => `<button class="chip-w${g.sel === id ? " sel" : ""}" data-id="${id}">${CARDS[id].de}<small>${CARDS[id].en}</small></button>`).join("")}</div>
+     <div class="bins">${bin("der")}${bin("die")}${bin("das")}</div>`);
+  app.querySelectorAll(".chip-w").forEach(b => b.onclick = () => { g.sel = b.dataset.id; sfx("tap"); gateSort(); });
+  app.querySelectorAll(".bin").forEach(b => b.onclick = () => {
+    if (!g.sel) return toast(L("Wähle zuerst ein Wort.", "Pick a word first."), 1400);
+    const id = g.sel; g.sel = null;
+    if (CARDS[id].g === b.dataset.a) { g.done[id] = true; sfx("ok"); speak(`${CARDS[id].g} ${CARDS[id].de}`, true); }
+    else gateMiss(L(`${CARDS[id].de} ist nicht „${b.dataset.a}“.`, `${CARDS[id].de} isn't “${b.dataset.a}”.`));
+    if (g.nouns.every(n => g.done[n])) return gateWin();
+    gateSort();
+  });
+}
+// 3) Hörrätsel: which sentence did you hear?
+function gateListen() {
+  const item = pickBy(run.gate.seed, ladder().listen);
+  gateState = gateState || { opts: shuffle(item), wrong: [] };
+  const g = gateState;
+  gateFrame("Hörrätsel", L("Hör genau zu: Welchen Satz hörst du?", "Listen carefully: which sentence do you hear?"),
+    `<button class="btn hot play" data-play>🔊 ${L("Anhören", "Listen")}</button>
+     <div class="col-btns wide">${g.opts.map(o => `<button class="btn opt-l" ${g.wrong.includes(o) ? "disabled" : ""}>${o}</button>`).join("")}</div>`);
+  const play = () => speak(item[0], true);
+  app.querySelector("[data-play]").onclick = play;
+  if (!g.played) { g.played = true; setTimeout(play, 400); }
+  app.querySelectorAll(".opt-l").forEach(b => b.onclick = () => {
+    if (b.textContent === item[0]) return gateWin();
+    g.wrong.push(b.textContent); gateMiss(L("Das war es nicht – hör noch einmal.", "That wasn't it – listen again.")); gateListen();
   });
 }
 
@@ -743,6 +852,7 @@ function showHelp() {
     <li><b>Word order:</b> the verb is always in <b>position 2</b>. Start with a time word (<i>heute</i>) and the subject moves behind the verb: <i>Heute sehe ich …</i></li>
     <li><b>Incantation:</b> when you forge, pick the right verb form and articles. Perfect sentences are ×1.5 stronger.</li>
     <li><b>⏪ Perfekt</b> (from A2): put it at the end to cast in the past tense – <i>Ich habe den Hund gesehen</i>.</li>
+    <li><b>🚪 Trials</b> (floors 4 and 8): Frau Huber's mini-games – you must pass them to go on. <b>🛒 Shop:</b> haggle with Herr Wotruba for 30 % off.</li>
     <li><b>Monsters have weaknesses</b> – tap ⓘ. <b>Energy ⚡:</b> verbs and nouns cost 1; pronouns, time words and ⏪ cost 0.</li>
   </ol>`);
 }
@@ -777,14 +887,17 @@ app.addEventListener("click", e => {
     skip: nextFloor,
     "rest-heal": () => { run.hp = Math.min(run.maxHp, run.hp + Math.round(run.maxHp * .3)); sfx("ok"); nextFloor(); },
     "rest-up": () => pickFromDeck(L("Welches Wort schmieden?", "Which word to upgrade?"), c => !c.up, c => { c.up = true; sfx("forge"); toast(`⚒️ ${CARDS[c.id].de} +2`); nextFloor(); }),
-    back: () => (run.map[run.floor][run.path[run.floor]] === "shop" ? showShop() : showRest()),
+    back: () => ({ shop: showShop, gate: gateReward }[run.map[run.floor][run.path[run.floor]]] || showRest)(),
     "buy-relic": () => {
-      const s = run.shop; if (run.gold < s.relicPrice) return;
-      run.gold -= s.relicPrice; gainRelic(s.relic); showRelic(s.relic); s.relic = null; sfx("ok"); save(); showShop();
+      const s = run.shop, price = shopPrice(s.relicPrice); if (run.gold < price) return;
+      run.gold -= price; gainRelic(s.relic); showRelic(s.relic); s.relic = null; sfx("ok"); save(); showShop();
     },
     "buy-remove": () => pickFromDeck(L("Welches Wort entfernen?", "Which word to remove?"), () => true, c => {
-      run.gold -= 60; run.shop.removed = true; run.deck = run.deck.filter(x => x !== c); toast(`🗑️ ${CARDS[c.id].de}`); save(); showShop();
+      run.gold -= shopPrice(60); run.shop.removed = true; run.deck = run.deck.filter(x => x !== c); toast(`🗑️ ${CARDS[c.id].de}`); save(); showShop();
     }),
+    haggle: () => showShop(true),
+    "gate-gold": () => { run.gold += 30; sfx("ok"); nextFloor(); },
+    "gate-up": () => pickFromDeck(L("Welches Wort schmieden?", "Which word to upgrade?"), c => !c.up, c => { c.up = true; sfx("forge"); toast(`⚒️ ${CARDS[c.id].de} +2`); nextFloor(); }),
     leave: nextFloor
   }[act] || (() => {}))();
 });
