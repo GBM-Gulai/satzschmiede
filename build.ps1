@@ -33,7 +33,7 @@ if (Test-Path $assetDir) {
   Get-ChildItem $assetDir -Recurse -Include *.png, *.jpg, *.jpeg | ForEach-Object {
     $rel = "assets/" + $_.FullName.Substring($assetDir.Length + 1).Replace("\", "/")
     $rel = [IO.Path]::ChangeExtension($rel, ".jpg").ToLower()   # the game always asks for lowercase .jpg (the web is case-sensitive)
-    $max = if ($rel -like "assets/bg/*") { 900 } else { 640 }
+    $max = if ($rel -like "assets/bg/*" -or $rel -like "assets/tower/*") { 1400 } else { 640 }   # backgrounds fill big PC screens too
     $images[$rel] = Shrink $_.FullName $max
   }
 }

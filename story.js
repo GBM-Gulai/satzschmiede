@@ -2,15 +2,15 @@
 
 // ---------- heroes ----------
 const HEROES = {
-  rafa:  { name: "Rafa", from: "Brasilien", fromEn: "Brazil", role: "Koch", roleEn: "Cook", e: "🧑🏽‍🍳",
+  rafa:  { g: "m", name: "Rafa", from: "Brasilien", fromEn: "Brazil", role: "Koch", roleEn: "Cook", e: "🧑🏽‍🍳",
            power: "Doppelte Portion", powerEn: "Double helping", powerText: "Dein nächster Satz wirkt doppelt.", powerTextEn: "Your next sentence has double power.",
            story: "Ich möchte in Wien ein Restaurant eröffnen.", storyEn: "I want to open a restaurant in Vienna.",
            magic: "Mein Kochlöffel … leuchtet ja!", magicEn: "My wooden spoon … it's glowing!" },
-  mei:   { name: "Mei", from: "Taiwan", fromEn: "Taiwan", role: "Programmiererin", roleEn: "Programmer", e: "👩🏻‍💻",
+  mei:   { g: "f", name: "Mei", from: "Taiwan", fromEn: "Taiwan", role: "Programmiererin", roleEn: "Programmer", e: "👩🏻‍💻",
            power: "Wörterbuch-App", powerEn: "Dictionary app", powerText: "Bei deiner nächsten Beschwörung leuchten die richtigen Antworten.", powerTextEn: "In your next incantation the right answers light up.",
            story: "Ich habe einen neuen Job in einer Wiener Firma.", storyEn: "I have a new job at a Viennese company.",
            magic: "Mein Tablet … ist jetzt ein Zauberbuch!", magicEn: "My tablet … it's a spellbook now!" },
-  amara: { name: "Amara", from: "Ghana", fromEn: "Ghana", role: "Krankenpflegerin", roleEn: "Nurse", e: "👩🏿‍⚕️",
+  amara: { g: "f", name: "Amara", from: "Ghana", fromEn: "Ghana", role: "Krankenpflegerin", roleEn: "Nurse", e: "👩🏿‍⚕️",
            power: "Erste Hilfe", powerEn: "First aid", powerText: "Heile 10 Leben und erhalte 6 Schild.", powerTextEn: "Heal 10 HP and gain 6 shield.",
            story: "Ich möchte hier im Krankenhaus arbeiten.", storyEn: "I want to work here in the hospital.",
            magic: "Meine Tasche … sie glüht!", magicEn: "My bag … it's glowing!" }

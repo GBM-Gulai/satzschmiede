@@ -114,17 +114,28 @@ function sfx(kind) {
 }
 // The device's own voice, used for sentences forged in fights (they're different every time).
 // Picks the most natural-sounding German voice the device has.
-function bestGermanVoice() {
-  const score = v => (/natural|neural|online|premium|enhanced|wavenet/i.test(v.name) ? 10 : 0) + (/google/i.test(v.name) ? 5 : 0) + (v.localService ? 0 : 2) + (/AT/.test(v.lang) ? 1 : 0);
-  return speechSynthesis.getVoices().filter(v => v.lang.replace("_", "-").toLowerCase().startsWith("de")).sort((a, b) => score(b) - score(a))[0];
+// Voice names give away the gender on most devices (Windows, Android, iOS, Chrome)
+const FEMALE_VOICE = /female|frau|katja|hedda|ingrid|seraphina|amala|leni|anna|marlene|vicki|petra|helena|sabine|zira|susan|hazel|sonia|libby|aria|jenny|ava|emma|samantha|karen|moira|tessa|serena|kate|google deutsch|google uk english female/i;
+const MALE_VOICE = /male|mann|stefan|conrad|killian|jonas|florian|hans|markus|daniel|george|ryan|guy|davis|andrew|brian|christopher|eric|thomas|oliver|arthur|fred|alex|google uk english male/i;
+const voiceGender = v => FEMALE_VOICE.test(v.name) ? "f" : MALE_VOICE.test(v.name) ? "m" : "";
+// Picks the most natural-sounding voice for a language, preferring the speaker's gender
+function bestVoice(lang = "de", gender = "") {
+  const score = v => (/natural|neural|online|premium|enhanced|wavenet/i.test(v.name) ? 10 : 0) + (/google/i.test(v.name) ? 5 : 0) + (v.localService ? 0 : 2) + (/AT/.test(v.lang) ? 1 : 0)
+    + (gender && voiceGender(v) === gender ? 30 : 0);
+  return speechSynthesis.getVoices().filter(v => v.lang.replace("_", "-").toLowerCase().startsWith(lang)).sort((a, b) => score(b) - score(a))[0];
 }
-function speak(text, force, english) {
+const bestGermanVoice = () => bestVoice("de");
+// gender: "m" or "f" for story characters, so Rafa never gets a female device voice
+function speak(text, force, english, gender = "") {
   if (!("speechSynthesis" in window) || (!meta.voice && !force)) return;
   speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text.replace(/[⏪]/g, "")), v = english ? null : bestGermanVoice();
-  u.lang = english ? "en-GB" : v ? v.lang : "de-DE"; if (v) u.voice = v; u.rate = .92;
+  const u = new SpeechSynthesisUtterance(text.replace(/[⏪]/g, "")), v = bestVoice(english ? "en" : "de", gender);
+  u.lang = v ? v.lang : english ? "en-GB" : "de-DE"; if (v) u.voice = v; u.rate = .92;
+  // no voice of the right gender on this device: shift the pitch instead
+  if (gender && (!v || voiceGender(v) !== gender)) u.pitch = gender === "m" ? .7 : 1.15;
   speechSynthesis.speak(u);
 }
+const speakerGender = who => who === "hero" ? HEROES[run.hero].g : who === "huber" ? "f" : "m";
 
 // ---------- music & story voice-over ----------
 // Music: CC0 tracks in assets/music (see CREDITS.md), crossfaded per screen. Story lines: recorded with Piper (tools/make-voices.py),
@@ -164,13 +175,13 @@ function stopLine() { if (voiceSrc) { try { voiceSrc.stop(); } catch {} voiceSrc
 function playLine(who, text, english) {   // story voice-over, starts automatically
   stopLine();
   if (!meta.voice) return;
-  if (!HAS_AUDIO) return speak(text, false, english);
+  if (!HAS_AUDIO) return speak(text, false, english, speakerGender(who));
   const speakerId = who === "hero" ? "hero-" + run.hero : who, ctx = audioCtx();
   buffer(`assets/voice/${djb2(speakerId + "|" + text)}.mp3`).then(buf => {
     const src = ctx.createBufferSource(); src.buffer = buf; src.connect(ctx.destination);
     src.onended = () => { if (voiceSrc === src) { voiceSrc = null; duck(false); } };
     voiceSrc = src; duck(true); src.start();
-  }).catch(() => speak(text, false, english));
+  }).catch(() => speak(text, false, english, speakerGender(who)));
 }
 // Browsers only allow sound after the first tap – start the wanted track then
 document.addEventListener("pointerdown", () => { const ctx = audioCtx(); if (ctx.state !== "running") ctx.resume().then(() => { if (wantTrack) music(wantTrack); }); }, true);
