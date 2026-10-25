@@ -37,8 +37,8 @@ const ACTS = 3;
 const stage = () => { const lad = ladder(); return { ...lad, ...((lad.acts || [])[run ? run.act || 0 : 0] || {}) }; };
 const actLabel = () => run && run.act ? ` · ${L("Akt", "Act")} ${run.act + 1}` : "";
 const HAND = 5;            // cards drawn each turn
-const FIELD_SLOTS = 2;     // verbs on the field
-const CHARGES = 3;         // a field verb casts this many times, then goes back to the discard pile
+const FIELD_SLOTS = 3;     // verbs on the field
+const VERB_TURNS = 3;      // a field verb stays this many turns, then goes back to the discard pile
 const DEALT = 2;           // pronouns dealt each turn
 const hero = () => HEROES[run.hero];
 
@@ -587,8 +587,8 @@ const TUT = [
     en: "This is your <b>energy ⚡</b>: 3 per turn. The red number on a card is its cost. Verbs and nouns cost 1, pronouns and short time words like <b>heute</b> 0." },
   { card: "sehen", at: "hand", de: "Verben kommen aufs <b>Feld</b> – ein Verb pro Zug, gratis. Tippe auf <b>sehen</b>.",
     en: "Verbs go on the <b>field</b> – one verb per turn, for free. Tap <b>sehen</b> (to see)." },
-  { info: ".vtile", de: "Ein Verb auf dem Feld hat <b>3 Ladungen</b> (die Punkte). Jeder Satz verbraucht eine. Danach geht es zurück in deinen Stapel.",
-    en: "A verb on the field has <b>3 charges</b> (the dots). Each sentence uses one. Then it goes back to your deck." },
+  { info: ".vtile", de: "Ein Verb bleibt <b>3 Züge</b> auf dem Feld (die Sanduhr-Punkte). Danach geht es zurück in deinen Stapel. Du hast 3 Plätze.",
+    en: "A verb stays on the field for <b>3 turns</b> (the hourglass dots). Then it goes back to your deck. You have 3 slots." },
   { info: ".pron-bar", de: "Jeden Zug bekommst du <b>2 Pronomen</b>. Heute: <b>ich</b> und <b>du</b>. Achtung: Die Verbform hängt vom Pronomen ab!",
     en: "Each turn you're dealt <b>2 pronouns</b>. Today: <b>ich</b> and <b>du</b>. Careful: the verb form depends on the pronoun!" },
   { card: "ich", at: "bar", de: "Ein Satz beginnt mit dem Subjekt – wer? Tippe auf <b>ich</b>.", en: "A sentence starts with the subject – who? Tap <b>ich</b> (I)." },
@@ -679,6 +679,8 @@ function drawCards(n) {
 }
 function startTurn() {
   fight.turn++;
+  // verbs age: after VERB_TURNS turns on the field they go back to the discard pile
+  fight.field.forEach((c, i) => { if (c && fight.turn > 1 && --c.turns <= 0) { fight.field[i] = null; fight.discard.push(c); toast(L(`⌛ <b>${CARDS[c.id].de}</b> verlässt das Feld.`, `⌛ <b>${CARDS[c.id].de}</b> leaves the field.`), 1600); } });
   fight.block = 0; fight.tapped = []; fight.placed = false; fight.placing = null;
   fight.energy = 3 + (fight.turn === 1 && has("kaffee") ? 1 : 0);
   drawCards(HAND + (has("duden") ? 1 : 0));
@@ -784,14 +786,14 @@ function renderFight() {
   </main>`;
   if (fight.tut != null && !fight.busy) { app.querySelector(".fight").insertAdjacentHTML("afterbegin", tutCoach()); tutGlow(); }
 }
-// A verb on the field: a compact tile with its power, object slots and remaining charges
+// A verb on the field: a compact tile with its power, object slots and the turns it has left
 function verbTile(c) {
   const d = CARDS[c.id], rest = fight.tapped.includes(c.uid);
   const need = d.slots.length ? d.slots.map(s => s === "dat" ? L("+ wem?", "+ to whom?") : L("+ was?", "+ what?")).join(" ") : L("ohne Objekt", "no object");
   return `<button class="vtile${rest ? " tapped" : ""}${fight.sentence.includes(c.uid) ? " used" : ""}${fight.placing ? " swap" : ""}" data-uid="${c.uid}">
     <span class="cost">${d.cost}</span><b>${d.de}</b><span class="vt-en">${esc(d.en)} · ${need}</span>
     <span class="vt-pow">${FX[d.fx].icon} ${powOf(c)}</span>
-    <span class="vt-charges">${Array.from({ length: CHARGES }, (_, i) => `<i class="${i < c.charges ? "on" : ""}"></i>`).join("")}</span>
+    <span class="vt-charges" title="${L("Züge übrig", "turns left")}">⌛ ${Array.from({ length: VERB_TURNS }, (_, i) => `<i class="${i < c.turns ? "on" : ""}"></i>`).join("")}</span>
     ${rest ? `<span class="vt-rest">${L("ruht bis zum nächsten Zug", "resting until next turn")}</span>` : ""}</button>`;
 }
 function toggleCard(uid) {
@@ -829,7 +831,7 @@ function playVerb(c) {
 function placeVerb(c, slot) {
   const old = fight.field[slot];
   if (old) { fight.discard.push(old); fight.sentence = fight.sentence.filter(u => u !== old.uid); }
-  c.charges = CHARGES;
+  c.turns = VERB_TURNS;
   fight.field[slot] = c; fight.hand = fight.hand.filter(x => x !== c);
   fight.placed = true; fight.placing = null;
   sfx("forge"); tutAdvance("hand", c.id); renderFight();
@@ -938,7 +940,6 @@ function resolve(cards, a, steps, answers) {
   fight.discard.push(...used); fight.sentence = [];
   if (fight.field.includes(a.verb)) {
     fight.tapped.push(a.verb.uid);
-    if (--a.verb.charges <= 0) { fight.field[fight.field.indexOf(a.verb)] = null; fight.discard.push(a.verb); notes.push(L(`${CARDS[a.verb.id].de} ist verbraucht und geht zurück in den Stapel.`, `${CARDS[a.verb.id].de} is used up and goes back to your deck.`)); }
   }
   run.stats.sentences++; meta.sentences++;
   if (perfect) { run.stats.perfect++; meta.perfect++; }
@@ -1319,7 +1320,7 @@ function overlay(html) {
 function showHelp() {
   overlay(`<div class="incant-h">How to play</div><ol class="help">
     <li><b>Your cards are German words.</b> Tap them in order to build a sentence: <i>Ich · sehe · den Hund</i>.</li>
-    <li><b>Each turn you're dealt 2 pronouns</b> (ich, du, wir …). <b>Verbs go on the field:</b> one per turn, for free. A field verb casts once per turn and has 3 charges.</li>
+    <li><b>Each turn you're dealt 2 pronouns</b> (ich, du, wir …). <b>Verbs go on the field:</b> one per turn, for free. A field verb casts once per turn and stays 3 turns (3 slots).</li>
     <li><b>Energy ⚡:</b> 3 per turn – the red seal on a card is its cost. <b>✨ Special power:</b> each hero has one, once per fight.</li>
     <li><b>The verb decides the spell:</b> ⚔️ attack, 🛡️ shield or ❤️ heal. The number is its power.</li>
     <li><b>Word order:</b> the verb is always in <b>position 2</b>. Start with a time word (<i>heute</i>) and the subject moves behind the verb: <i>Heute sehe ich …</i></li>
