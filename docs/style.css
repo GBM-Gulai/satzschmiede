@@ -370,3 +370,30 @@ body[data-ladder="a2"] .foe-name, body[data-ladder="a2"] .map h2, body[data-ladd
 .node.skip { opacity: .4; }
 .seal { position: absolute; right: -6px; bottom: -4px; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 14px; color: #ffe9d6;
   background: radial-gradient(circle at 35% 30%, #d4553a, #8c2a17 65%, #5e160b); box-shadow: 0 2px 3px rgba(0, 0, 0, .4); }
+
+
+/* ---------- field: pronoun bar + verb slots ---------- */
+.field { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 620px; margin: 0 auto; }
+.pron-bar { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.pron { display: flex; flex-direction: column; align-items: center; min-width: 46px; padding: 4px 8px; border-radius: 10px; line-height: 1.1;
+  background: linear-gradient(#fbf1d8, #e6d2a4); color: #2b3a55; border: 2px solid #5f7190; box-shadow: 0 3px 0 #3f4c63; }
+.pron b { font-size: 16px; } .pron small { font-size: 10px; color: #5d6a80; font-style: italic; }
+.pron.used { opacity: .45; transform: translateY(2px); box-shadow: 0 1px 0 #3f4c63; }
+.verb-field { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 8px; border-radius: 14px;
+  background: rgba(0, 0, 0, .28); border: 1px dashed rgba(217, 164, 65, .45); }
+.verb-field .card { width: 100%; }
+.vslot { display: grid; place-items: center; min-height: 92px; border-radius: 12px; border: 2px dashed rgba(217, 164, 65, .35); color: rgba(242, 230, 201, .45); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
+.card.tapped { filter: grayscale(.8) brightness(.7); transform: rotate(-6deg) scale(.95); }
+.card.swap { outline: 3px dashed #ffb347; outline-offset: 2px; }
+.card.to-field::after { content: "▲ " attr(data-field); position: absolute; bottom: -9px; left: 50%; translate: -50% 0; font-size: 9.5px; font-weight: 800; padding: 1px 6px; border-radius: 999px; background: #b8391f; color: #fff3d6; white-space: nowrap; }
+.card.placing { outline: 3px solid #ffb347; outline-offset: 2px; transform: translateY(-6px); }
+
+/* phones: smaller monster picture so the field and hand fit on screen */
+@media (max-width: 700px) {
+  .fight { gap: 8px; }
+  .enemy { padding: 8px 10px; }
+  .foe-pic { width: clamp(96px, 27vw, 140px); }
+  .boss .foe-pic { width: clamp(116px, 33vw, 170px); }
+  .vslot { min-height: 80px; }
+  .verb-field { gap: 8px; padding: 6px; }
+}
