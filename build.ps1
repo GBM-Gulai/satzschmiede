@@ -39,7 +39,9 @@ if (Test-Path $assetDir) {
 }
 
 # ---------- 1) one-file version ----------
-$assetJs = "window.ASSET_DATA = {" + (($images.Keys | Sort-Object | ForEach-Object { '"' + $_ + '":"data:image/jpeg;base64,' + [Convert]::ToBase64String($images[$_]) + '"' }) -join ",") + "};"
+# the one-file version stays under the artifact size limit: no PC-only wide backgrounds, no backgrounds of unbuilt ladders
+$oneFile = $images.Keys | Where-Object { $_ -notlike "*-wide.jpg" -and $_ -notmatch "^assets/bg/(b1|b2|c1|c2)\.jpg$" }
+$assetJs = "window.ASSET_DATA = {" + (($oneFile | Sort-Object | ForEach-Object { '"' + $_ + '":"data:image/jpeg;base64,' + [Convert]::ToBase64String($images[$_]) + '"' }) -join ",") + "};"
 $index = Read-Text "index.html"
 $fonts = [regex]::Match($index, '<link href="https://fonts\.googleapis\.com[^>]*>').Value
 $out = @"
