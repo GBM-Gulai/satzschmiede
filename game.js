@@ -178,7 +178,7 @@ function toggleSound(kind) {
 // ---------- saving ----------
 const SAVE = "satzschmiede-run", META = "satzschmiede-meta";
 const load = k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } };
-let meta = Object.assign({ runs: 0, wins: 0, sentences: 0, perfect: 0, unlocked: 1, cleared: [], music: true, voice: true, tutorial: false }, load(META) || {});
+let meta = Object.assign({ runs: 0, wins: 0, sentences: 0, perfect: 0, unlocked: 1, cleared: [], music: true, voice: true, tutorial: false, collection: {}, slots: 12 }, load(META) || {});
 let run = load(SAVE), fight = null, view = "title";
 if (run && !run.ladder) run = null;   // save from an older version
 function save() {
@@ -190,19 +190,98 @@ function save() {
 if (run) uidSeq = Math.max(1, ...run.deck.map(c => c.uid + 1));
 const has = r => run && run.relics.includes(r);
 
+// ---------- word collection: grows across runs; each run you pack a bag from it ----------
+const MAX_COPIES = 3, MAX_SLOTS = 20;
+// Words of this ladder and all ladders below it (so A1 runs never get ⏪ Perfekt)
+function allowedIds(lad) {
+  const upto = LADDERS.slice(0, LADDERS.indexOf(lad) + 1);
+  return new Set(upto.flatMap(l => [...l.start, ...l.pool, ...(l.starter || [])]).filter(deckable));
+}
+// The first time a ladder is played its starter words join the collection
+function grantStarter(lad) {
+  const counts = {};
+  for (const id of [...lad.start, ...(lad.starter || [])].filter(deckable)) counts[id] = (counts[id] || 0) + 1;
+  for (const [id, n] of Object.entries(counts)) meta.collection[id] = Math.max(meta.collection[id] || 0, n);
+}
+function collect(id) {
+  const had = meta.collection[id] || 0;
+  if (had < MAX_COPIES) meta.collection[id] = had + 1;
+  save();
+  if (!had) toast(L(`📚 Neu in deiner Sammlung: <b>${CARDS[id].de}</b>`, `📚 New in your collection: <b>${CARDS[id].de}</b>`), 1800);
+}
+// Every owned copy that may be packed for this ladder, e.g. ["sehen#0", "perf#0", "perf#1"]
+function ownedCopies(lad) {
+  const ok = allowedIds(lad), order = ["verb", "noun", "adv", "perf"];
+  return Object.entries(meta.collection).filter(([id]) => ok.has(id))
+    .sort(([a], [b]) => order.indexOf(CARDS[a].type) - order.indexOf(CARDS[b].type) || CARDS[a].de.localeCompare(CARDS[b].de))
+    .flatMap(([id, n]) => Array.from({ length: n }, (_, k) => `${id}#${k}`));
+}
+// A sensible bag: the ladder's start words first, then about 40 % verbs
+function recommendedBag(lad) {
+  const owned = ownedCopies(lad), bag = [], isVerb = key => CARDS[key.split("#")[0]].type === "verb";
+  const add = key => { if (bag.length < meta.slots && !bag.includes(key) && owned.includes(key)) bag.push(key); };
+  const seen = {};
+  for (const id of lad.start.filter(deckable)) { seen[id] = (seen[id] || 0); add(`${id}#${seen[id]++}`); }
+  const rest = shuffle(owned.filter(k => !bag.includes(k)));
+  for (const k of rest.filter(isVerb)) if (bag.filter(isVerb).length < Math.round(meta.slots * .4)) add(k);
+  for (const k of rest) add(k);
+  return bag;
+}
+const bagCheck = bag => {
+  const types = bag.map(k => CARDS[k.split("#")[0]].type);
+  if (types.filter(t => t === "verb").length < 3) return L("Pack mindestens 3 Verben ein.", "Pack at least 3 verbs.");
+  if (!types.includes("noun")) return L("Pack auch Nomen ein.", "Pack some nouns too.");
+  if (bag.length < 8) return L("Pack mindestens 8 Wörter ein.", "Pack at least 8 words.");
+  return "";
+};
+function showPack() {
+  music("inn");
+  view = "pack";
+  const lad = ladder(), owned = ownedCopies(lad);
+  run.bag = run.bag || recommendedBag(lad);
+  const bag = run.bag, problem = bagCheck(bag), T = TYPE_LABEL();
+  const groups = ["verb", "noun", "adv", "perf"].map(t => {
+    const keys = owned.filter(k => CARDS[k.split("#")[0]].type === t);
+    if (!keys.length) return "";
+    return `<h3 class="pack-h">${T[t]} <small>${keys.filter(k => bag.includes(k)).length} / ${keys.length}</small></h3>
+      <div class="pack-grid">${keys.map(k => cardHtml({ id: k.split("#")[0], uid: k }, "mini" + (bag.includes(k) ? " packed" : ""))).join("")}</div>`;
+  }).join("");
+  app.innerHTML = `${topbar()}<main class="panel pack"><h2 class="fraktur">${L("Pack deine Tasche", "Pack your bag")}</h2>
+    <p class="sub">${L("Wähle die Wörter für diesen Lauf. Neue Wörter, die du findest, bleiben für immer in deiner Sammlung.", "Choose the words for this run. New words you find stay in your collection forever.")}</p>
+    <div class="bag-meter">${Array.from({ length: meta.slots }, (_, i) => `<i class="${i < bag.length ? "full" : ""}"></i>`).join("")}<b>${bag.length} / ${meta.slots}</b></div>
+    <div class="row-btns"><button class="btn ghost" data-act="bag-auto">✨ ${L("Empfohlen", "Recommended")}</button><button class="btn ghost" data-act="bag-clear">✕ ${L("Leeren", "Clear")}</button></div>
+    ${groups}
+    <p class="status ${problem ? "" : "ok"}">${problem || L(`📚 Sammlung: ${owned.length} Wörter`, `📚 Collection: ${owned.length} words`)}</p>
+    <button class="btn hot" data-act="bag-go" ${problem ? "disabled" : ""}>${L("Los geht's", "Let's go")} ➜</button></main>`;
+  app.querySelectorAll(".pack-grid .card").forEach(b => b.onclick = () => {
+    const k = b.dataset.uid, i = bag.indexOf(k);
+    if (i >= 0) bag.splice(i, 1);
+    else if (bag.length < meta.slots) bag.push(k);
+    else return toast(L("Deine Tasche ist voll.", "Your bag is full."), 1400);
+    sfx("tap"); showPack();
+  });
+}
+function startClimb() {
+  run.deck = run.bag.map(k => mk(k.split("#")[0]));
+  run.packed = true; save();
+  showMap();
+}
+
 // ---------- run setup ----------
 let pickedHero = null;
 function newRun(ladderId) {
   const lad = LADDERS.find(l => l.id === ladderId), hp = 50 + (pickedHero === "amara" ? 12 : 0);
   run = {
     ladder: ladderId, hero: pickedHero, hp, maxHp: hp, gold: 60, floor: 0, relics: [],
-    deck: lad.start.filter(deckable).map(id => mk(id)), map: LAYOUT.map(opts => shuffle(opts)), path: [],
+    deck: [], packed: false, map: LAYOUT.map(opts => shuffle(opts)), path: [],
     stats: { sentences: 0, perfect: 0, mistakes: 0, dmg: 0 }
   };
+  grantStarter(lad);
+  run.deck = recommendedBag(lad).map(k => mk(k.split("#")[0]));   // the tutorial plays with the recommended bag
   meta.runs++; save();
   setScene(ladderId);
   const tutorial = !meta.tutorial && STORY[ladderId].tutorial;
-  playStory(STORY[ladderId].intro, tutorial ? () => playStory(STORY[ladderId].tutorial, startTutorial) : showMap);
+  playStory(STORY[ladderId].intro, tutorial ? () => playStory(STORY[ladderId].tutorial, startTutorial) : showPack);
 }
 
 // ---------- story scenes ----------
@@ -766,7 +845,7 @@ function winFight() {
   run.gold += gold;
   sfx("win");
   if (e.boss) { run.floor++; save(); return ladderCleared(); }
-  if (fight.tut != null) { meta.tutorial = true; save(); return playStory(STORY[run.ladder].tutorialEnd, showMap); }
+  if (fight.tut != null) { meta.tutorial = true; save(); return playStory(STORY[run.ladder].tutorialEnd, showPack); }
   const relic = e.elite ? rnd(Object.keys(RELICS).filter(r => !run.relics.includes(r))) : null;
   if (relic) gainRelic(relic);
   save();
@@ -784,7 +863,7 @@ function showReward(gold, relic) {
     <p>${L("Wähle ein neues Wort für dein Deck:", "Choose a new word for your deck:")}</p>
     <div class="choice">${picks.map(c => cardHtml(c)).join("")}</div>
     <button class="btn ghost" data-act="skip">${L("Überspringen", "Skip")}</button></main>`;
-  app.querySelectorAll(".choice .card").forEach(b => b.onclick = () => { run.deck.push(picks.find(c => c.uid === +b.dataset.uid)); sfx("ok"); nextFloor(); });
+  app.querySelectorAll(".choice .card").forEach(b => b.onclick = () => { const c = picks.find(c => c.uid === +b.dataset.uid); run.deck.push(c); collect(c.id); sfx("ok"); nextFloor(); });
 }
 
 // ---------- rest site ----------
@@ -836,7 +915,7 @@ function showShop(haggling) {
   app.querySelectorAll(".ware .card").forEach(b => b.onclick = () => {
     const c = s.cards.find(x => x.uid === +b.dataset.uid), price = shopPrice(c.price);
     if (c.sold || run.gold < price) return toast(L("Nicht genug Gold.", "Not enough gold."));
-    run.gold -= price; c.sold = true; run.deck.push(mk(c.id)); sfx("ok"); save(); showShop();
+    run.gold -= price; c.sold = true; run.deck.push(mk(c.id)); collect(c.id); sfx("ok"); save(); showShop();
   });
 }
 
@@ -955,7 +1034,7 @@ function summary() {
 function ladderCleared() {
   music("inn");
   const lad = ladder(), idx = LADDERS.indexOf(lad);
-  if (!meta.cleared.includes(lad.id)) meta.cleared.push(lad.id);
+  if (!meta.cleared.includes(lad.id)) { meta.cleared.push(lad.id); meta.slots = Math.min(MAX_SLOTS, meta.slots + 2); toast(L(`🎒 Deine Tasche wächst: ${meta.slots} Plätze`, `🎒 Your bag grows: ${meta.slots} slots`), 2600); }
   meta.unlocked = Math.max(meta.unlocked, idx + 2); meta.wins++;
   save();
   playStory(STORY[lad.id].outro, () => {
@@ -1017,7 +1096,7 @@ app.addEventListener("click", e => {
     "pick-hero": () => { pickedHero = el.dataset.h; sfx("ok"); showTower(); },
     ladder: () => newRun(el.dataset.l),
     tower: showTower,
-    continue: showMap,
+    continue: () => run.packed === false ? showPack() : showMap(),
     help: showHelp,
     title: showTitle,
     deck: showDeck,
@@ -1041,6 +1120,9 @@ app.addEventListener("click", e => {
       run.gold -= shopPrice(60); run.shop.removed = true; run.deck = run.deck.filter(x => x !== c); toast(`🗑️ ${CARDS[c.id].de}`); save(); showShop();
     }),
     haggle: () => showShop(true),
+    "bag-auto": () => { run.bag = recommendedBag(ladder()); sfx("ok"); showPack(); },
+    "bag-clear": () => { run.bag = []; showPack(); },
+    "bag-go": () => { if (!bagCheck(run.bag)) { sfx("ok"); startClimb(); } },
     "gate-gold": () => { run.gold += 30; sfx("ok"); nextFloor(); },
     "gate-up": () => pickFromDeck(L("Welches Wort schmieden?", "Which word to upgrade?"), c => !c.up, c => { c.up = true; sfx("forge"); toast(`⚒️ ${CARDS[c.id].de} +2`); nextFloor(); }),
     leave: nextFloor

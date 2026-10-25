@@ -397,3 +397,16 @@ body[data-ladder="a2"] .foe-name, body[data-ladder="a2"] .map h2, body[data-ladd
   .vslot { min-height: 80px; }
   .verb-field { gap: 8px; padding: 6px; }
 }
+
+
+/* ---------- pack your bag ---------- */
+.pack { max-width: 680px; }
+.pack-h { width: 100%; margin: 10px 0 2px; font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: var(--brass); display: flex; justify-content: space-between; }
+.pack-h small { color: #cdbb98; letter-spacing: 0; }
+.pack-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 12px 8px; width: 100%; padding-top: 8px; }
+.pack-grid .card { width: 100%; opacity: .5; filter: saturate(.5); }
+.pack-grid .card.packed { opacity: 1; filter: none; box-shadow: inset 0 0 0 3px #fbf1d8, inset 0 0 0 5px var(--tc), inset 0 0 0 6px #fbf1d8, 0 0 0 3px var(--ember2), 0 0 16px rgba(255, 179, 71, .6); }
+.bag-meter { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; justify-content: center; }
+.bag-meter i { width: 16px; height: 22px; border-radius: 4px; border: 2px solid rgba(217, 164, 65, .5); }
+.bag-meter i.full { background: linear-gradient(#ffcf6b, #e08a2e); border-color: #ffd36b; }
+.bag-meter b { margin-left: 8px; }
