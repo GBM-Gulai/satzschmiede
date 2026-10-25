@@ -41,7 +41,7 @@ const weakLabel = w => ({ dat: L("Dativ", "Dativ"), akk: L("Akkusativ", "Akkusat
 // Optional looping videos (assets/video/<id>.mp4, e.g. made with Google Flow) play over the picture; if missing, the picture stays.
 const ASSET = window.ASSET_DATA || {};
 const src = p => ASSET[p] || p;
-const VIDEO = ["automat", "hydra", "huber", "drache", "hausmeister"];   // ids that may have a clip in assets/video/
+const VIDEO = ["automat", "hydra", "huber", "drache", "hausmeister", "wotruba"];   // ids that may have a clip in assets/video/
 window.artFail = img => img.parentNode.classList.add("noimg");
 // Screens are redrawn often (every card tap). Videos are kept in a cache and moved into each new screen,
 // so they keep playing instead of restarting: renders only contain <video data-src> placeholders.
@@ -740,7 +740,7 @@ function showShop(haggling) {
     haggle = `<div class="haggle"><p class="riddle">${q}</p><div class="row-btns">${shuffle(opts).map(o => `<button class="btn opt-h" data-ok="${o === opts[0] ? 1 : 0}">${o}</button>`).join("")}</div></div>`;
   }
   app.innerHTML = `${topbar()}<main class="panel"><h2 class="fraktur">Wotrubas Greißlerei</h2>
-    <div class="gate-host">${art("assets/npc/wotruba.jpg", NPCS.wotruba.e, "event-pic")}<p class="sub"><b>Herr Wotruba:</b> ${mood}</p></div>
+    <div class="gate-host">${art("assets/npc/wotruba.jpg", NPCS.wotruba.e, "event-pic", clip("wotruba"))}<p class="sub"><b>Herr Wotruba:</b> ${mood}</p></div>
     ${s.haggled ? "" : haggle || `<button class="btn" data-act="haggle">🗣️ ${L("Feilschen – löse ein Rätsel für 30 % Rabatt", "Haggle – solve a riddle for 30 % off")}</button>`}
     <div class="choice wrap">${s.cards.map(c => `<div class="ware">${cardHtml(c, c.sold ? "used" : "")}<span class="price">${c.sold ? L("verkauft", "sold") : "💰 " + shopPrice(c.price)}</span></div>`).join("")}</div>
     <div class="row-btns">

@@ -172,7 +172,7 @@ def main():
         global MODEL
         MODEL = "gemini-3.8-flash-lite-tts"
     if "--batch" in sys.argv:   # only lines whose file is older than --since <unix time> (or missing)
-        since = float(sys.argv[sys.argv.index("--since") + 1]) if "--since" in sys.argv else 1e18
+        since = float(sys.argv[sys.argv.index("--since") + 1]) if "--since" in sys.argv else 0
         todo = [(s, t) for s, t in dict.fromkeys(jobs()) if s in VOICES and
                 (not (OUT / f"{djb2(f'{s}|{t}')}.mp3").exists() or (OUT / f"{djb2(f'{s}|{t}')}.mp3").stat().st_mtime < since)]
         print(f"{len(todo)} lines to record in batches")
