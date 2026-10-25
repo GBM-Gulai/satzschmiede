@@ -40,6 +40,8 @@ const HAND = 5;            // cards drawn each turn
 const FIELD_SLOTS = 3;     // verbs on the field
 const VERB_TURNS = 3;      // a field verb stays this many turns, then goes back to the discard pile
 const DEALT = 2;           // pronouns dealt each turn
+const POWER_CHARGE = 3;    // perfect sentences needed to recharge the hero power
+const placeLimit = () => fight.turn === 1 ? 2 : 1;   // verbs you may put on the field this turn (2 on the opening turn)
 const hero = () => HEROES[run.hero];
 
 // Language of hints & menus grows with the level: A1 English, A2 both, B1+ German
@@ -572,7 +574,7 @@ function startFight(eid) {
     eid, enemy: { hp: e.hp + scale, max: e.hp + scale, block: 0, str: 0, move: 0 },
     draw: shuffle(run.deck.filter(c => deckable(c.id)).map(c => ({ ...c }))), hand: [], discard: [], sentence: [],
     bar: [], field: Array(FIELD_SLOTS).fill(null), tapped: [], placed: false, placing: null,
-    energy: 3, block: 0, turn: 0, eselUsed: false, busy: false, powerUsed: false, boost: false, reveal: false
+    energy: 3, block: 0, turn: 0, eselUsed: false, busy: false, charge: POWER_CHARGE, boost: false, reveal: false, streak: 0, combos: [], recycled: false
   };
   view = "fight";
   startTurn();
@@ -600,8 +602,8 @@ const TUT = [
     en: "Hit! A <b>perfect sentence</b> (everything right) is <b>×1.5</b> stronger. Mistakes make it weaker – but you learn the right form." },
   { info: ".enemy .info", de: "Viele Monster haben eine <b>Schwäche</b> (×2), zum Beispiel Akkusativ oder Sätze mit Zeitwort. Tippe im Kampf auf ⓘ.",
     en: "Many monsters have a <b>weakness</b> (×2), e.g. Akkusativ or sentences starting with a time word. Tap ⓘ in a fight to see it." },
-  { info: ".power-btn", de: "Und das ist deine <b>Spezialkraft</b> – einmal pro Kampf. Heb sie dir für einen schweren Moment auf!",
-    en: "And this is your <b>special power</b> – once per fight. Save it for a tough moment!" },
+  { info: ".power-btn", de: "Und das ist deine <b>Spezialkraft</b>. Sie ist am Anfang bereit – danach laden <b>3 perfekte Sätze</b> sie wieder auf. Perfekte Sätze in Serie werden außerdem immer stärker 🔥.",
+    en: "And this is your <b>special power</b>. It starts ready – after that, <b>3 perfect sentences</b> recharge it. Perfect sentences in a row also get stronger and stronger 🔥." },
   { act: "end", de: "Jedes Verb wirkt nur einmal pro Zug – <b>sehen</b> ruht jetzt. Übrige Energie verfällt. Beende deinen Zug.",
     en: "Each verb works only once per turn – <b>sehen</b> is resting now. Leftover energy is lost. End your turn." },
   { card: "laufen", at: "hand", de: "Autsch! Neuer Zug: neue Karten, neue Pronomen (<b>ich</b>, <b>wir</b>). <b>laufen</b> gibt 🛡️ Schild gegen Angriffe. Leg es aufs Feld.",
@@ -681,8 +683,8 @@ function startTurn() {
   fight.turn++;
   // verbs age: after VERB_TURNS turns on the field they go back to the discard pile
   fight.field.forEach((c, i) => { if (c && fight.turn > 1 && --c.turns <= 0) { fight.field[i] = null; fight.discard.push(c); toast(L(`⌛ <b>${CARDS[c.id].de}</b> verlässt das Feld.`, `⌛ <b>${CARDS[c.id].de}</b> leaves the field.`), 1600); } });
-  fight.block = 0; fight.tapped = []; fight.placed = false; fight.placing = null;
-  fight.energy = 3 + (fight.turn === 1 && has("kaffee") ? 1 : 0);
+  fight.block = 0; fight.tapped = []; fight.placed = 0; fight.placing = null; fight.recycled = false;
+  fight.energy = 3 + (run.act || 0) + (fight.turn === 1 && has("kaffee") ? 1 : 0);   // +1 max energy for every act cleared
   drawCards(HAND + (has("duden") ? 1 : 0));
   fight.bar = (fight.tutBars && fight.tutBars.length ? fight.tutBars.shift() : dealPronouns()).map(id => mk(id));
   // never stuck: with no verb on the field and none in hand, fetch one from the piles
@@ -763,11 +765,13 @@ function renderFight() {
       <button class="info" data-act="foeinfo" aria-label="About this enemy">ⓘ</button>
     </section>
     <section class="you"><span class="pill">🛡️ ${L("Schild", "Shield")} ${fight.block}</span>
-      <button class="power-btn${fight.powerUsed ? " used" : ""}" data-act="power" ${fight.powerUsed || fight.busy ? "disabled" : ""}>${heroArt(run.hero, "power-pic")}<span>✨ ${L(hero().power, hero().powerEn)}<small>${fight.powerUsed ? L("verbraucht", "used") : L("1× pro Kampf", "1× per fight")}</small></span></button>
+      <button class="power-btn${fight.charge < POWER_CHARGE ? " used" : ""}" data-act="power" ${fight.charge < POWER_CHARGE || fight.busy ? "disabled" : ""}>${heroArt(run.hero, "power-pic")}<span>✨ ${L(hero().power, hero().powerEn)}<small>${fight.charge >= POWER_CHARGE ? L("bereit!", "ready!") : L("lädt mit perfekten Sätzen", "charges with perfect sentences")}
+        <span class="pw-pips">${Array.from({ length: POWER_CHARGE }, (_, i) => `<i class="${i < fight.charge ? "on" : ""}"></i>`).join("")}</span></small></span></button>
       <span class="pill dim">${L("Stapel", "Draw")} ${fight.draw.length} · ${L("Ablage", "Discard")} ${fight.discard.length}</span></section>
     <section class="forge">
       <div class="slots">${cards.length ? cards.map(c => cardHtml(c, "mini")).join("") : `<span class="empty">${L("Deine Schmiede ist leer", "Your forge is empty")}</span>`}</div>
       <div class="status ${a.ok ? "ok" : ""}">${a.msg}${a.ok && sentenceCost() > fight.energy ? ` <b>${L("Nicht genug Energie.", "Not enough energy.")}</b>` : ""}</div>
+      ${fight.streak ? `<div class="streak">🔥 ${L("Serie", "Streak")} ${fight.streak} · ${L("nächster perfekter Satz", "next perfect sentence")} ×${Math.min(2, 1.5 + .1 * fight.streak).toFixed(1)}</div>` : ""}
       <div class="energy-orbs" title="${L("Energie", "Energy")}">${Array.from({ length: Math.max(3, fight.energy) }, (_, i) => {
         const left = fight.energy - sentenceCost();
         return `<i class="${i < left ? "full" : i < fight.energy ? "spend" : "empty"}">⚡</i>`;
@@ -780,7 +784,7 @@ function renderFight() {
       <div class="verb-field">${fight.field.map(c => c ? verbTile(c) : `<div class="vslot">${L("Verb-Platz", "Verb slot")}</div>`).join("")}</div>
     </section>
     <section class="hand">${fight.hand.map(c => cardHtml(c, (fight.sentence.includes(c.uid) ? "used" : "") + (CARDS[c.id].type === "verb" ? " to-field" + (fight.placing === c.uid ? " placing" : "") : ""))
-      .replace("data-uid", `data-field="${L("aufs Feld", "to field")}" data-uid`)).join("")}</section>
+      .replace("data-uid", `data-field="${fight.placed >= placeLimit() ? (fight.recycled ? "–" : L("♻️ recyceln", "♻️ recycle")) : L("aufs Feld", "to field")}" data-uid`)).join("")}</section>
     <section class="actions"><button class="btn ghost" data-act="redraw" ${fight.energy - sentenceCost() >= 1 && !fight.busy ? "" : "disabled"}>↻ ${L("Neu ziehen", "Redraw")} (1⚡)</button>
       <button class="btn" data-act="end" ${fight.busy ? "disabled" : ""}>${L("Zug beenden", "End turn")} ⏭</button></section>
   </main>`;
@@ -812,8 +816,8 @@ function toggleCard(uid) {
 // Verbs work like lands: one per turn goes from the hand onto the field (free) and stays for the whole fight
 // The hero's special power: once per fight
 function usePower() {
-  if (fight.busy || fight.powerUsed) return;
-  fight.powerUsed = true;
+  if (fight.busy || fight.charge < POWER_CHARGE) return;
+  fight.charge = 0;
   const h = hero();
   if (run.hero === "rafa") fight.boost = true;
   else if (run.hero === "mei") fight.reveal = true;
@@ -823,7 +827,13 @@ function usePower() {
 }
 function playVerb(c) {
   if (fight.placing === c.uid) { fight.placing = null; return renderFight(); }
-  if (fight.placed) return toast(L("Nur ein Verb pro Zug aufs Feld.", "Only one verb per turn onto the field."), 1800);
+  if (fight.placed >= placeLimit()) {
+    // can't place it this turn: recycle it instead (discard + draw a new card), once per turn
+    if (fight.recycled) return toast(L("Nur ein Verb pro Zug aufs Feld – und du hast schon recycelt.", "Only one verb per turn onto the field – and you've already recycled."), 1800);
+    fight.recycled = true; fight.hand = fight.hand.filter(x => x !== c); fight.discard.push(c); drawCards(1);
+    sfx("tap"); toast(L(`♻️ <b>${CARDS[c.id].de}</b> recycelt – neue Karte gezogen.`, `♻️ <b>${CARDS[c.id].de}</b> recycled – new card drawn.`), 1600);
+    return renderFight();
+  }
   const slot = fight.field.indexOf(null);
   if (slot < 0) { fight.placing = c.uid; sfx("tap"); return renderFight(); }   // field full: the next tap on a field verb swaps it
   placeVerb(c, slot);
@@ -833,7 +843,7 @@ function placeVerb(c, slot) {
   if (old) { fight.discard.push(old); fight.sentence = fight.sentence.filter(u => u !== old.uid); }
   c.turns = VERB_TURNS;
   fight.field[slot] = c; fight.hand = fight.hand.filter(x => x !== c);
-  fight.placed = true; fight.placing = null;
+  fight.placed++; fight.placing = null;
   sfx("forge"); tutAdvance("hand", c.id); renderFight();
 }
 
@@ -923,8 +933,13 @@ function resolve(cards, a, steps, answers) {
   if (!a.perf && okOf(a.verb) && isStrongForm(v, a.person)) bonus.push(`${PERSON[a.person]} ${forms(v)[a.person]}`);
   if (perfOk && isStrongPart(v)) bonus.push(v.part);
   for (const o of a.objs) if (o.cas === "dat" && okOf(o.c)) bonus.push("Dativ");
+  const combo = `${a.person}|${a.verb.id}`;
+  if (okOf(a.verb) && !fight.combos.includes(combo)) { fight.combos.push(combo); bonus.push(L("neue Kombi", "new combo")); }
   power += 2 * bonus.length;
-  if (perfect) power = Math.ceil(power * 1.5) + (has("sachertorte") ? 3 : 0);
+  // perfect streak: ×1.5, then ×1.6, ×1.7 … (max ×2) for perfect sentences in a row; a mistake resets it
+  const streakMult = perfect ? Math.min(2, 1.5 + .1 * fight.streak) : 1;
+  if (perfect) { power = Math.ceil(power * streakMult) + (has("sachertorte") ? 3 : 0); fight.streak++; fight.charge = Math.min(POWER_CHARGE, fight.charge + 1); }
+  else fight.streak = 0;
   if (perfOk && has("meldezettel")) power += 4;
   if (fight.boost) { power *= 2; fight.boost = false; notes.push(L("🍳 Doppelte Portion: ×2!", "🍳 Double helping: ×2!")); }
   const flags = { dat: a.objs.some(o => o.cas === "dat" && okOf(o.c)), akk: a.objs.some(o => o.cas === "akk" && okOf(o.c)), inv: a.inv, perfect, long: cards.filter(c => CARDS[c.id].type !== "perf").length >= 5, perf: perfOk };
@@ -953,14 +968,14 @@ function resolve(cards, a, steps, answers) {
   } else if (v.fx === "blk") { fight.block += power; line = `🛡️ +<b>${power}</b> ${L("Schild", "shield")}`; }
   else { const before = run.hp; run.hp = Math.min(run.maxHp, run.hp + power); line = `❤️ +<b>${run.hp - before}</b> ${L("Leben", "HP")}`; }
   if (e.leech && mistakes) { en.hp = Math.min(en.max, en.hp + 4 * mistakes); notes.push(L(`${e.e} ${e.name} lebt von deinen Fehlern: +${4 * mistakes}.`, `${e.e} ${e.name} feeds on your mistakes: +${4 * mistakes} HP.`)); }
-  if (bonus.length) line += ` <span class="r-bonus">💪 +${2 * bonus.length} ${L("starke Form", "strong form")}: ${bonus.join(", ")}</span>`;
+  if (bonus.length) line += ` <span class="r-bonus">💪 +${2 * bonus.length}: ${bonus.join(", ")}</span>`;
   const html = sentenceWords(cards, a, steps, answers, steps.length, true);
   fight.busy = false;
   renderFight();
   speak(plainSentence(html));
   sfx(perfect ? "ok" : "bad");
   if (v.fx === "atk") { sfx("hit"); const f = $("#foe"); if (f) { f.classList.add("hit"); floatNum(f, dmg); } }
-  showResult(html, perfect, a.perf, line, notes);
+  showResult(html, perfect, a.perf, line, notes, streakMult);
   save();
   if (en.hp <= 0) setTimeout(winFight, 900);
 }
@@ -970,11 +985,11 @@ function floatNum(el, n) {
   f.style.left = r.left + r.width / 2 + "px"; f.style.top = r.top + "px";
   document.body.append(f); setTimeout(() => f.remove(), 1000);
 }
-function showResult(html, perfect, perf, line, notes) {
+function showResult(html, perfect, perf, line, notes, mult = 1.5) {
   const old = $(".result"); if (old) old.remove();
   const r = document.createElement("div");
   r.className = "result " + (perfect ? "perfect" : "flawed");
-  r.innerHTML = `<div class="r-h">${perfect ? L("✨ Perfekter Satz! ×1.5", "✨ Perfect sentence! ×1.5") : L("⚒️ Satz mit Fehlern", "⚒️ Sentence with mistakes")}${perf ? " · ⏪ Perfekt" : ""}</div>
+  r.innerHTML = `<div class="r-h">${perfect ? L(`✨ Perfekter Satz! ×${String(mult).replace(".", ",")}`, `✨ Perfect sentence! ×${mult}`) + (fight && fight.streak > 1 ? ` · 🔥 ${L("Serie", "streak")} ${fight.streak}` : "") : L("⚒️ Satz mit Fehlern", "⚒️ Sentence with mistakes")}${perf ? " · ⏪ Perfekt" : ""}</div>
     <div class="r-s">${html} <button class="say" aria-label="Anhören">🔊</button></div>
     <div class="r-fx">${line}</div>${notes.length ? `<ul class="r-n">${notes.map(n => `<li>${n}</li>`).join("")}</ul>` : ""}
     <div class="r-legend"><span class="case-nom">Nominativ</span> <span class="case-akk">Akkusativ</span> <span class="case-dat">Dativ</span></div>`;
@@ -1038,7 +1053,7 @@ function actCleared() {
   playStory(STORY[run.ladder][`act${done}End`] || [], () => {
     music("inn"); view = "act";
     app.innerHTML = `${topbar()}<main class="panel"><h2 class="fraktur">${L(`Akt ${done} geschafft!`, `Act ${done} cleared!`)}</h2>
-      <p class="sub">❤️ +${heal} · 💰 +40${relic ? ` · ${RELICS[relic].e} <b>${RELICS[relic].name}</b> – ${RELICS[relic].text}` : ""}</p>
+      <p class="sub">⚡ +1 ${L("max. Energie", "max energy")} · ❤️ +${heal} · 💰 +40${relic ? ` · ${RELICS[relic].e} <b>${RELICS[relic].name}</b> – ${RELICS[relic].text}` : ""}</p>
       <p>${L(`Weiter geht's: <b>${stage().name}</b>`, `Next up: <b>${stage().name}</b>`)}</p>
       <button class="btn hot" data-act="continue">${L("Weiter", "Continue")} ➜</button></main>`;
   });
@@ -1321,7 +1336,8 @@ function showHelp() {
   overlay(`<div class="incant-h">How to play</div><ol class="help">
     <li><b>Your cards are German words.</b> Tap them in order to build a sentence: <i>Ich · sehe · den Hund</i>.</li>
     <li><b>Each turn you're dealt 2 pronouns</b> (ich, du, wir …). <b>Verbs go on the field:</b> one per turn, for free. A field verb casts once per turn and stays 3 turns (3 slots).</li>
-    <li><b>Energy ⚡:</b> 3 per turn – the red seal on a card is its cost. <b>✨ Special power:</b> each hero has one, once per fight.</li>
+    <li><b>Energy ⚡:</b> 3 per turn (+1 for every act cleared) – the red seal on a card is its cost. <b>✨ Special power:</b> ready at the start of a fight, then 3 perfect sentences recharge it.</li>
+    <li><b>🔥 Streaks:</b> perfect sentences in a row grow stronger (×1.5 → ×1.6 → … ×2). <b>New combos</b> (a pronoun + verb you haven't used this fight) give +2. On the first turn you may place 2 verbs; a verb you can't place can be ♻️ recycled once per turn.</li>
     <li><b>The verb decides the spell:</b> ⚔️ attack, 🛡️ shield or ❤️ heal. The number is its power.</li>
     <li><b>Word order:</b> the verb is always in <b>position 2</b>. Start with a time word (<i>heute</i>) and the subject moves behind the verb: <i>Heute sehe ich …</i></li>
     <li><b>Incantation:</b> when you forge, pick the right verb form and articles. Perfect sentences are ×1.5 stronger.</li>

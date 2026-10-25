@@ -508,3 +508,10 @@ body[data-ladder="a2"] .foe-name, body[data-ladder="a2"] .map h2, body[data-ladd
   main.fight .boss .foe-pic { width: clamp(200px, 25vw, 360px); }
   .topbar, header.top { max-width: 1320px; }
 }
+
+/* v9: streak, power charge */
+.streak { text-align: center; font-weight: 800; color: #ffb347; font-size: 14px; text-shadow: 0 0 10px rgba(255, 122, 47, .6); }
+.pw-pips { display: inline-flex; gap: 3px; margin-left: 6px; vertical-align: middle; }
+.pw-pips i { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid #dcd0ff; }
+.pw-pips i.on { background: #dcd0ff; box-shadow: 0 0 6px #c9a6ff; }
+.power-btn.used { filter: saturate(.4); opacity: .75; box-shadow: none; }
