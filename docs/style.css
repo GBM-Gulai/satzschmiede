@@ -333,3 +333,40 @@ body[data-ladder="a2"] .foe-name, body[data-ladder="a2"] .map h2, body[data-ladd
 @keyframes tutglow { 0%, 100% { box-shadow: 0 0 0 3px #ffd36b, 0 0 14px 4px rgba(255, 190, 70, .8); } 50% { box-shadow: 0 0 0 5px #fff1b8, 0 0 26px 10px rgba(255, 190, 70, .95); } }
 .tut-glow.nudge { animation: tutglow 1.1s ease-in-out infinite, nudge .35s; }
 @keyframes nudge { 25% { translate: -5px 0; } 75% { translate: 5px 0; } }
+
+
+/* ---------- map v2: parchment treasure map with brass medallions and ink routes ---------- */
+.map-scroll { width: 100%; max-width: 620px; margin: 6px auto 0; padding: 18px 10px 22px; border-radius: 6px; color: #3b2814;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 .4 0 0 0 0 .26 0 0 0 0 .1 0 0 0 .28 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 50% 45%, #f4e4bd 35%, #dcc28c 80%, #b8975a 100%);
+  box-shadow: inset 0 0 40px rgba(110, 70, 25, .55), inset 0 0 0 2px rgba(91, 61, 30, .35), 0 12px 30px rgba(0, 0, 0, .55); }
+.map-rows { position: relative; gap: 4px; }
+.map-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.map-lines path { fill: none; stroke: #6b4a26; stroke-width: 2; stroke-linecap: round; }
+.map-lines .ahead { stroke-dasharray: 1 7; opacity: .7; }
+.map-lines .next { stroke: #8c2a17; stroke-dasharray: 6 6; stroke-width: 2.5; }
+.map-lines .taken { stroke: #8c2a17; stroke-width: 3.5; }
+.floor-row { position: relative; z-index: 1; padding: 4px 0; }
+.floor-row.current { background: radial-gradient(ellipse at center, rgba(255, 200, 90, .35), transparent 70%); outline: none; }
+.fl { font-size: 14px; font-weight: 800; font-style: italic; color: #8a6a3e; width: 30px; text-align: center; }
+.node, .node.open, .node.done, .node.open:hover { background: none; border: 0; padding: 4px 2px; animation: none; gap: 3px; }
+.node .nl { font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #4a3218; }
+.medal { position: relative; width: 62px; height: 62px; border-radius: 50%; display: grid; place-items: center; color: #3b2814;
+  background: radial-gradient(circle at 40% 35%, #fbf1d8, #e2c995 70%);
+  box-shadow: 0 0 0 3px #b98a3a, 0 0 0 5px #6e4a1c, inset 0 2px 6px rgba(110, 70, 25, .5), 0 4px 8px rgba(40, 20, 5, .45); }
+.medal-pic { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: none; }
+.medal-pic img { width: 100%; height: 100%; object-fit: cover; }
+.medal-pic .pic-e { display: grid; place-items: center; font-size: 30px; }
+.medal .ink { width: 32px; height: 32px; }
+.n-boss .medal { width: 86px; height: 86px; box-shadow: 0 0 0 3px #d9a441, 0 0 0 6px #7a1e12, 0 0 22px rgba(200, 60, 30, .6), 0 4px 10px rgba(40, 20, 5, .5); }
+.n-elite .medal { box-shadow: 0 0 0 3px #b98a3a, 0 0 0 5px #7a1e12, inset 0 2px 6px rgba(110, 70, 25, .5), 0 4px 8px rgba(40, 20, 5, .45); color: #7a1e12; }
+.n-gate .medal { color: #2f4a6b; } .n-shop .medal { color: #6b4a14; } .n-rest .medal { color: #a3461a; }
+.node.open .medal { animation: medalglow 1.6s ease-in-out infinite; }
+.node.open:hover .medal { transform: scale(1.06); }
+@keyframes medalglow { 50% { box-shadow: 0 0 0 3px #ffd36b, 0 0 0 5px #8c2a17, 0 0 24px 8px rgba(255, 190, 70, .85), 0 4px 8px rgba(40, 20, 5, .45); } }
+.node.skip, .node.future { opacity: 1; }
+.node.skip .medal, .node.future .medal { filter: sepia(.6) saturate(.6); opacity: .7; }
+.node.skip { opacity: .4; }
+.seal { position: absolute; right: -6px; bottom: -4px; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 14px; color: #ffe9d6;
+  background: radial-gradient(circle at 35% 30%, #d4553a, #8c2a17 65%, #5e160b); box-shadow: 0 2px 3px rgba(0, 0, 0, .4); }

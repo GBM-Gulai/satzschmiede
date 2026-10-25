@@ -71,6 +71,72 @@ Squares (1:1) work best for characters. Backgrounds should be tall (9:16).
 | `a1.jpg` | Tall 9:16 background: the grand hall of an old Viennese train station at dawn, iron and glass roof, warm light through steam, empty platforms, a sausage stand in the distance, no people. |
 | `a2.jpg` | Tall 9:16 background: a long, slightly eerie corridor inside an old Viennese government office, green-painted walls, numbered doors, waiting chairs, stacks of paper, a flickering lamp, no people. |
 
+## The language tower → `assets/tower/` and `assets/bg/` (NEW)
+
+The ladder screen becomes a painted tower: one tall background plus a "window" per floor showing that ladder's place.
+The windows reuse the backgrounds (`assets/bg/<ladder>.jpg`), so B1–C2 also get their battle backgrounds from these.
+
+| File | Prompt |
+|---|---|
+| `tower/tower.jpg` | Tall 9:16 painting of a magical Viennese clock tower seen from below at dusk, six storeys stacked on top of each other, each storey a different architectural style rising from a 1900s train station at the bottom to an old coffee house with a glowing dome at the top, a winding golden staircase spiralling up the outside, lanterns, floating word cards drifting like leaves, warm and mysterious storybook light, no text, no people. |
+| `bg/b1.jpg` | Tall 9:16 background: a modern open-plan office in today's Vienna, Leopoldstadt, big windows with a view of the Danube canal, laptops, plants, a coffee machine, a whiteboard full of sticky notes, morning light, no people, no readable text. |
+| `bg/b2.jpg` | Tall 9:16 background: the grand arcaded courtyard and a lecture hall of the University of Vienna, stone columns, busts of scholars, rows of wooden benches, tall windows, golden afternoon light, no people. |
+| `bg/c1.jpg` | Tall 9:16 background: a busy newspaper editorial office on the Ringstraße at night, desks piled with papers, old printing press in the back, a window showing the Vienna State Opera lit up, green desk lamps, no people, no readable text. |
+| `bg/c2.jpg` | Tall 9:16 background: the inside of a traditional, smoky Viennese coffee house (like Café Hawelka), dark wood panelling, old posters (unreadable), marble tables, bentwood chairs, a coat rack, warm dim light, no people. |
+
+## Acts 2 and 3 (NEW) – each ladder becomes three acts with its own boss
+
+| File | Prompt |
+|---|---|
+| `bg/a1-2.jpg` | Tall 9:16 background: the Naschmarkt in old Vienna at midday, rows of market stalls with striped awnings, mountains of vegetables, spices and cheeses, hanging sausages, cobblestones, no people. |
+| `bg/a1-3.jpg` | Tall 9:16 background: the Prater amusement park in old Vienna at dusk, the giant Ferris wheel (Riesenrad) glowing in the background, carousels, lanterns, a ghost-train entrance, no people. |
+| `bg/a2-2.jpg` | Tall 9:16 background: the endless archive in the cellar of a Viennese government office, towering shelves of dusty files, candle light, cobwebs, a narrow ladder, mysterious glow far away, no people. |
+| `bg/a2-3.jpg` | Tall 9:16 background: the grand ballroom of Vienna City Hall (Rathaus), neo-Gothic arches, huge chandeliers, a red carpet leading to a throne-like mayor's chair, no people. |
+
+**A1 · Act 2 – Naschmarkt** → `assets/enemies/`
+
+| File | Prompt |
+|---|---|
+| `gurke.jpg` | Square image of the "Gurken-Gauner": a sneaky pickle bandit with a tiny mask and a bag of stolen coins, hiding in a jar at a market stall. |
+| `schreier.jpg` | Square image of the "Marktschreier": a loud market crier made of a giant cabbage with a huge moustache, shouting through a paper megaphone. |
+| `wespe.jpg` | Square image of the "Würstel-Wespe": a chubby wasp wearing a chef's hat, buzzing around a sausage stand with a mustard-dripping stinger. |
+| `kraut.jpg` | Square image of the "Kraut-Golem": a hulking golem made of sauerkraut barrels and cabbages, stomping through a market. |
+| `standlerin.jpg` | Square image of "Die Standlerin" (elite): a formidable market-stall lady with rolled-up sleeves, a giant scale as a shield and a ladle as a weapon, fierce but funny. |
+| `kaese.jpg` | Square image of "Der Käse-Kaiser" (boss): an enormous emperor made of Emmental cheese wearing a golden crown and a fur cloak, sitting on a throne of cheese wheels, dramatic boss lighting. |
+
+**A1 · Act 3 – Prater**
+
+| File | Prompt |
+|---|---|
+| `pony.jpg` | Square image of the "Ringelspiel-Pony": a wooden carousel horse that came to life, chipped paint, golden pole still through its back, mischievous grin. |
+| `watte.jpg` | Square image of the "Zuckerwatte-Geist": a fluffy pink cotton-candy ghost floating over a fairground, sticky and silly. |
+| `spiegel.jpg` | Square image of the "Spiegel-Doppelgänger": a warped funhouse-mirror creature showing a distorted reflection, in a hall of mirrors. |
+| `fledermaus.jpg` | Square image of the "Geisterbahn-Fledermaus": a theatrical bat from an old ghost train ride, cardboard wings, glowing red eyes, on rails. |
+| `watschenmann.jpg` | Square image of "Der Watschenmann" (elite): the famous old Prater punching-dummy figure, a grumpy padded wooden man with a leather face, come to life with big fists. |
+| `riesenrad.jpg` | Square image of "Das Riesenrad" (boss): the Vienna Ferris wheel come alive as a giant, its red cabins like glowing eyes, steel spokes like arms, towering over the Prater at night, dramatic boss lighting. |
+
+**A2 · Act 2 – Das Archiv**
+
+| File | Prompt |
+|---|---|
+| `aktenmaus.jpg` | Square image of the "Akten-Maus": a tiny grey mouse in a clerk's sleeve protectors, nibbling on a file, wearing glasses. |
+| `staub.jpg` | Square image of the "Staub-Gespenst": a ghost made of swirling dust and loose paper, drifting between shelves. |
+| `ordner.jpg` | Square image of the "Ordner-Mimic": a filing box with sharp paper teeth and a long tongue made of a ribbon, lurking on a shelf. |
+| `krake.jpg` | Square image of the "Tintenfass-Krake": a small octopus living in a giant inkwell, each tentacle holding a different pen. |
+| `archivar.jpg` | Square image of "Der Archivar" (elite): an ancient skeletal archivist with a long beard, a lantern and a gigantic key ring, eyes glowing, in endless shelves. |
+| `aktenberg.jpg` | Square image of "Der Aktenberg" (boss): a mountain of files that rises up as a giant with a face of folders, paperclip teeth and rubber-stamp fists, dramatic boss lighting. |
+
+**A2 · Act 3 – Das Rathaus**
+
+| File | Prompt |
+|---|---|
+| `loewe.jpg` | Square image of the "Wappen-Löwe": a heraldic lion stepping out of a coat of arms, gilded and proud. |
+| `walzer.jpg` | Square image of the "Ballsaal-Geist": an elegant ghost couple waltzing endlessly in a ballroom, translucent, in 1900s ball gowns and tailcoats. |
+| `pfau.jpg` | Square image of the "Protokoll-Pfau": a pompous peacock whose tail feathers are official documents with wax seals. |
+| `siegel.jpg` | Square image of the "Siegel-Golem": a golem made of red sealing wax, a big official seal for a face. |
+| `sekretaer.jpg` | Square image of "Der Obersekretär" (elite): a towering, many-armed secretary juggling telephones, typewriters and appointment books. |
+| `rathausmann.jpg` | Square image of "Der Rathausmann" (boss): the iron knight statue from the top of Vienna City Hall, come alive and gigantic, holding a banner lance, armour glinting, dramatic boss lighting. |
+
 ## Card frames (optional) → `assets/cards/`
 
 Painted backgrounds for the word cards; the game draws the text on top. Make them **tall 2:3**, with a **plain, light parchment centre** (the text goes there) and decoration only around the edges.

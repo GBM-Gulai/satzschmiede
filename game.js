@@ -314,6 +314,34 @@ function showTower() {
 }
 
 // ---------- map ----------
+// Engraved ink icons for the map medallions (paths after Lucide, ISC licence). Painted ones in assets/map/<type>.jpg win if present.
+const ICON = {
+  fight: '<polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/>',
+  elite: '<path d="M15 22a1 1 0 0 0 1-1v-1a2 2 0 0 0 1.56-3.25 8 8 0 1 0-11.12 0A2 2 0 0 0 8 20v1a1 1 0 0 0 1 1z"/><circle cx="15" cy="12" r="1.3"/><circle cx="9" cy="12" r="1.3"/><path d="m12.5 17-.5-1-.5 1h1z"/>',
+  rest: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+  shop: '<path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2 2.7 2.7 0 0 1-2-1 2.7 2.7 0 0 1-4 0 2.7 2.7 0 0 1-4 0 2.7 2.7 0 0 1-4 0 2.7 2.7 0 0 1-2 1 2 2 0 0 1-2-2V7"/>',
+  event: '<path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v3h4"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M11 8.5a2 2 0 0 1 3.9.6c0 1.3-2 1.9-2 1.9"/><path d="M12.9 13.5h.01"/>',
+  gate: '<path d="M13 4h3a2 2 0 0 1 2 2v14"/><path d="M2 20h3"/><path d="M13 20h9"/><path d="M10 12v.01"/><path d="M13 4.56v16.16a1 1 0 0 1-1.24.97L5 20V5.56a2 2 0 0 1 1.52-1.94l4-1A2 2 0 0 1 13 4.56Z"/>'
+};
+const iconSvg = n => `<svg class="ink" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICON[n]}</svg>`;
+// Ink lines between the medallions: red for the route taken, dotted for the ways ahead
+function drawMapLines() {
+  const box = $(".map-rows"); if (!box) return;
+  const r0 = box.getBoundingClientRect(), pos = el => { const r = el.querySelector(".medal").getBoundingClientRect(); return [r.left + r.width / 2 - r0.left, r.top + r.height / 2 - r0.top]; };
+  const floors = run.map.map((_, f) => [...box.querySelectorAll(`.floor-row[data-f="${f}"] .node`)]);
+  let lines = "";
+  for (let f = 0; f < floors.length - 1; f++) {
+    const a = floors[f], b = floors[f + 1];
+    a.forEach((na, i) => b.forEach((nb, j) => {
+      const near = Math.abs((a.length > 1 ? i / (a.length - 1) : .5) - (b.length > 1 ? j / (b.length - 1) : .5)) <= .5;
+      const taken = run.path[f] === i && run.path[f + 1] === j, next = f === run.floor - 1 && run.path[f] === i;
+      if ((f < run.floor - 1 && !taken) || (!near && !taken && !next)) return;
+      const [x1, y1] = pos(na), [x2, y2] = pos(nb), my = (y1 + y2) / 2;
+      lines += `<path class="${taken ? "taken" : next ? "next" : "ahead"}" d="M${x1} ${y1} C${x1} ${my} ${x2} ${my} ${x2} ${y2}"/>`;
+    }));
+  }
+  box.querySelector(".map-lines").innerHTML = lines;
+}
 function showMap() {
   music("inn");
   view = "map"; fight = null; setScene(run.ladder);
@@ -323,13 +351,16 @@ function showMap() {
     const chosen = run.path[f];
     const nodes = opts.map((n, i) => {
       const state = f < run.floor ? (chosen === i ? "done" : "skip") : f === run.floor ? "open" : "future";
-      const icon = n === "boss" ? enemyArt(lad.boss, "node-pic") : `<span class="ne">${NODE[n][0]}</span>`;
-      return `<button class="node ${state} n-${n}" data-act="node" data-i="${i}" ${state === "open" ? "" : "disabled"}>${icon}<span class="nl">${L(NODE[n][1], NODE[n][2])}</span></button>`;
+      const icon = n === "boss" ? enemyArt(lad.boss, "medal-pic") : art(`assets/map/${n}.jpg`, iconSvg(n), "medal-pic");
+      const nudge = ((f * 7 + i * 13) % 5 - 2) * 6;   // a little hand-drawn wobble
+      return `<button class="node ${state} n-${n}" data-act="node" data-i="${i}" ${state === "open" ? "" : "disabled"} style="translate:${nudge}px 0">
+        <span class="medal">${icon}${state === "done" ? `<span class="seal">✓</span>` : ""}</span><span class="nl">${L(NODE[n][1], NODE[n][2])}</span></button>`;
     }).join("");
-    return `<div class="floor-row${f === run.floor ? " current" : ""}"><span class="fl">${f + 1}</span><div class="nodes">${nodes}</div></div>`;
+    return `<div class="floor-row${f === run.floor ? " current" : ""}" data-f="${f}"><span class="fl">${f + 1}</span><div class="nodes">${nodes}</div></div>`;
   }).reverse().join("");
-  app.innerHTML = `${topbar()}<main class="map"><h2 class="fraktur">${lad.mapTitle}</h2><p class="sub">${lad.mapSub}</p><div class="map-rows">${rows}</div></main>`;
-  requestAnimationFrame(() => { const cur = $(".floor-row.current"); if (cur) cur.scrollIntoView({ block: "center" }); });
+  app.innerHTML = `${topbar()}<main class="map"><h2 class="fraktur">${lad.mapTitle}</h2><p class="sub">${lad.mapSub}</p>
+    <div class="map-scroll"><div class="map-rows"><svg class="map-lines"></svg>${rows}</div></div></main>`;
+  requestAnimationFrame(() => { drawMapLines(); const cur = $(".floor-row.current"); if (cur) cur.scrollIntoView({ block: "center" }); });
 }
 function enterNode(i) {
   const n = run.map[run.floor][i], lad = ladder();
@@ -924,6 +955,7 @@ function showDeck() {
 }
 
 // ---------- input ----------
+addEventListener("resize", () => { if (view === "map") drawMapLines(); });
 app.addEventListener("click", e => {
   const el = e.target.closest("[data-act]"), act = el && el.dataset.act, card = e.target.closest(".card");
   if (view === "fight" && (el || card) && act !== "music" && act !== "voice" && tutBlocks(el, card)) { const g = $(".tut-glow"); if (g) { g.classList.remove("nudge"); void g.offsetWidth; g.classList.add("nudge"); } return; }
