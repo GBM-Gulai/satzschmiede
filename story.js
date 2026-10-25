@@ -29,6 +29,11 @@ const LADDERS = [
   { id: "a1", lvl: "A1", name: "Ankunft", nameEn: "Arrival", place: "Wien, Westbahnhof", ui: "en", ready: true,
     mapTitle: "Durch den Westbahnhof", mapSub: "Find your way through the station. The ticket machine waits at the top.",
     enemies: ["assel", "taube", "kontrolleur", "regen"], easy: ["assel", "taube"], elite: "hausmeister", boss: "automat",
+    // acts 2 and 3 (act 1 uses the fields above)
+    acts: [{}, { name: "Der Naschmarkt", bg: "a1-2", mapTitle: "Über den Naschmarkt", mapSub: "Stalls, smells and swindlers. The Cheese Emperor sits behind the last stall.",
+                 enemies: ["gurke", "schreier", "wespe", "kraut"], easy: ["gurke", "wespe"], elite: "standlerin", boss: "kaese" },
+               { name: "Der Prater", bg: "a1-3", mapTitle: "Durch den Prater", mapSub: "Carousels, ghost trains – and a giant wheel that turns all by itself.",
+                 enemies: ["pony", "watte", "spiegel", "fledermaus"], easy: ["pony", "fledermaus"], elite: "watschenmann", boss: "riesenrad" }],
     start: ["ich", "du", "wir", "sehen", "finden", "haben", "laufen", "trinken", "Hund", "Katze", "Buch", "Wasser", "heute"],
     starter: ["kaufen", "essen", "Mann", "Apfel", "jetzt"],   // extra words in the collection from the very first run
     pool: ["er", "sie", "ihr", "sie_pl", "suchen", "kaufen", "nehmen", "lesen", "brauchen", "essen", "schlafen", "Pferd", "Taube", "Mann", "Frau", "Kind",
@@ -56,6 +61,10 @@ const LADDERS = [
   { id: "a2", lvl: "A2", name: "Das Amt", nameEn: "The Office", place: "Magistratisches Bezirksamt", ui: "both", ready: true,
     mapTitle: "Durch die Gänge des Amts", mapSub: "Formulare, Stempel, Warteschlangen. Ganz oben wartet die Formular-Hydra.",
     enemies: ["kobold", "stempel", "schlange", "papagei"], easy: ["kobold", "stempel"], elite: "drache", boss: "hydra",
+    acts: [{}, { name: "Das Archiv", bg: "a2-2", mapTitle: "Hinab ins Archiv", mapSub: "Staub, Akten, Dunkelheit. Ganz unten wartet der Aktenberg.",
+                 enemies: ["aktenmaus", "staub", "ordner", "krake"], easy: ["aktenmaus", "krake"], elite: "archivar", boss: "aktenberg" },
+               { name: "Das Rathaus", bg: "a2-3", mapTitle: "Hinauf ins Rathaus", mapSub: "Ballsaal, Wappen, Siegel. Auf dem Turm wartet der Rathausmann.",
+                 enemies: ["loewe", "walzer", "pfau", "siegel"], easy: ["loewe", "walzer"], elite: "sekretaer", boss: "rathausmann" }],
     start: ["ich", "du", "wir", "sehen", "haben", "gehen", "geben", "helfen", "Frau", "Hund", "Formular", "Kaffee", "gestern", "perf"],
     starter: ["kommen", "zeigen", "Brief", "Beamtin", "perf"],
     pool: ["er", "sie", "ihr", "sie_pl", "finden", "suchen", "kaufen", "schreiben", "brauchen", "trinken", "essen", "kommen", "fahren", "laufen", "folgen", "danken",
@@ -125,8 +134,28 @@ const STORY = {
       ["automat", "BITTE. WÄHLEN. SIE. IHRE. SPRACHE.", "PLEASE. SELECT. YOUR. LANGUAGE."],
       ["hero", "Deutsch. Ich wähle Deutsch!", "German. I choose German!"]
     ],
-    outro: [
+    act1End: [
       ["automat", "FAHRKARTE … GÜLTIG.", "TICKET … VALID."],
+      ["huber", "Gut gemacht, {name}! Mit der Fahrkarte kommen Sie weiter – zum Naschmarkt.", "Well done, {name}! With the ticket you can go on – to the Naschmarkt."],
+      ["narr", "Akt 2: Der Naschmarkt. Hier riecht alles nach Essen – und nach Ärger.", "Act 2: the Naschmarkt. Everything here smells of food – and of trouble."]
+    ],
+    boss2: [
+      ["narr", "Hinter dem letzten Stand thront er: der Käse-Kaiser.", "Behind the last stall he sits on his throne: the Cheese Emperor."],
+      ["kaese", "Wer nicht kauft, der zahlt!", "Whoever doesn't buy, pays!"],
+      ["hero", "Ich kaufe nichts. Ich kämpfe!", "I'm not buying anything. I'm fighting!"]
+    ],
+    act2End: [
+      ["kaese", "Mein … Reich … zerbröselt …", "My … empire … is crumbling …"],
+      ["huber", "Es wird dunkel. Der Prater wartet – und das Riesenrad dreht sich von allein.", "It's getting dark. The Prater is waiting – and the giant wheel turns all by itself."],
+      ["narr", "Akt 3: Der Prater.", "Act 3: the Prater."]
+    ],
+    boss3: [
+      ["narr", "Das Riesenrad erwacht. Seine Gondeln leuchten wie Augen.", "The giant wheel wakes up. Its cabins glow like eyes."],
+      ["riesenrad", "Steig ein – oder dreh dich für immer im Kreis!", "Get in – or go round in circles forever!"],
+      ["hero", "Ich habe keine Angst!", "I'm not afraid!"]
+    ],
+    outro: [
+      ["riesenrad", "Die Fahrt … ist … zu Ende …", "The ride … is … over …"],
       ["narr", "Für einen Moment flackert das Wien von heute auf – Glas, Züge, Menschen mit Handys. Dann ist es wieder fort.", "For a moment today's Vienna flickers into view – glass, trains, people with phones. Then it's gone again."],
       ["huber", "Bravo, {name}! Aber jetzt kommt das Schwierigste: das Amt.", "Bravo, {name}! But now comes the hardest part: the registration office."],
       ["hero", "Das Amt? Wie schlimm kann das sein?", "The office? How bad can it be?"],
@@ -146,8 +175,28 @@ const STORY = {
       ["hydra", "Haben Sie das Formular B-12 ausgefüllt? Und B-13? Und B-14?", "Have you filled in form B-12? And B-13? And B-14?"],
       ["hero", "Ich habe alles ausgefüllt. Alles!", "I have filled in everything. Everything!"]
     ],
-    outro: [
+    act1End: [
       ["hydra", "Der Stempel … ist … gültig …", "The stamp … is … valid …"],
+      ["novak", "Gültig, ja. Aber Ihre Akte liegt im Archiv. Im Keller.", "Valid, yes. But your file is in the archive. In the cellar."],
+      ["narr", "Akt 2: Das Archiv. Hier unten hat seit hundert Jahren niemand aufgeräumt.", "Act 2: the archive. Nobody has tidied up down here for a hundred years."]
+    ],
+    boss2: [
+      ["narr", "Ganz unten bewegt sich etwas: der Aktenberg.", "Right at the bottom something moves: the mountain of files."],
+      ["aktenberg", "Ich habe Ihre Akte. Ich habe ALLE Akten!", "I have your file. I have ALL the files!"],
+      ["hero", "Ich habe Ihnen schon alles gegeben!", "I've already given you everything!"]
+    ],
+    act2End: [
+      ["aktenberg", "Nehmen … Sie … Ihre … Akte …", "Take … your … file …"],
+      ["novak", "Jetzt fehlt nur noch die Unterschrift. Im Rathaus. Ganz oben.", "Now all that's missing is the signature. In the city hall. Right at the top."],
+      ["narr", "Akt 3: Das Rathaus.", "Act 3: the city hall."]
+    ],
+    boss3: [
+      ["narr", "Auf dem Turm erwacht der eiserne Ritter: der Rathausmann.", "On the tower the iron knight awakes: the Rathausmann."],
+      ["rathausmann", "Wer hier unterschreiben will, muss erzählen, was er erlebt hat!", "Whoever wants to sign here must tell what they have been through!"],
+      ["hero", "Ich habe viel erlebt. Hören Sie zu!", "I've been through a lot. Listen!"]
+    ],
+    outro: [
+      ["rathausmann", "Unterschrieben … und … gestempelt …", "Signed … and … stamped …"],
       ["novak", "Willkommen in Wien, {name}. Sie sind jetzt offiziell gemeldet.", "Welcome to Vienna, {name}. You're now officially registered."],
       ["hero", "Endlich! Jetzt brauche ich nur noch … einen Job.", "Finally! Now I just need … a job."],
       ["huber", "Sie haben genug gelernt, {name}. Zeit, ins Wien von heute zurückzukehren.", "You've learned enough, {name}. Time to return to today's Vienna."],

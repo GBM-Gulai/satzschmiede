@@ -32,6 +32,10 @@ const ladder = () => LADDERS.find(l => l.id === (run ? run.ladder : "a1"));
 const PRONOUNS = ["ich", "du", "er", "sie", "wir", "ihr", "sie_pl"];
 const deckable = id => CARDS[id] && CARDS[id].type !== "subj";
 const rewardPool = () => ladder().pool.filter(deckable);
+// Each ladder has three acts; act 1 uses the ladder's own enemies, later acts override them
+const ACTS = 3;
+const stage = () => { const lad = ladder(); return { ...lad, ...((lad.acts || [])[run ? run.act || 0 : 0] || {}) }; };
+const actLabel = () => run && run.act ? ` · ${L("Akt", "Act")} ${run.act + 1}` : "";
 const HAND = 5;            // cards drawn each turn
 const FIELD_SLOTS = 3;     // verbs on the field
 const hero = () => HEROES[run.hero];
@@ -79,9 +83,9 @@ const clip = id => VIDEO.includes(id) ? `assets/video/${id}.mp4` : "";
 const enemyArt = (id, cls) => art(`assets/enemies/${id}.jpg`, ENEMIES[id].e, cls, cls === "foe-pic" || cls === "portrait" ? clip(id) : "");
 const heroArt = (id, cls) => art(`assets/heroes/${id}.jpg`, HEROES[id].e, cls);
 for (const t of ["subj", "verb", "noun", "adv", "perf"]) document.documentElement.style.setProperty(`--card-${t}`, `url("${src(`assets/cards/${t}.jpg`)}")`);
-function setScene(id) {   // background art per ladder
+function setScene(id, bg = id) {   // background art per ladder (or per act)
   document.body.dataset.ladder = id || "";
-  document.body.style.setProperty("--bg", id ? `url("${src(`assets/bg/${id}.jpg`)}")` : "none");
+  document.body.style.setProperty("--bg", bg ? `url("${src(`assets/bg/${bg}.jpg`)}"), url("${src(`assets/bg/${id}.jpg`)}")` : "none");
 }
 
 // ---------- sound & speech ----------
@@ -187,7 +191,7 @@ function save() {
     if (run) localStorage.setItem(SAVE, JSON.stringify(run)); else localStorage.removeItem(SAVE);
   } catch {}
 }
-if (run) uidSeq = Math.max(1, ...run.deck.map(c => c.uid + 1));
+if (run) { uidSeq = Math.max(1, ...run.deck.map(c => c.uid + 1)); run.act = run.act || 0; }
 const has = r => run && run.relics.includes(r);
 
 // ---------- word collection: grows across runs; each run you pack a bag from it ----------
@@ -272,7 +276,7 @@ let pickedHero = null;
 function newRun(ladderId) {
   const lad = LADDERS.find(l => l.id === ladderId), hp = 50 + (pickedHero === "amara" ? 12 : 0);
   run = {
-    ladder: ladderId, hero: pickedHero, hp, maxHp: hp, gold: 60, floor: 0, relics: [],
+    ladder: ladderId, hero: pickedHero, hp, maxHp: hp, gold: 60, floor: 0, act: 0, relics: [],
     deck: [], packed: false, map: LAYOUT.map(opts => shuffle(opts)), path: [],
     stats: { sentences: 0, perfect: 0, mistakes: 0, dmg: 0 }
   };
@@ -339,7 +343,7 @@ function topbar() {
     <span class="pill hp">❤️ ${run.hp}/${run.maxHp}</span>
     <span class="pill">💰 ${run.gold}</span>
     <span class="relics">${run.relics.map(r => `<button class="relic" data-act="relic" data-r="${r}" title="${esc(RELICS[r].name + ": " + RELICS[r].text)}">${RELICS[r].e}</button>`).join("")}</span>
-    <span class="pill floor">${ladder().lvl} · ${Math.min(run.floor + 1, LAYOUT.length)}/${LAYOUT.length}</span>
+    <span class="pill floor">${ladder().lvl}${actLabel()} · ${Math.min(run.floor + 1, LAYOUT.length)}/${LAYOUT.length}</span>
     <button class="pill" data-act="deck" title="Deck">🂠 ${run.deck.length}</button>${soundBtn("music")}${soundBtn("voice")}
   </header>`;
 }
@@ -370,7 +374,7 @@ function showTitle() {
   app.innerHTML = `<main class="title"><div class="logo fraktur">Satzschmiede</div>
     <p class="tag">A deckbuilder where your <b>German sentences</b> are your weapons.<br><span class="en">Ein Deckbuilder, in dem deine deutschen Sätze deine Waffen sind.</span></p>
     ${window.ASSET_DATA ? `<div class="anvil">⚒️</div>` : `<div class="title-vid"><video data-src="assets/video/title.mp4"></video></div>`}
-    <div class="col-btns">${run ? `<button class="btn hot" data-act="continue">Continue · Weiter (${LADDERS.find(l => l.id === run.ladder).lvl}, ${run.floor + 1}/${LAYOUT.length})</button>` : ""}
+    <div class="col-btns">${run ? `<button class="btn hot" data-act="continue">Continue · Weiter (${LADDERS.find(l => l.id === run.ladder).lvl}${actLabel()}, ${run.floor + 1}/${LAYOUT.length})</button>` : ""}
       <button class="btn ${run ? "" : "hot"}" data-act="heroes">New adventure · Neues Abenteuer</button>
       <button class="btn ghost" data-act="help">How to play · Wie spielt man?</button></div>
     <div class="sound-row">${soundBtn("music")} ${soundBtn("voice")}</div>
@@ -429,9 +433,10 @@ function drawMapLines() {
 }
 function showMap() {
   music("inn");
-  view = "map"; fight = null; setScene(run.ladder);
+  view = "map"; fight = null;
   if (run.floor >= LAYOUT.length) return ladderCleared();
-  const lad = ladder();
+  const lad = stage();
+  setScene(run.ladder, lad.bg);
   const rows = run.map.map((opts, f) => {
     const chosen = run.path[f];
     const nodes = opts.map((n, i) => {
@@ -448,11 +453,11 @@ function showMap() {
   requestAnimationFrame(() => { drawMapLines(); const cur = $(".floor-row.current"); if (cur) cur.scrollIntoView({ block: "center" }); });
 }
 function enterNode(i) {
-  const n = run.map[run.floor][i], lad = ladder();
+  const n = run.map[run.floor][i], lad = stage();
   run.path[run.floor] = i; save();
   if (n === "fight") startFight(rnd(run.floor < 2 ? lad.easy : lad.enemies));
   else if (n === "elite") startFight(lad.elite);
-  else if (n === "boss") { music("boss"); playStory(STORY[run.ladder].boss, () => startFight(lad.boss)); }
+  else if (n === "boss") { music("boss"); playStory(STORY[run.ladder][["boss", "boss2", "boss3"][run.act || 0]] || [], () => startFight(lad.boss)); }
   else if (n === "rest") showRest();
   else if (n === "shop") showShop();
   else if (n === "gate") showGate();
@@ -463,7 +468,7 @@ function nextFloor() { run.floor++; save(); showMap(); }
 // ---------- combat ----------
 function startFight(eid) {
   music(ENEMIES[eid].boss ? "boss" : "battle");
-  const e = ENEMIES[eid], scale = e.boss ? 0 : run.floor * 2;
+  const e = ENEMIES[eid], scale = e.boss ? 0 : run.floor * 2 + (run.act || 0) * 5;
   fight = {
     eid, enemy: { hp: e.hp + scale, max: e.hp + scale, block: 0, str: 0, move: 0 },
     draw: shuffle(run.deck.filter(c => deckable(c.id)).map(c => ({ ...c }))), hand: [], discard: [], sentence: [],
@@ -844,12 +849,27 @@ function winFight() {
   const gold = e.boss ? 0 : e.elite ? between(40, 55) : between(14, 24);
   run.gold += gold;
   sfx("win");
+  if (e.boss && (run.act || 0) < ACTS - 1 && (ladder().acts || [])[(run.act || 0) + 1]) return actCleared();
   if (e.boss) { run.floor++; save(); return ladderCleared(); }
   if (fight.tut != null) { meta.tutorial = true; save(); return playStory(STORY[run.ladder].tutorialEnd, showPack); }
   const relic = e.elite ? rnd(Object.keys(RELICS).filter(r => !run.relics.includes(r))) : null;
   if (relic) gainRelic(relic);
   save();
   showReward(gold, relic);
+}
+// Between acts: a story scene, then heal, gold and a relic before the next map
+function actCleared() {
+  const done = (run.act || 0) + 1, heal = Math.round((run.maxHp - run.hp) * .6), relic = rnd(Object.keys(RELICS).filter(r => !run.relics.includes(r)));
+  run.act = done; run.floor = 0; run.path = []; run.map = LAYOUT.map(opts => shuffle(opts)); run.shop = null; run.gate = null;
+  run.hp += heal; run.gold += 40; if (relic) gainRelic(relic);
+  save();
+  playStory(STORY[run.ladder][`act${done}End`] || [], () => {
+    music("inn"); view = "act";
+    app.innerHTML = `${topbar()}<main class="panel"><h2 class="fraktur">${L(`Akt ${done} geschafft!`, `Act ${done} cleared!`)}</h2>
+      <p class="sub">❤️ +${heal} · 💰 +40${relic ? ` · ${RELICS[relic].e} <b>${RELICS[relic].name}</b> – ${RELICS[relic].text}` : ""}</p>
+      <p>${L(`Weiter geht's: <b>${stage().name}</b>`, `Next up: <b>${stage().name}</b>`)}</p>
+      <button class="btn hot" data-act="continue">${L("Weiter", "Continue")} ➜</button></main>`;
+  });
 }
 function gainRelic(r) { run.relics.push(r); if (r === "lederhose") { run.maxHp += 10; run.hp += 10; } }
 

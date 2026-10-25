@@ -105,7 +105,35 @@ const ENEMIES = {
   schlange:    { name: "Warteschlangen-Wurm", e: "🐍", hp: 32, moves: [["blk", 7], ["atk", 7], ["atk", 9]], weak: "long", hint: "Endless and slow. Weak to long sentences (5+ words)." },
   papagei:     { name: "Paragrafen-Papagei", e: "🦜", hp: 28, moves: [["atk", 7], ["atk", 7], ["heal", 6]], weak: "dat", leech: true, hint: "Repeats your mistakes and heals from them (+4 each). Weak to Dativ." },
   drache:      { name: "Dativ-Drache", e: "🐉", hp: 52, moves: [["atk", 10], ["blk", 9], ["atk", 14], ["buff", 2]], weak: "dat", resist: true, elite: true, hint: "Elite. Only Dativ really hurts it (dem, der …)." },
-  hydra:       { name: "Die Formular-Hydra", e: "🐲", hp: 110, moves: [["blk", 12], ["atk", 10], ["buff", 3], ["atk", 13], ["atk", 18]], weak: "perf", boss: true, hint: "Boss. Grows new paper heads. Tell her what happened – Perfekt sentences deal double damage." }
+  hydra:       { name: "Die Formular-Hydra", e: "🐲", hp: 110, moves: [["blk", 12], ["atk", 10], ["buff", 3], ["atk", 13], ["atk", 18]], weak: "perf", boss: true, hint: "Boss. Grows new paper heads. Tell her what happened – Perfekt sentences deal double damage." },
+  // A1 · Act 2 – Naschmarkt
+  gurke:       { name: "Gurken-Gauner", e: "🥒", hp: 24, moves: [["atk", 6], ["atk", 7], ["blk", 5]], weak: "akk", hint: "Steals your change. Weak to Akkusativ objects (den, die, das)." },
+  schreier:    { name: "Der Marktschreier", e: "📣", hp: 26, moves: [["buff", 2], ["atk", 7], ["atk", 6]], weak: "long", hint: "Shouts over short answers. Weak to long sentences (5+ words)." },
+  wespe:       { name: "Würstel-Wespe", e: "🐝", hp: 22, moves: [["atk", 4], ["atk", 5], ["atk", 9]], weak: "perfect", hint: "Buzzes faster and faster. Perfect sentences swat it (×2)." },
+  kraut:       { name: "Kraut-Golem", e: "🥬", hp: 32, moves: [["blk", 7], ["atk", 10]], weak: "inv", hint: "Slow but heavy. Start with a time word to get past its leaves (Heute …)." },
+  standlerin:  { name: "Die Standlerin", e: "⚖️", hp: 52, moves: [["atk", 10], ["blk", 9], ["atk", 13], ["buff", 3]], weak: "akk", resist: true, elite: true, hint: "Elite. Only Akkusativ gets past her scale – everything else does half damage." },
+  kaese:       { name: "Der Käse-Kaiser", e: "🧀", hp: 95, moves: [["blk", 12], ["atk", 11], ["buff", 3], ["atk", 14], ["atk", 17]], weak: "inv", boss: true, hint: "Boss. Full of holes – and full of himself. Sentences that start with a time word deal double damage." },
+  // A1 · Act 3 – Prater
+  pony:        { name: "Ringelspiel-Pony", e: "🎠", hp: 28, moves: [["atk", 7], ["atk", 8], ["blk", 6]], weak: "inv", hint: "Goes round and round. Start with a time word to jump on (Jetzt …)." },
+  watte:       { name: "Zuckerwatte-Geist", e: "🍭", hp: 26, moves: [["atk", 6], ["heal", 7], ["atk", 9]], weak: "perfect", hint: "Sticky and sweet, heals itself. Perfect sentences dissolve it (×2)." },
+  spiegel:     { name: "Spiegel-Doppelgänger", e: "🪞", hp: 30, moves: [["atk", 8], ["buff", 2], ["atk", 7]], weak: "long", resist: true, hint: "Copies short sentences back at you. Only long sentences (5+ words) break the mirror." },
+  fledermaus:  { name: "Geisterbahn-Fledermaus", e: "🦇", hp: 24, moves: [["atk", 10], ["atk", 5]], weak: "akk", hint: "Swoops out of the ghost train. Weak to Akkusativ objects." },
+  watschenmann:{ name: "Der Watschenmann", e: "🥊", hp: 60, moves: [["atk", 12], ["atk", 7], ["buff", 3], ["atk", 15]], weak: "perfect", resist: true, elite: true, hint: "Elite. The Prater's grumpiest punching dummy – only perfect sentences hurt him." },
+  riesenrad:   { name: "Das Riesenrad", e: "🎡", hp: 120, moves: [["blk", 14], ["atk", 12], ["atk", 15], ["buff", 3], ["atk", 18]], weak: "long", boss: true, hint: "Final boss of A1. Turns endlessly – long sentences (5+ words) deal double damage." },
+  // A2 · Act 2 – Das Archiv
+  aktenmaus:   { name: "Akten-Maus", e: "🐭", hp: 28, moves: [["atk", 7], ["atk", 7], ["blk", 6]], weak: "dat", hint: "Nibbles on your files. Weak to Dativ (dem, der …)." },
+  staub:       { name: "Staub-Gespenst", e: "👻", hp: 30, moves: [["atk", 7], ["heal", 7], ["atk", 10]], weak: "perf", hint: "Made of old dust. Tell it what happened – Perfekt sentences (⏪) blow it away." },
+  ordner:      { name: "Ordner-Mimic", e: "📦", hp: 34, moves: [["blk", 9], ["atk", 12]], weak: "akk", resist: true, hint: "Looks like a harmless box. Only Akkusativ opens it." },
+  krake:       { name: "Tintenfass-Krake", e: "🐙", hp: 30, moves: [["atk", 5], ["atk", 6], ["atk", 11]], weak: "long", hint: "Eight pens at once. Weak to long sentences (5+ words)." },
+  archivar:    { name: "Der Archivar", e: "🗝️", hp: 64, moves: [["atk", 12], ["buff", 3], ["atk", 11], ["blk", 11]], weak: "perf", resist: true, leech: true, elite: true, hint: "Elite. Remembers every mistake (+4 each) – only Perfekt really hurts him." },
+  aktenberg:   { name: "Der Aktenberg", e: "🗄️", hp: 125, moves: [["blk", 13], ["atk", 11], ["buff", 3], ["atk", 15], ["atk", 19]], weak: "dat", boss: true, hint: "Boss. A mountain of files. Dativ (dem, der …) deals double damage." },
+  // A2 · Act 3 – Das Rathaus
+  loewe:       { name: "Wappen-Löwe", e: "🦁", hp: 32, moves: [["atk", 9], ["blk", 7], ["atk", 9]], weak: "inv", hint: "Steps out of the coat of arms. Start with a time word (Gestern …)." },
+  walzer:      { name: "Ballsaal-Geist", e: "💃", hp: 32, moves: [["atk", 7], ["atk", 7], ["heal", 8]], weak: "perfect", hint: "Waltzes forever. Perfect sentences stop the music (×2)." },
+  pfau:        { name: "Protokoll-Pfau", e: "🦚", hp: 34, moves: [["buff", 3], ["atk", 9], ["atk", 11]], weak: "dat", resist: true, hint: "Pompous. Only Dativ impresses it – everything else does half damage." },
+  siegel:      { name: "Siegel-Golem", e: "🔴", hp: 36, moves: [["blk", 11], ["atk", 13]], weak: "perf", hint: "Made of hot sealing wax. Perfekt sentences (⏪) crack it." },
+  sekretaer:   { name: "Der Obersekretär", e: "☎️", hp: 68, moves: [["atk", 9], ["atk", 9], ["atk", 15], ["buff", 2]], weak: "long", leech: true, elite: true, hint: "Elite. Six arms, six phones. Feeds on mistakes (+4 each). Weak to long sentences." },
+  rathausmann: { name: "Der Rathausmann", e: "🗡️", hp: 140, moves: [["atk", 14], ["blk", 15], ["atk", 18], ["buff", 3], ["atk", 13]], weak: "perf", boss: true, hint: "Final boss of A2. The iron knight of the Rathaus – tell him your story: Perfekt deals double damage." }
 };
 
 // ---------- relics ----------
