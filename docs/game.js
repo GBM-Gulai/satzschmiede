@@ -187,7 +187,7 @@ function toggleSound(kind) {
 // ---------- saving ----------
 const SAVE = "satzschmiede-run", META = "satzschmiede-meta";
 const load = k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } };
-let meta = Object.assign({ runs: 0, wins: 0, sentences: 0, perfect: 0, unlocked: 1, cleared: [], music: true, voice: true, tutorial: false, collection: {}, slots: 12 }, load(META) || {});
+let meta = Object.assign({ runs: 0, wins: 0, sentences: 0, perfect: 0, unlocked: 1, cleared: [], music: true, voice: true, tutorial: false, collection: {}, slots: 12, mistakes: {} }, load(META) || {});
 let run = load(SAVE), fight = null, view = "title";
 if (run && !run.ladder) run = null;   // save from an older version
 function save() {
@@ -198,6 +198,68 @@ function save() {
 }
 if (run) { uidSeq = Math.max(1, ...run.deck.map(c => c.uid + 1)); run.act = run.act || 0; }
 const has = r => run && run.relics.includes(r);
+
+// ---------- Fehlerheft: every wrong form is remembered until you get it right again ----------
+// keys: "conj|sehen|1" (du + sehen), "art|Hund|akk", "aux|gehen", "part|sehen"
+// Irregular (strong) forms earn extra power: du siehst, er läuft, gesehen …
+function regularStem(d) { return d.de.replace(/e?n$/, ""); }
+function isStrongForm(d, p) {
+  const st = regularStem(d), e = /[dt]$/.test(st) ? ["e", "est", "et", "en", "et", "en"] : ["e", "st", "t", "en", "t", "en"];
+  return forms(d)[p] !== st + e[p];
+}
+function isStrongPart(d) {
+  const st = regularStem(d), t = /[dt]$/.test(st) ? "et" : "t";
+  return d.part !== "ge" + st + t && d.part !== st + t;
+}
+function stepKey(st, a) {
+  if (st.kind === "conj") return `conj|${st.c.id}|${a.person}`;
+  if (st.kind === "art") return `art|${st.c.id}|${st.cas}`;
+  return `${st.kind}|${a.verb.id}`;
+}
+function noteMistake(key) { meta.mistakes[key] = Math.min(5, (meta.mistakes[key] || 0) + 1); }
+function noteRight(key) { if (meta.mistakes[key] && --meta.mistakes[key] <= 0) delete meta.mistakes[key]; }
+const mistakeCount = () => Object.keys(meta.mistakes).length;
+// Pronouns you get wrong with the verbs at hand are dealt more often
+function dealPronouns() {
+  const verbs = [...fight.field.filter(Boolean), ...fight.hand].filter(c => CARDS[c.id].type === "verb").map(c => c.id);
+  const weight = id => 1 + 2 * verbs.reduce((n, v) => n + (meta.mistakes[`conj|${v}|${CARDS[id].p}`] || 0), 0);
+  const pool = [...PRONOUNS], out = [];
+  while (out.length < DEALT && pool.length) {
+    let r = Math.random() * pool.reduce((n, id) => n + weight(id), 0), i = 0;
+    while ((r -= weight(pool[i])) > 0 && i < pool.length - 1) i++;
+    out.push(pool.splice(i, 1)[0]);
+  }
+  return out;
+}
+// A quiz question for one Fehlerheft entry
+function reviewQuestion(key) {
+  const [kind, id, x] = key.split("|"), d = CARDS[id];
+  if (!d) return null;
+  if (kind === "conj") { const right = forms(d)[+x]; return { q: `<b>${PERSON[+x]}</b> + ${d.de} → ?`, right, opts: shuffle([right, ...shuffle([...new Set(forms(d))].filter(f => f !== right)).slice(0, 2)]) }; }
+  if (kind === "art") return { q: L(`<b>${nounForm(d, x)}</b> im ${CASE_NAME[x]}`, `<b>${nounForm(d, x)}</b> in the ${CASE_NAME[x]}`), right: ART[x][d.g], opts: ARTICLES };
+  if (kind === "aux") return { q: L(`<b>${d.de}</b>: Perfekt mit …?`, `<b>${d.de}</b>: Perfekt with …?`), right: d.aux, opts: ["haben", "sein"] };
+  return { q: L(`Partizip II von <b>${d.de}</b>?`, `Past participle of <b>${d.de}</b>?`), right: d.part, opts: shuffle([d.part, ...fakeParts(d)]) };
+}
+// Camp option: redo up to 5 of your mistakes, +5 HP for each one you now get right
+function showReview(keys = null, i = 0, healed = 0) {
+  view = "review";
+  keys = keys || Object.entries(meta.mistakes).sort((a, b) => b[1] - a[1]).map(([k]) => k).filter(reviewQuestion).slice(0, 5);
+  if (i >= keys.length) {
+    app.innerHTML = `${topbar()}<main class="panel"><h2 class="fraktur">Fehlerheft</h2><p class="sub">❤️ +${healed} · ${L(`Noch ${mistakeCount()} Einträge im Heft.`, `${mistakeCount()} entries left in the notebook.`)}</p>
+      <button class="btn hot" data-act="skip">${L("Weiter", "Continue")} ➜</button></main>`;
+    return save();
+  }
+  const r = reviewQuestion(keys[i]);
+  app.innerHTML = `${topbar()}<main class="panel"><h2 class="fraktur">Fehlerheft</h2><p class="sub">${L("Diese Formen waren falsch. Jetzt richtig = +5 ❤️", "You got these wrong before. Right now = +5 ❤️")} · ${i + 1} / ${keys.length}</p>
+    <div class="gate-task">${r.q}</div><div class="incant-opts">${r.opts.map(o => `<button class="opt">${o}</button>`).join("")}</div></main>`;
+  app.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+    const good = b.textContent === r.right;
+    if (good) { noteRight(keys[i]); run.hp = Math.min(run.maxHp, run.hp + 5); healed += 5; sfx("ok"); }
+    else { sfx("bad"); toast(L(`Richtig ist: <b>${r.right}</b>`, `The right answer: <b>${r.right}</b>`), 1800); }
+    b.classList.add(good ? "right" : "wrong");
+    setTimeout(() => showReview(keys, i + 1, healed), good ? 500 : 1400);
+  });
+}
 
 // ---------- word collection: grows across runs; each run you pack a bag from it ----------
 const MAX_COPIES = 3, MAX_SLOTS = 20;
@@ -382,7 +444,7 @@ function showTitle() {
       <button class="btn ${run ? "" : "hot"}" data-act="heroes">New adventure · Neues Abenteuer</button>
       <button class="btn ghost" data-act="help">How to play · Wie spielt man?</button></div>
     <div class="sound-row">${soundBtn("music")} ${soundBtn("voice")}</div>
-    <div class="stats"><div><b>${meta.runs}</b>Runs</div><div><b>${meta.cleared.length}</b>Leitern</div><div><b>${meta.sentences}</b>Sätze</div><div><b>${meta.perfect}</b>perfekt</div></div></main>`;
+    <div class="stats"><div><b>${meta.runs}</b>Runs</div><div><b>${meta.cleared.length}</b>Leitern</div><div><b>${meta.sentences}</b>Sätze</div><div><b>${meta.perfect}</b>perfekt</div><div><b>${mistakeCount()}</b>📖 Fehlerheft</div></div></main>`;
 }
 function showHeroes() {
   view = "heroes";
@@ -489,8 +551,8 @@ function startFight(eid) {
 const TUT = [
   { info: ".intent", de: "Oben siehst du, was das Monster als Nächstes macht: <b>Angriff 5</b>. Du bist zuerst dran!",
     en: "At the top you see what the monster does next: <b>Attack 5</b>. You go first!" },
-  { info: ".energy-orbs", de: "Das ist deine <b>Energie ⚡</b>: 3 pro Zug. Die rote Zahl auf einer Karte ist ihr Preis. Verben und Nomen kosten 1, Pronomen und Zeitwörter 0.",
-    en: "This is your <b>energy ⚡</b>: 3 per turn. The red number on a card is its cost. Verbs and nouns cost 1, pronouns and time words 0." },
+  { info: ".energy-orbs", de: "Das ist deine <b>Energie ⚡</b>: 3 pro Zug. Die rote Zahl auf einer Karte ist ihr Preis. Verben und Nomen kosten 1, Pronomen und kurze Zeitwörter wie <b>heute</b> 0.",
+    en: "This is your <b>energy ⚡</b>: 3 per turn. The red number on a card is its cost. Verbs and nouns cost 1, pronouns and short time words like <b>heute</b> 0." },
   { card: "sehen", at: "hand", de: "Verben kommen aufs <b>Feld</b> – ein Verb pro Zug, gratis. Tippe auf <b>sehen</b>.",
     en: "Verbs go on the <b>field</b> – one verb per turn, for free. Tap <b>sehen</b> (to see)." },
   { info: ".vtile", de: "Ein Verb auf dem Feld hat <b>3 Ladungen</b> (die Punkte). Jeder Satz verbraucht eine. Danach geht es zurück in deinen Stapel.",
@@ -588,7 +650,7 @@ function startTurn() {
   fight.block = 0; fight.tapped = []; fight.placed = false; fight.placing = null;
   fight.energy = 3 + (fight.turn === 1 && has("kaffee") ? 1 : 0);
   drawCards(HAND + (has("duden") ? 1 : 0));
-  fight.bar = (fight.tutBars && fight.tutBars.length ? fight.tutBars.shift() : sample(PRONOUNS, DEALT)).map(id => mk(id));
+  fight.bar = (fight.tutBars && fight.tutBars.length ? fight.tutBars.shift() : dealPronouns()).map(id => mk(id));
   // never stuck: with no verb on the field and none in hand, fetch one from the piles
   const isVerb = c => CARDS[c.id].type === "verb";
   if (!fight.field.some(Boolean) && !fight.hand.some(isVerb)) {
@@ -798,7 +860,7 @@ function incant(cards, a, steps, i, answers) {
   const st = steps[i];
   ov.innerHTML = `<div class="incant-in"><div class="incant-h">🔨 ${L("Beschwörung", "Incantation")} ${i + 1}/${steps.length}</div>
     <div class="incant-s">${sentenceWords(cards, a, steps, answers, i, false)}</div>
-    <div class="incant-q">${st.q}</div>${tutHint(st) ? `<div class="coach small">${art("assets/npc/huber.jpg", NPCS.huber.e, "coach-pic")}<div>${tutHint(st)}</div></div>` : ""}
+    <div class="incant-q">${st.q}${meta.mistakes[stepKey(st, a)] ? ` <span class="fh-tag">📖 ${L("im Fehlerheft", "in your notebook")}</span>` : ""}</div>${tutHint(st) ? `<div class="coach small">${art("assets/npc/huber.jpg", NPCS.huber.e, "coach-pic")}<div>${tutHint(st)}</div></div>` : ""}
     <div class="incant-opts">${st.opts.map(o => `<button class="opt${fight.reveal && o === st.right ? " reveal" : ""}">${o}</button>`).join("")}</div></div>`;
   ov.querySelectorAll(".opt").forEach(b => b.onclick = () => { sfx("forge"); incant(cards, a, steps, i + 1, [...answers, b.textContent]); });
 }
@@ -807,6 +869,7 @@ function resolve(cards, a, steps, answers) {
   const e = ENEMIES[fight.eid], en = fight.enemy, v = CARDS[a.verb.id];
   const notes = [];
   let mistakes = 0;
+  steps.forEach((st, i) => (answers[i] === st.right ? noteRight : noteMistake)(stepKey(st, a)));
   const ok = steps.map((st, i) => {
     if (answers[i] === st.right) return true;
     if (has("esel") && !fight.eselUsed) { fight.eselUsed = true; notes.push(L(`🫏 Eselsbrücke rettet dich: richtig ist <b>${st.right}</b>.`, `🫏 Eselsbrücke saves you: the right answer is <b>${st.right}</b>.`)); return true; }
@@ -822,6 +885,11 @@ function resolve(cards, a, steps, answers) {
   const perfect = mistakes === 0;
   let power = cards.reduce((s, c) => s + (okOf(c) ? powOf(c) : 0), 0);
   const perfOk = a.perf && okOf(a.verb) && okOf(a.perfCard);
+  const bonus = [];
+  if (!a.perf && okOf(a.verb) && isStrongForm(v, a.person)) bonus.push(`${PERSON[a.person]} ${forms(v)[a.person]}`);
+  if (perfOk && isStrongPart(v)) bonus.push(v.part);
+  for (const o of a.objs) if (o.cas === "dat" && okOf(o.c)) bonus.push("Dativ");
+  power += 2 * bonus.length;
   if (perfect) power = Math.ceil(power * 1.5) + (has("sachertorte") ? 3 : 0);
   if (perfOk && has("meldezettel")) power += 4;
   if (fight.boost) { power *= 2; fight.boost = false; notes.push(L("🍳 Doppelte Portion: ×2!", "🍳 Double helping: ×2!")); }
@@ -852,6 +920,7 @@ function resolve(cards, a, steps, answers) {
   } else if (v.fx === "blk") { fight.block += power; line = `🛡️ +<b>${power}</b> ${L("Schild", "shield")}`; }
   else { const before = run.hp; run.hp = Math.min(run.maxHp, run.hp + power); line = `❤️ +<b>${run.hp - before}</b> ${L("Leben", "HP")}`; }
   if (e.leech && mistakes) { en.hp = Math.min(en.max, en.hp + 4 * mistakes); notes.push(L(`${e.e} ${e.name} lebt von deinen Fehlern: +${4 * mistakes}.`, `${e.e} ${e.name} feeds on your mistakes: +${4 * mistakes} HP.`)); }
+  if (bonus.length) line += ` <span class="r-bonus">💪 +${2 * bonus.length} ${L("starke Form", "strong form")}: ${bonus.join(", ")}</span>`;
   const html = sentenceWords(cards, a, steps, answers, steps.length, true);
   fight.busy = false;
   renderFight();
@@ -962,7 +1031,8 @@ function showRest() {
   const heal = Math.round(run.maxHp * .3);
   app.innerHTML = `${topbar()}<main class="panel"><h2 class="fraktur">Lagerfeuer</h2><div class="campfire">🔥</div>
     <div class="row-btns"><button class="btn hot" data-act="rest-heal">😴 ${L("Ausruhen", "Rest")} (+${heal} ❤️)</button>
-    <button class="btn" data-act="rest-up">⚒️ ${L("Ein Wort schmieden (+2 Kraft)", "Upgrade a word (+2 power)")}</button></div></main>`;
+    <button class="btn" data-act="rest-up">⚒️ ${L("Ein Wort schmieden (+2 Kraft)", "Upgrade a word (+2 power)")}</button>
+    <button class="btn" data-act="rest-review" ${mistakeCount() ? "" : "disabled"}>📖 ${mistakeCount() ? L(`Fehlerheft üben (${mistakeCount()}) – +5 ❤️ pro richtige Antwort`, `Practise your mistakes (${mistakeCount()}) – +5 ❤️ per right answer`) : L("Fehlerheft leer – stark!", "No mistakes to practise – great!")}</button></div></main>`;
 }
 function pickFromDeck(title, filter, onPick) {
   view = "pick";
@@ -1164,7 +1234,8 @@ function showHelp() {
     <li><b>Incantation:</b> when you forge, pick the right verb form and articles. Perfect sentences are ×1.5 stronger.</li>
     <li><b>⏪ Perfekt</b> (from A2): put it at the end to cast in the past tense – <i>Ich habe den Hund gesehen</i>.</li>
     <li><b>🚪 Trials</b> (floors 4 and 8): Frau Huber's mini-games – you must pass them to go on. <b>🛒 Shop:</b> haggle with Herr Wotruba for 30 % off.</li>
-    <li><b>Monsters have weaknesses</b> – tap ⓘ. <b>Energy ⚡:</b> verbs and nouns cost 1; pronouns, time words and ⏪ cost 0.</li>
+    <li><b>Monsters have weaknesses</b> – tap ⓘ. <b>Energy ⚡:</b> verbs, nouns and strong time words (morgen, immer …) cost 1; pronouns, heute/jetzt and ⏪ cost 0.</li>
+    <li><b>💪 Strong forms:</b> irregular verb forms (du <i>siehst</i>, er <i>läuft</i>, <i>gesehen</i>) and Dativ objects give +2 power. <b>📖 Fehlerheft:</b> every mistake is saved – practise them at the camp to heal.</li>
   </ol>`);
 }
 function showDeck() {
@@ -1200,6 +1271,7 @@ app.addEventListener("click", e => {
     end: endTurn,
     foeinfo: () => { const en = ENEMIES[fight.eid]; toast(`${en.e} <b>${en.name}</b>: ${en.hint}`, 4200); },
     skip: nextFloor,
+    "rest-review": () => showReview(),
     "rest-heal": () => { run.hp = Math.min(run.maxHp, run.hp + Math.round(run.maxHp * .3)); sfx("ok"); nextFloor(); },
     "rest-up": () => pickFromDeck(L("Welches Wort schmieden?", "Which word to upgrade?"), c => !c.up, c => { c.up = true; sfx("forge"); toast(`⚒️ ${CARDS[c.id].de} +2`); nextFloor(); }),
     back: () => ({ shop: showShop, gate: gateReward }[run.map[run.floor][run.path[run.floor]]] || showRest)(),

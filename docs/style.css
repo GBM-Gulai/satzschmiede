@@ -452,3 +452,8 @@ body[data-ladder="a2"] .foe-name, body[data-ladder="a2"] .map h2, body[data-ladd
 
 /* painted medallions bring their own ring: zoom in to the centre so it sits inside ours */
 .node:not(.n-boss) .medal-pic img { transform: scale(1.38); }
+
+/* v7: strong-form bonus, Fehlerheft */
+.r-bonus { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: rgba(126, 240, 176, .15); color: #7ef0b0; font-size: 13px; }
+.fh-tag { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: #6f4fb8; color: #fff; font-size: 12px; font-weight: 800; vertical-align: middle; }
+.opt.right { background: #2f8f5b; color: #fff; } .opt.wrong { background: #a3241a; color: #fff; }

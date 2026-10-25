@@ -79,10 +79,10 @@ const CARDS = {
 
   heute:   { type: "adv", de: "heute", en: "today", cost: 0, pow: 2 },
   jetzt:   { type: "adv", de: "jetzt", en: "now", cost: 0, pow: 2 },
-  morgen:  { type: "adv", de: "morgen", en: "tomorrow", cost: 0, pow: 3 },
-  oft:     { type: "adv", de: "oft", en: "often", cost: 0, pow: 3 },
-  immer:   { type: "adv", de: "immer", en: "always", cost: 0, pow: 4 },
-  gestern: { type: "adv", de: "gestern", en: "yesterday", cost: 0, pow: 3 },
+  morgen:  { type: "adv", de: "morgen", en: "tomorrow", cost: 1, pow: 3 },
+  oft:     { type: "adv", de: "oft", en: "often", cost: 1, pow: 3 },
+  immer:   { type: "adv", de: "immer", en: "always", cost: 1, pow: 4 },
+  gestern: { type: "adv", de: "gestern", en: "yesterday", cost: 1, pow: 3 },
 
   perf:    { type: "perf", de: "⏪ Perfekt", en: "past tense", cost: 0, pow: 4 }
 };
