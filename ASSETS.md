@@ -137,6 +137,19 @@ The windows reuse the backgrounds (`assets/bg/<ladder>.jpg`), so B1–C2 also ge
 | `sekretaer.jpg` | Square image of "Der Obersekretär" (elite): a towering, many-armed secretary juggling telephones, typewriters and appointment books. |
 | `rathausmann.jpg` | Square image of "Der Rathausmann" (boss): the iron knight statue from the top of Vienna City Hall, come alive and gigantic, holding a banner lance, armour glinting, dramatic boss lighting. |
 
+## Map medallions (optional) → `assets/map/`
+
+The map already has engraved ink icons. If you'd like painted ones instead, make these and they replace the icons automatically.
+
+| File | Prompt |
+|---|---|
+| `fight.jpg` | Square round medallion icon, two crossed swords engraved in dark ink on aged cream parchment, thin brass ring, painterly storybook style, plain background, no text. |
+| `elite.jpg` | Square round medallion icon, a menacing horned skull engraved in dark red ink on aged cream parchment, thin brass ring, painterly storybook style, plain background, no text. |
+| `rest.jpg` | Square round medallion icon, a small cosy campfire with a kettle, painted on aged cream parchment, thin brass ring, painterly storybook style, plain background, no text. |
+| `shop.jpg` | Square round medallion icon, a tiny old Viennese corner shop with a striped awning, painted on aged cream parchment, thin brass ring, painterly storybook style, plain background, no text. |
+| `event.jpg` | Square round medallion icon, a rolled parchment scroll with a question mark seal, painted on aged cream parchment, thin brass ring, painterly storybook style, plain background, no text. |
+| `gate.jpg` | Square round medallion icon, an ornate old wooden door with a keyhole glowing gold, painted on aged cream parchment, thin brass ring, painterly storybook style, plain background, no text. |
+
 ## Card frames (optional) → `assets/cards/`
 
 Painted backgrounds for the word cards; the game draws the text on top. Make them **tall 2:3**, with a **plain, light parchment centre** (the text goes there) and decoration only around the edges.
