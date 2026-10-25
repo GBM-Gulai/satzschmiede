@@ -53,7 +53,7 @@ const weakLabel = w => ({ dat: L("Dativ", "Dativ"), akk: L("Akkusativ", "Akkusat
 // Optional looping videos (assets/video/<id>.mp4, e.g. made with Google Flow) play over the picture; if missing, the picture stays.
 const ASSET = window.ASSET_DATA || {};
 const src = p => ASSET[p] || p;
-const VIDEO = ["automat", "hydra", "huber", "drache", "hausmeister", "wotruba"];   // ids that may have a clip in assets/video/
+const VIDEO = ["automat", "hydra", "huber", "drache", "hausmeister", "wotruba", "kaese", "riesenrad", "aktenberg", "rathausmann", "standlerin", "watschenmann", "archivar", "sekretaer"];   // ids that may have a clip in assets/video/
 window.artFail = img => img.parentNode.classList.add("noimg");
 // Screens are redrawn often (every card tap). Videos are kept in a cache and moved into each new screen,
 // so they keep playing instead of restarting: renders only contain <video data-src> placeholders.
