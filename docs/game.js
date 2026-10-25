@@ -1169,7 +1169,67 @@ function gateListen() {
 }
 
 // ---------- riddle event ----------
+// ---------- encounters (❓ stops): an illustrated scene with choices; the Sphinx riddle is the fallback ----------
+const encPool = () => ENCOUNTERS[`${run.ladder}-${run.act || 0}`] || [];
+const T2 = pair => L(pair[0], pair[1]);
+// scene text: always German, with the English underneath until B1
+const DE2 = pair => uiMode() === "de" ? pair[0] : `${pair[0]}<small class="en-sub">${pair[1]}</small>`;
+function costText(c) { return c ? ` <small>(${c.gold ? `💰 ${c.gold}` : ""}${c.hp ? `❤️ −${c.hp}` : ""})</small>` : ""; }
+function showEncounter() {
+  view = "event";
+  run.seenEnc = run.seenEnc || [];
+  if (!run.enc || run.enc.floor !== run.floor) {
+    const fresh = encPool().filter(e => !run.seenEnc.includes(e.id));
+    const pick = rnd(fresh.length ? fresh : encPool());
+    run.enc = { floor: run.floor, id: pick.id }; run.seenEnc.push(pick.id); save();
+  }
+  const enc = encPool().find(e => e.id === run.enc.id);
+  app.innerHTML = `${topbar()}<main class="panel encounter"><h2 class="fraktur">${T2(enc.title)}</h2>
+    <div class="enc-pic">${art(`assets/events/${enc.id}.jpg`, enc.e, "enc-img")}</div>
+    <p class="enc-text">${DE2(enc.text)}</p>
+    <div class="col-btns wide">${enc.choices.map((c, i) => {
+      const poor = c.cost && c.cost.gold > run.gold, frail = c.cost && c.cost.hp >= run.hp;
+      return `<button class="btn${i === 0 ? " hot" : ""}" data-ch="${i}" ${poor || frail ? "disabled" : ""}>${c.quiz ? "🗣️ " : ""}${T2(c.label)}${costText(c.cost)}</button>`;
+    }).join("")}</div></main>`;
+  app.querySelectorAll("[data-ch]").forEach(b => b.onclick = () => chooseEncounter(enc, enc.choices[+b.dataset.ch]));
+}
+function chooseEncounter(enc, ch) {
+  if (ch.cost) { run.gold -= ch.cost.gold || 0; run.hp -= ch.cost.hp || 0; }
+  if (!ch.quiz) return encounterOutcome(enc, ch.effect || {});
+  const q = ch.quiz, right = q.opts[0];
+  app.innerHTML = `${topbar()}<main class="panel encounter"><h2 class="fraktur">${T2(enc.title)}</h2>
+    <div class="enc-pic small">${art(`assets/events/${enc.id}.jpg`, enc.e, "enc-img")}</div>
+    <p class="riddle">${DE2(q.q)}</p>
+    <div class="col-btns wide">${shuffle(q.opts).map(o => `<button class="btn opt-e">${o}</button>`).join("")}</div></main>`;
+  app.querySelectorAll(".opt-e").forEach(b => b.onclick = () => {
+    const good = b.textContent === right;
+    sfx(good ? "ok" : "bad");
+    if (good) speak(right);
+    encounterOutcome(enc, good ? ch.win : ch.lose, good ? null : right);
+  });
+}
+// Apply an outcome and show what happened; word upgrades/removals open the deck picker afterwards
+function encounterOutcome(enc, fx, rightAnswer) {
+  fx = fx || {};
+  const got = [];
+  if (fx.gold) { run.gold += fx.gold; got.push(`💰 +${fx.gold}`); }
+  if (fx.maxHp) { run.maxHp += fx.maxHp; run.hp += fx.maxHp; got.push(`❤️ +${fx.maxHp} max`); }
+  if (fx.hp) { const before = run.hp; run.hp = Math.max(1, Math.min(run.maxHp, run.hp + fx.hp)); got.push(fx.hp > 0 ? `❤️ +${run.hp - before}` : `💔 ${run.hp - before}`); }
+  if (fx.card || fx.rare) {
+    const id = fx.card && fx.card !== "pool" ? fx.card : rnd(rewardPool()), c = mk(id, !!fx.rare);
+    run.deck.push(c); collect(id); got.push(`🂠 ${CARDS[id].de}${fx.rare ? " +" : ""}`);
+  }
+  if (fx.relic) { const r = rnd(Object.keys(RELICS).filter(r => !run.relics.includes(r))); if (r) { gainRelic(r); got.push(`${RELICS[r].e} ${RELICS[r].name}`); } else { run.gold += 40; got.push("💰 +40"); } }
+  save();
+  const next = fx.upgrade ? "enc-upgrade" : fx.remove ? "enc-remove" : "skip";
+  app.innerHTML = `${topbar()}<main class="panel encounter"><h2 class="fraktur">${T2(enc.title)}</h2>
+    <div class="enc-pic small">${art(`assets/events/${enc.id}.jpg`, enc.e, "enc-img")}</div>
+    ${rightAnswer ? `<p class="sub">${L("Richtig wäre:", "The right answer:")} <b>${rightAnswer}</b></p>` : ""}
+    ${fx.say ? `<p class="enc-text">${DE2(fx.say)}</p>` : ""}${got.length ? `<p class="enc-got">${got.join(" · ")}</p>` : ""}
+    <button class="btn hot" data-act="${next}">${fx.upgrade ? L("Wort wählen", "Choose a word") : fx.remove ? L("Wort entfernen", "Remove a word") : L("Weiter", "Continue")} ➜</button></main>`;
+}
 function showEvent() {
+  if (encPool().length) return showEncounter();
   view = "event";
   const [q, opts] = rnd(ladder().riddles), right = opts[0];
   app.innerHTML = `${topbar()}<main class="panel"><h2 class="fraktur">Die Sphinx der Sprache</h2>${art("assets/npc/sphinx.jpg", "🦁", "event-pic")}
@@ -1274,7 +1334,9 @@ app.addEventListener("click", e => {
     "rest-review": () => showReview(),
     "rest-heal": () => { run.hp = Math.min(run.maxHp, run.hp + Math.round(run.maxHp * .3)); sfx("ok"); nextFloor(); },
     "rest-up": () => pickFromDeck(L("Welches Wort schmieden?", "Which word to upgrade?"), c => !c.up, c => { c.up = true; sfx("forge"); toast(`⚒️ ${CARDS[c.id].de} +2`); nextFloor(); }),
-    back: () => ({ shop: showShop, gate: gateReward }[run.map[run.floor][run.path[run.floor]]] || showRest)(),
+    back: () => ({ shop: showShop, gate: gateReward, event: nextFloor }[run.map[run.floor][run.path[run.floor]]] || showRest)(),
+    "enc-upgrade": () => pickFromDeck(L("Welches Wort schmieden?", "Which word to upgrade?"), c => !c.up, c => { c.up = true; sfx("forge"); toast(`⚒️ ${CARDS[c.id].de} +2`); nextFloor(); }),
+    "enc-remove": () => pickFromDeck(L("Welches Wort entfernen?", "Which word to remove?"), () => true, c => { run.deck = run.deck.filter(x => x !== c); toast(`🗑️ ${CARDS[c.id].de}`); save(); nextFloor(); }),
     "buy-relic": () => {
       const s = run.shop, price = shopPrice(s.relicPrice); if (run.gold < price) return;
       run.gold -= price; gainRelic(s.relic); showRelic(s.relic); s.relic = null; sfx("ok"); save(); showShop();

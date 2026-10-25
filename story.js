@@ -204,3 +204,181 @@ const STORY = {
     ]
   }
 };
+
+// ---------- encounters: the ❓ stops on the map, 4 per act ----------
+// Each: a picture (assets/events/<id>.jpg), a short scene and choices. A choice can cost gold or HP, ask a German question
+// (quiz: right answer first in opts) with win/lose outcomes, or simply give an effect.
+// Effects: gold, hp (+ heals / − hurts), maxHp, card ("pool" = random word, or a word id), rare (upgraded random word), upgrade, remove, relic.
+const ENCOUNTERS = {
+  "a1-0": [
+    { id: "touristin", e: "🧳", title: ["Die verirrte Touristin", "The lost tourist"], who: "Touristin",
+      text: ["Eine Frau mit Stadtplan sieht dich verzweifelt an: „Entschuldigung … wo ist Bahnsteig 3?“", "A woman with a city map looks at you, desperate: “Excuse me … where is platform 3?”"],
+      choices: [
+        { label: ["Helfen", "Help her"], quiz: { q: ["Welche Antwort passt?", "Which answer fits?"], opts: ["Er ist dort drüben, links.", "Ich heiße Bahnsteig.", "Ich bin drei Jahre alt."] },
+          win: { gold: 25, say: ["„Danke schön!“ Sie gibt dir ein Trinkgeld.", "“Thank you!” She gives you a tip."] },
+          lose: { say: ["Sie schaut dich verwirrt an und geht weiter.", "She looks at you, confused, and walks on."] } },
+        { label: ["Weitergehen", "Walk on"], effect: {} }] },
+    { id: "zeitung", e: "📰", title: ["Der Zeitungsverkäufer", "The newspaper seller"], who: "Zeitungsverkäufer",
+      text: ["„Extrablatt! Extrablatt!“ Ein Junge hält dir eine Zeitung hin. Die Schlagzeile: „Heute Sonne in ganz Wien!“", "“Extra! Extra!” A boy holds out a newspaper. The headline: “Sunshine all over Vienna today!”"],
+      choices: [
+        { label: ["Die Schlagzeile lesen", "Read the headline"], quiz: { q: ["Wie ist das Wetter heute?", "What's the weather like today?"], opts: ["sonnig", "regnerisch", "es schneit"] },
+          win: { gold: 15, say: ["„Richtig! Du liest ja schon Zeitung!“", "“Right! You're already reading the paper!”"] },
+          lose: { say: ["Draußen scheint die Sonne. Hm.", "Outside, the sun is shining. Hm."] } },
+        { label: ["Eine Zeitung kaufen", "Buy a newspaper"], cost: { gold: 10 }, effect: { card: "Zeitung", say: ["Neues Wort: die Zeitung.", "New word: die Zeitung."] } },
+        { label: ["Weitergehen", "Walk on"], effect: {} }] },
+    { id: "traeger", e: "🧑‍🔧", title: ["Der Gepäckträger", "The porter"], who: "Gepäckträger",
+      text: ["„Schwerer Koffer, was? Ich trage ihn für Sie – für 20 Gold.“", "“Heavy suitcase, eh? I'll carry it for you – for 20 gold.”"],
+      choices: [
+        { label: ["Bezahlen und ausruhen", "Pay and rest"], cost: { gold: 20 }, effect: { hp: 14, say: ["Du gehst mit leichten Schritten weiter.", "You walk on with a spring in your step."] } },
+        { label: ["Selbst tragen", "Carry it yourself"], quiz: { q: ["„Mein Koffer ist ___ schwer.“", "“My suitcase is ___ heavy.”"], opts: ["sehr", "sehen", "seid"] },
+          win: { maxHp: 4, say: ["Du trägst ihn selbst – und wirst stärker. +4 max. Leben.", "You carry it yourself – and get stronger. +4 max HP."] },
+          lose: { hp: -4, say: ["Uff. Dein Rücken tut weh.", "Oof. Your back hurts."] } }] },
+    { id: "schaffnerin", e: "🎫", title: ["Die Schaffnerin", "The conductor"], who: "Schaffnerin",
+      text: ["Eine strenge Schaffnerin stellt sich dir in den Weg: „Ihre Fahrkarte, bitte!“", "A stern conductor blocks your way: “Your ticket, please!”"],
+      choices: [
+        { label: ["Die Fahrkarte zeigen", "Show your ticket"], quiz: { q: ["Was sagst du, wenn du ihr die Karte gibst?", "What do you say as you hand it over?"], opts: ["Bitte schön.", "Gute Nacht.", "Wie bitte?"] },
+          win: { upgrade: true, say: ["„Sehr höflich!“ Sie stempelt ein Wort in deinem Deck – es wird stärker.", "“Very polite!” She stamps a word in your deck – it gets stronger."] },
+          lose: { hp: -6, say: ["„Unhöflich! Strafe!“", "“Rude! That's a fine!”"] } },
+        { label: ["Weglaufen", "Run away"], effect: { hp: -3, say: ["Du entkommst – aber stolperst über einen Koffer.", "You escape – but trip over a suitcase."] } }] }
+  ],
+  "a1-1": [
+    { id: "wuerstel", e: "🌭", title: ["Der Würstelstand", "The sausage stand"], who: "Würstelmann",
+      text: ["Es riecht herrlich. Der Würstelmann wischt sich die Hände ab: „Was darf's sein?“", "It smells wonderful. The sausage man wipes his hands: “What'll it be?”"],
+      choices: [
+        { label: ["Auf Deutsch bestellen", "Order in German"], quiz: { q: ["Wie bestellst du richtig? (die Wurst)", "How do you order correctly? (die Wurst)"], opts: ["Eine Burenwurst, bitte!", "Ein Burenwurst, bitte!", "Einen Burenwurst, bitte!"] },
+          win: { hp: 16, say: ["„Bitte sehr – mit extra Senf!“ Du fühlst dich wie neu.", "“Here you go – with extra mustard!” You feel brand new."] },
+          lose: { hp: 5, say: ["Er lacht – aber du bekommst trotzdem eine Wurst.", "He laughs – but you still get a sausage."] } },
+        { label: ["Einfach zeigen und zahlen", "Just point and pay"], cost: { gold: 10 }, effect: { hp: 10, say: ["Lecker, auch ohne Worte.", "Tasty, even without words."] } }] },
+    { id: "gewuerz", e: "🌶️", title: ["Der Gewürzhändler", "The spice merchant"], who: "Gewürzhändler",
+      text: ["„Psst! Eine magische Gewürzmischung aus dem Orient. Nur 35 Gold. Sie werden es nicht bereuen!“", "“Psst! A magical spice blend from the Orient. Only 35 gold. You won't regret it!”"],
+      choices: [
+        { label: ["Kaufen", "Buy it"], cost: { gold: 35 }, effect: { relic: true, say: ["Die Mischung funkelt in deiner Tasche.", "The blend sparkles in your bag."] } },
+        { label: ["„Nein, danke.“", "“No, thank you.”"], effect: {} }] },
+    { id: "obst", e: "🍎", title: ["Der Obststand", "The fruit stall"], who: "Obstverkäuferin",
+      text: ["„Drei Äpfel kosten zwei Euro, Schatzi. Und sechs Äpfel?“", "“Three apples cost two euros, love. And six apples?”"],
+      choices: [
+        { label: ["Rechnen", "Do the maths"], quiz: { q: ["Sechs Äpfel kosten …", "Six apples cost …"], opts: ["vier Euro", "sechs Euro", "zwei Euro"] },
+          win: { card: "Apfel", gold: 10, say: ["„Richtig! Ein Apfel geht aufs Haus.“", "“Right! One apple's on the house.”"] },
+          lose: { say: ["„Nein, nein … Mathe ist nicht dein Ding, oder?“", "“No, no … maths isn't your thing, is it?”"] } },
+        { label: ["Weitergehen", "Walk on"], effect: {} }] },
+    { id: "dieb", e: "👜", title: ["Haltet den Dieb!", "Stop, thief!"], who: "Marktfrau",
+      text: ["Eine Frau ruft: „Hilfe! Der Mann da …“ – sie zeigt auf einen Gauner mit ihrer Tasche.", "A woman shouts: “Help! That man …” – she points at a crook running off with her bag."],
+      choices: [
+        { label: ["Für sie rufen", "Shout for her"], quiz: { q: ["„Er hat ___ Tasche!“ (die Tasche, ihre)", "“He has ___ bag!” (die Tasche, hers)"], opts: ["ihre", "ihren", "ihr"] },
+          win: { gold: 30, say: ["Alle drehen sich um, der Dieb lässt die Tasche fallen. Die Frau belohnt dich.", "Everyone turns, the thief drops the bag. The woman rewards you."] },
+          lose: { hp: -5, say: ["Niemand versteht dich – und der Dieb rempelt dich um.", "Nobody understands you – and the thief knocks you over."] } },
+        { label: ["Nicht einmischen", "Stay out of it"], effect: {} }] }
+  ],
+  "a1-2": [
+    { id: "wahrsagerin", e: "🔮", title: ["Die Wahrsagerin", "The fortune teller"], who: "Wahrsagerin",
+      text: ["In einem Zelt voller Kerzen flüstert eine alte Frau: „Ich sehe deine Zukunft … für 15 Gold.“", "In a tent full of candles an old woman whispers: “I see your future … for 15 gold.”"],
+      choices: [
+        { label: ["Zuhören", "Listen"], cost: { gold: 15 }, quiz: { q: ["Sie sagt: „Morgen ___ du Glück.“", "She says: “Tomorrow you ___ luck.”"], opts: ["hast", "habe", "hat"] },
+          win: { rare: true, say: ["„Deine Zukunft ist hell!“ Ein starkes Wort erscheint in deinem Deck.", "“Your future is bright!” A strong word appears in your deck."] },
+          lose: { say: ["Die Kristallkugel wird dunkel. Dein Geld ist weg.", "The crystal ball goes dark. Your money is gone."] } },
+        { label: ["Lieber nicht", "Better not"], effect: {} }] },
+    { id: "schiessbude", e: "🎯", title: ["Die Schießbude", "The shooting gallery"], who: "Budenbesitzer",
+      text: ["„Drei Schuss, zehn Gold! Triff das richtige Ziel und gewinne!“ Auf den Zielscheiben stehen Wörter.", "“Three shots, ten gold! Hit the right target and win!” The targets have words on them."],
+      choices: [
+        { label: ["Schießen", "Shoot"], cost: { gold: 10 }, quiz: { q: ["Triff das <b>Verb</b>!", "Hit the <b>verb</b>!"], opts: ["schießen", "der Schuss", "schnell"] },
+          win: { upgrade: true, say: ["Treffer! Du darfst ein Wort schmieden.", "Bullseye! You may upgrade a word."] },
+          lose: { say: ["Daneben!", "Missed!"] } },
+        { label: ["Weitergehen", "Walk on"], effect: {} }] },
+    { id: "langos", e: "🥯", title: ["Der Lángos-Stand", "The lángos stand"], who: "Lángos-Bäcker",
+      text: ["Frittiertes Brot mit Knoblauch – dein Magen knurrt laut.", "Fried bread with garlic – your stomach growls loudly."],
+      choices: [
+        { label: ["Sagen, dass du Hunger hast", "Say you're hungry"], quiz: { q: ["„Ich ___ Hunger!“", "“I'm hungry!”"], opts: ["habe", "bin", "mache"] },
+          win: { hp: 16, say: ["„Na dann, guten Appetit!“", "“Well then, enjoy!”"] },
+          lose: { hp: 4, say: ["„Du BIST Hunger? Komisch.“ Er gibt dir trotzdem ein Stück.", "“You ARE hunger? Strange.” He gives you a piece anyway."] } },
+        { label: ["Kaufen (8 Gold)", "Buy one (8 gold)"], cost: { gold: 8 }, effect: { hp: 10 } }] },
+    { id: "geisterbahn", e: "👻", title: ["Die Geisterbahn", "The ghost train"], who: "Geisterbahn",
+      text: ["Ein Wagen wartet vor dem dunklen Tunnel. Ein Schild: „Nur für Mutige. Schätze im Inneren!“", "A car waits in front of the dark tunnel. A sign: “Only for the brave. Treasure inside!”"],
+      choices: [
+        { label: ["Einsteigen", "Get in"], cost: { hp: 8 }, effect: { rare: true, gold: 20, say: ["Gespenster, Spinnen, Schreie – und am Ende: ein Schatz!", "Ghosts, spiders, screams – and at the end: treasure!"] } },
+        { label: ["Zu gruselig", "Too spooky"], effect: {} }] }
+  ],
+  "a2-0": [
+    { id: "kaffeeautomat", e: "☕", title: ["Der Kaffeeautomat", "The coffee machine"], who: "Kaffeeautomat",
+      text: ["Du wirfst eine Münze ein. Der Automat brummt – und nichts passiert. Ein Beamter fragt: „Was ist passiert?“", "You put in a coin. The machine hums – and nothing happens. An official asks: “What happened?”"],
+      choices: [
+        { label: ["Erklären (Perfekt)", "Explain (Perfekt)"], quiz: { q: ["Was ist passiert?", "What happened?"], opts: ["Der Automat hat mein Geld genommen.", "Der Automat hat mein Geld genehmt.", "Der Automat ist mein Geld genommen."] },
+          win: { gold: 20, hp: 6, say: ["Er gibt dir dein Geld zurück – und einen Kaffee.", "He gives you your money back – and a coffee."] },
+          lose: { say: ["„Wie bitte?“ Er zuckt mit den Schultern.", "“Pardon?” He shrugs."] } },
+        { label: ["Gegen den Automaten treten", "Kick the machine"], effect: { hp: -3, gold: 12, say: ["Au! Aber ein paar Münzen fallen heraus.", "Ouch! But a few coins fall out."] } }] },
+    { id: "wartenummer", e: "🔢", title: ["Die Wartenummer", "The queue number"], who: "Herr Novak",
+      text: ["Du ziehst Nummer 347. Auf der Anzeige steht: 112. Herr Novak gähnt hinter seinem Schalter.", "You draw number 347. The display shows: 112. Herr Novak yawns behind his counter."],
+      choices: [
+        { label: ["Höflich fragen", "Ask politely"], quiz: { q: ["Wie fragst du höflich?", "How do you ask politely?"], opts: ["Könnten Sie mir bitte helfen?", "Helfen Sie mir!", "Du hilfst mir jetzt!"] },
+          win: { remove: true, say: ["„Na gut …“ Er streicht ein Wort aus deinem Deck – Platz für Besseres.", "“Oh, all right …” He crosses a word out of your deck – room for better ones."] },
+          lose: { say: ["„Nummer 347? Warten Sie.“", "“Number 347? Wait.”"] } },
+        { label: ["Warten und dösen", "Wait and doze"], effect: { hp: 10, say: ["Drei Stunden später bist du gut ausgeruht.", "Three hours later you're well rested."] } }] },
+    { id: "stempel_kollegin", e: "🖋️", title: ["Die Kollegin mit dem Stempel", "The colleague with the stamp"], who: "Beamtin",
+      text: ["Eine Beamtin hält ihren Stempel in die Luft: „Wem geben Sie das Formular?“", "An official holds her stamp in the air: “To whom are you giving the form?”"],
+      choices: [
+        { label: ["Antworten (Dativ)", "Answer (Dativ)"], quiz: { q: ["„Ich gebe ___ Beamtin das Formular.“", "“I give the form to the official.”"], opts: ["der", "die", "dem"] },
+          win: { upgrade: true, say: ["*STEMPEL!* Ein Wort in deinem Deck wird offiziell stärker.", "*STAMP!* A word in your deck becomes officially stronger."] },
+          lose: { hp: -5, say: ["„Falsches Formular!“ Sie stempelt dir auf die Hand.", "“Wrong form!” She stamps your hand."] } },
+        { label: ["Weitergehen", "Walk on"], effect: {} }] },
+    { id: "formular", e: "📋", title: ["Das verlorene Formular", "The lost form"], who: "Hausmeister",
+      text: ["Der Hausmeister flüstert: „Ich habe ein ausgefülltes Formular B-12 gefunden. 25 Gold, und es gehört Ihnen.“", "The caretaker whispers: “I found a filled-in form B-12. 25 gold and it's yours.”"],
+      choices: [
+        { label: ["Kaufen", "Buy it"], cost: { gold: 25 }, effect: { maxHp: 6, say: ["Mit dem Formular fühlst du dich sicherer. +6 max. Leben.", "With the form you feel safer. +6 max HP."] } },
+        { label: ["„Das ist doch illegal!“", "“That's illegal!”"], effect: {} }] }
+  ],
+  "a2-1": [
+    { id: "geisterbeamter", e: "🕯️", title: ["Der Geisterbeamte", "The ghost clerk"], who: "Geisterbeamter",
+      text: ["Ein durchsichtiger Beamter schwebt zwischen den Regalen: „Für das Protokoll: Was haben Sie gestern gemacht?“", "A see-through clerk floats between the shelves: “For the record: what did you do yesterday?”"],
+      choices: [
+        { label: ["Antworten (Perfekt)", "Answer (Perfekt)"], quiz: { q: ["Was haben Sie gestern gemacht?", "What did you do yesterday?"], opts: ["Ich habe gearbeitet.", "Ich bin gearbeitet.", "Ich habe arbeitet."] },
+          win: { rare: true, say: ["„Korrekt protokolliert.“ Er schenkt dir ein seltenes Wort.", "“Correctly recorded.” He gives you a rare word."] },
+          lose: { hp: -6, say: ["„Fehler im Protokoll!“ Ein kalter Wind fährt durch dich.", "“Error in the record!” A cold wind blows through you."] } },
+        { label: ["Schnell weiter", "Hurry on"], effect: {} }] },
+    { id: "kiste", e: "📦", title: ["Die verstaubte Kiste", "The dusty box"], who: "Kiste",
+      text: ["In einer Ecke steht eine Kiste mit der Aufschrift „1899 – NICHT ÖFFNEN“.", "In a corner there's a box labelled “1899 – DO NOT OPEN”."],
+      choices: [
+        { label: ["Öffnen", "Open it"], cost: { hp: 6 }, effect: { gold: 40, say: ["Eine Staubwolke – und alte Goldmünzen!", "A cloud of dust – and old gold coins!"] } },
+        { label: ["Lieber nicht", "Better not"], effect: {} }] },
+    { id: "archivkatze", e: "🐈‍⬛", title: ["Die Archivkatze", "The archive cat"], who: "Archivkatze",
+      text: ["Eine schwarze Katze sieht dich an und läuft in einen Gang. Sie kennt den Weg.", "A black cat looks at you and walks into a corridor. It knows the way."],
+      choices: [
+        { label: ["Ihr folgen (Dativ)", "Follow it (Dativ)"], quiz: { q: ["„Ich folge ___ Katze.“", "“I follow the cat.”"], opts: ["der", "die", "den"] },
+          win: { hp: 12, gold: 10, say: ["Sie führt dich zu einem warmen Plätzchen – und ein paar Münzen.", "It leads you to a warm spot – and a few coins."] },
+          lose: { say: ["Du verlierst sie aus den Augen.", "You lose sight of it."] } },
+        { label: ["Weitergehen", "Walk on"], effect: {} }] },
+    { id: "tagebuch", e: "📔", title: ["Das alte Tagebuch", "The old diary"], who: "Tagebuch",
+      text: ["Auf einem Pult liegt ein Tagebuch. Du liest: „Am 3. Mai 1900 bin ich nach Wien gekommen.“", "A diary lies on a desk. You read: “On 3 May 1900 I came to Vienna.”"],
+      choices: [
+        { label: ["Verstehen", "Understand it"], quiz: { q: ["Was ist passiert?", "What happened?"], opts: ["Jemand ist nach Wien gekommen.", "Jemand hat Wien verlassen.", "Jemand kommt morgen nach Wien."] },
+          win: { card: "perf", say: ["Die Seite leuchtet: eine neue ⏪ Perfekt-Karte!", "The page glows: a new ⏪ Perfekt card!"] },
+          lose: { say: ["Die Buchstaben verschwimmen.", "The letters blur."] } },
+        { label: ["Zuklappen", "Close it"], effect: {} }] }
+  ],
+  "a2-2": [
+    { id: "ball", e: "💃", title: ["Der Rathausball", "The city hall ball"], who: "Tänzer",
+      text: ["Walzermusik. Ein eleganter Herr verbeugt sich vor dir: „Darf ich bitten?“", "Waltz music. An elegant gentleman bows to you: “Darf ich bitten?”"],
+      choices: [
+        { label: ["Verstehen", "Understand"], quiz: { q: ["„Darf ich bitten?“ heißt …", "“Darf ich bitten?” means …"], opts: ["Darf ich um diesen Tanz bitten?", "Darf ich bezahlen?", "Darf ich gehen?"] },
+          win: { maxHp: 6, hp: 6, say: ["Ihr tanzt einen Walzer – du fühlst dich leicht wie eine Feder.", "You dance a waltz – you feel light as a feather."] },
+          lose: { say: ["Du gibst ihm deine Geldbörse. Er schaut verwirrt.", "You hand him your wallet. He looks confused."] } },
+        { label: ["Am Rand stehen", "Stay on the side"], effect: {} }] },
+    { id: "buffet", e: "🍰", title: ["Das Buffet", "The buffet"], who: "Kellner",
+      text: ["Torten, Brötchen, Sekt – ein Kellner fragt: „Was hätten Sie gern?“", "Cakes, rolls, sparkling wine – a waiter asks: “What would you like?”"],
+      choices: [
+        { label: ["Bestellen", "Order"], quiz: { q: ["„Ich hätte gern ___ Stück Torte.“ (das Stück)", "“I'd like a piece of cake.” (das Stück)"], opts: ["ein", "einen", "eine"] },
+          win: { hp: 16, say: ["„Sehr gern!“ Die Sachertorte ist himmlisch.", "“With pleasure!” The Sachertorte is heavenly."] },
+          lose: { hp: 5, say: ["Er bringt dir … eine Gurke. Besser als nichts.", "He brings you … a pickle. Better than nothing."] } },
+        { label: ["Trinkgeld geben (15 Gold)", "Tip generously (15 gold)"], cost: { gold: 15 }, effect: { hp: 20, say: ["Der Kellner bringt dir das Beste vom Buffet.", "The waiter brings you the best of the buffet."] } }] },
+    { id: "wappenmaler", e: "🎨", title: ["Der Wappenmaler", "The coat-of-arms painter"], who: "Wappenmaler",
+      text: ["Ein Maler arbeitet an einem riesigen Wappen: „Ich zeige es gleich dem Bürgermeister!“", "A painter is working on a huge coat of arms: “I'm about to show it to the mayor!”"],
+      choices: [
+        { label: ["Den Satz wiederholen (Dativ)", "Repeat the sentence (Dativ)"], quiz: { q: ["„Ich zeige ___ Bürgermeister das Wappen.“", "“I show the coat of arms to the mayor.”"], opts: ["dem", "den", "der"] },
+          win: { upgrade: true, say: ["„Bravo!“ Er malt ein goldenes Zeichen auf eines deiner Wörter.", "“Bravo!” He paints a golden mark on one of your words."] },
+          lose: { say: ["Er hört dich nicht – er malt weiter.", "He doesn't hear you – he keeps painting."] } },
+        { label: ["Ein Bild kaufen (20 Gold)", "Buy a painting (20 gold)"], cost: { gold: 20 }, effect: { upgrade: true } }] },
+    { id: "schluessel", e: "🗝️", title: ["Der geheimnisvolle Schlüssel", "The mysterious key"], who: "Schlüssel",
+      text: ["Hinter einem Vorhang schwebt ein goldener Schlüssel. Er glüht. Wer ihn nimmt, zahlt einen Preis.", "Behind a curtain a golden key floats. It glows. Whoever takes it pays a price."],
+      choices: [
+        { label: ["Nehmen", "Take it"], cost: { hp: 10 }, effect: { relic: true, say: ["Der Schlüssel brennt in deiner Hand – und verwandelt sich in ein Relikt.", "The key burns in your hand – and turns into a relic."] } },
+        { label: ["Liegen lassen", "Leave it"], effect: {} }] }
+  ]
+};

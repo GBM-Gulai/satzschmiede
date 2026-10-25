@@ -137,6 +137,37 @@ The windows reuse the backgrounds (`assets/bg/<ladder>.jpg`), so B1–C2 also ge
 | `sekretaer.jpg` | Square image of "Der Obersekretär" (elite): a towering, many-armed secretary juggling telephones, typewriters and appointment books. |
 | `rathausmann.jpg` | Square image of "Der Rathausmann" (boss): the iron knight statue from the top of Vienna City Hall, come alive and gigantic, holding a banner lance, armour glinting, dramatic boss lighting. |
 
+## Encounters (NEW) → `assets/events/`
+
+The ❓ stops on the map are now little scenes. One picture each (square, like the enemies). Until a picture exists, an emoji stands in.
+
+| File | Prompt |
+|---|---|
+| `touristin.jpg` | Square image: a lost lady tourist in 1900s travelling clothes holding a big unfolded city map upside down, suitcase beside her, on a busy old Viennese train platform. Painterly storybook style, warm lantern light, no text. |
+| `zeitung.jpg` | Square image: a cheeky newspaper boy in a flat cap waving a newspaper (no readable text), inside an old Viennese train station hall with steam. Painterly storybook style, warm lantern light, no text. |
+| `traeger.jpg` | Square image: a strong, friendly train-station porter with a red cap and a luggage trolley piled with suitcases, offering to help, old Vienna station. Painterly storybook style, warm lantern light, no text. |
+| `schaffnerin.jpg` | Square image: a stern but fair female train conductor in a 1900s uniform and cap, holding out her hand for a ticket, hole-punch in the other hand, train carriage. Painterly storybook style, warm lantern light, no text. |
+| `wuerstel.jpg` | Square image: a cosy Viennese sausage stand (Würstelstand) at night with steam rising, a jolly sausage seller with a moustache holding a sausage with mustard. Painterly storybook style, warm lantern light, no text. |
+| `gewuerz.jpg` | Square image: a mysterious spice merchant in a turban whispering behind a stall of colourful spice mountains and glowing jars, Naschmarkt. Painterly storybook style, warm lantern light, no text. |
+| `obst.jpg` | Square image: a cheerful plump fruit-stall lady with rosy cheeks holding up three red apples, crates of fruit, striped awning, Naschmarkt. Painterly storybook style, warm lantern light, no text. |
+| `dieb.jpg` | Square image: a sneaky thief in a striped shirt running off with a lady's handbag through a crowded market, the lady shouting in the background, comic and dynamic. Painterly storybook style, warm lantern light, no text. |
+| `wahrsagerin.jpg` | Square image: an old fortune teller with a headscarf and golden earrings gazing into a glowing crystal ball, tent full of candles and tarot cards, Prater fairground. Painterly storybook style, warm lantern light, no text. |
+| `schiessbude.jpg` | Square image: an old fairground shooting gallery booth with wooden targets, lanterns and prizes on shelves, the booth owner with a bow tie grinning, Prater. Painterly storybook style, warm lantern light, no text. |
+| `langos.jpg` | Square image: a fairground stand frying lángos (flat fried dough) with garlic, a baker in a white apron holding one up, warm steam and string lights, Prater. Painterly storybook style, warm lantern light, no text. |
+| `geisterbahn.jpg` | Square image: the spooky entrance of an old ghost train ride, a little cart on rails, painted skeletons and bats, a dark tunnel mouth, glowing eyes inside. Painterly storybook style, warm lantern light, no text. |
+| `kaffeeautomat.jpg` | Square image: a grumpy old brass coffee machine in a government office corridor, a single coin stuck in it, a tired official in sleeve protectors looking at it. Painterly storybook style, warm lantern light, no text. |
+| `wartenummer.jpg` | Square image: a waiting room in an old Viennese government office, a ticket-number dispenser and a big number display, endless rows of chairs, a yawning clerk behind a counter. Painterly storybook style, warm lantern light, no text. |
+| `stempel_kollegin.jpg` | Square image: a proud female civil servant in a cardigan holding a giant rubber stamp up in the air like a trophy, piles of forms, green office walls. Painterly storybook style, warm lantern light, no text. |
+| `formular.jpg` | Square image: a shifty caretaker in a blue work coat whispering and offering a crumpled official form from under his coat, dim stairwell. Painterly storybook style, warm lantern light, no text. |
+| `geisterbeamter.jpg` | Square image: a translucent ghost civil servant with old-fashioned glasses and a quill, floating between towering archive shelves, holding a ledger, eerie blue light. Painterly storybook style, warm lantern light, no text. |
+| `kiste.jpg` | Square image: an old dusty wooden crate with a big wax seal and a warning label (no readable text) in a cobwebbed archive corner, light falling on it. Painterly storybook style, warm lantern light, no text. |
+| `archivkatze.jpg` | Square image: a sleek black cat with golden eyes sitting on a stack of old files, looking back over its shoulder as if inviting you to follow, candle-lit archive. Painterly storybook style, warm lantern light, no text. |
+| `tagebuch.jpg` | Square image: an old leather diary lying open on a reading desk, pages glowing softly, a candle and an inkwell beside it, archive shelves behind. Painterly storybook style, warm lantern light, no text. |
+| `ball.jpg` | Square image: an elegant gentleman in a tailcoat bowing and offering his hand for a waltz, a grand ballroom with chandeliers and dancing couples behind him, Vienna city hall. Painterly storybook style, warm lantern light, no text. |
+| `buffet.jpg` | Square image: a lavish ball buffet with Sachertorte, pastries and champagne glasses, a polite waiter in white gloves presenting a tray, chandeliers. Painterly storybook style, warm lantern light, no text. |
+| `wappenmaler.jpg` | Square image: a painter on a ladder painting a huge colourful coat of arms on the wall of a neo-Gothic hall, paint pots and brushes, golden accents. Painterly storybook style, warm lantern light, no text. |
+| `schluessel.jpg` | Square image: a glowing golden key floating in the air behind a heavy red velvet curtain, magical sparks, mysterious and slightly dangerous. Painterly storybook style, warm lantern light, no text. |
+
 ## Map medallions (optional) → `assets/map/`
 
 The map already has engraved ink icons. If you'd like painted ones instead, make these and they replace the icons automatically.
