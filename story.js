@@ -3,15 +3,15 @@
 // ---------- heroes ----------
 const HEROES = {
   rafa:  { name: "Rafa", from: "Brasilien", fromEn: "Brazil", role: "Koch", roleEn: "Cook", e: "🧑🏽‍🍳",
-           bonus: "Kochtalent: Sätze mit Essen oder Getränken heilen +3.", bonusEn: "Kitchen talent: sentences with food or drinks heal +3.",
+           power: "Doppelte Portion", powerEn: "Double helping", powerText: "Dein nächster Satz wirkt doppelt.", powerTextEn: "Your next sentence has double power.",
            story: "Ich möchte in Wien ein Restaurant eröffnen.", storyEn: "I want to open a restaurant in Vienna.",
            magic: "Mein Kochlöffel … leuchtet ja!", magicEn: "My wooden spoon … it's glowing!" },
   mei:   { name: "Mei", from: "Taiwan", fromEn: "Taiwan", role: "Programmiererin", roleEn: "Programmer", e: "👩🏻‍💻",
-           bonus: "Struktur: Ziehe jede Runde 1 Karte mehr.", bonusEn: "Structure: draw 1 extra card every turn.",
+           power: "Wörterbuch-App", powerEn: "Dictionary app", powerText: "Bei deiner nächsten Beschwörung leuchten die richtigen Antworten.", powerTextEn: "In your next incantation the right answers light up.",
            story: "Ich habe einen neuen Job in einer Wiener Firma.", storyEn: "I have a new job at a Viennese company.",
            magic: "Mein Tablet … ist jetzt ein Zauberbuch!", magicEn: "My tablet … it's a spellbook now!" },
   amara: { name: "Amara", from: "Ghana", fromEn: "Ghana", role: "Krankenpflegerin", roleEn: "Nurse", e: "👩🏿‍⚕️",
-           bonus: "Ausdauer: +12 max. Leben, nach jedem Kampf +3.", bonusEn: "Stamina: +12 max HP and +3 HP after every fight.",
+           power: "Erste Hilfe", powerEn: "First aid", powerText: "Heile 10 Leben und erhalte 6 Schild.", powerTextEn: "Heal 10 HP and gain 6 shield.",
            story: "Ich möchte hier im Krankenhaus arbeiten.", storyEn: "I want to work here in the hospital.",
            magic: "Meine Tasche … sie glüht!", magicEn: "My bag … it's glowing!" }
 };
@@ -121,8 +121,8 @@ const STORY = {
     ],
     // first-run tutorial fight, right after arriving in the past
     tutorial: [
-      ["huber", "Schauen Sie – eine Artikel-Assel! Zeit für Ihre erste Lektion.", "Look – an article woodlouse! Time for your first lesson."],
-      ["huber", "Ich helfe Ihnen. Machen Sie einfach, was ich sage.", "I'll help you. Just do what I say."]
+      ["huber", "Schauen Sie – eine Artikel-Assel! Zeit für eine Übungsrunde.", "Look – an article woodlouse! Time for a practice round."],
+      ["huber", "Ich erkläre Ihnen alles. Machen Sie einfach, was ich sage.", "I'll explain everything. Just do what I say."]
     ],
     tutorialEnd: [
       ["huber", "Sehr gut! Mit jedem Satz werden Sie stärker.", "Very good! With every sentence you get stronger."],

@@ -37,7 +37,9 @@ const ACTS = 3;
 const stage = () => { const lad = ladder(); return { ...lad, ...((lad.acts || [])[run ? run.act || 0 : 0] || {}) }; };
 const actLabel = () => run && run.act ? ` · ${L("Akt", "Act")} ${run.act + 1}` : "";
 const HAND = 5;            // cards drawn each turn
-const FIELD_SLOTS = 3;     // verbs on the field
+const FIELD_SLOTS = 2;     // verbs on the field
+const CHARGES = 3;         // a field verb casts this many times, then goes back to the discard pile
+const DEALT = 2;           // pronouns dealt each turn
 const hero = () => HEROES[run.hero];
 
 // Language of hints & menus grows with the level: A1 English, A2 both, B1+ German
@@ -274,7 +276,7 @@ function startClimb() {
 // ---------- run setup ----------
 let pickedHero = null;
 function newRun(ladderId) {
-  const lad = LADDERS.find(l => l.id === ladderId), hp = 50 + (pickedHero === "amara" ? 12 : 0);
+  const lad = LADDERS.find(l => l.id === ladderId), hp = 50;
   run = {
     ladder: ladderId, hero: pickedHero, hp, maxHp: hp, gold: 60, floor: 0, act: 0, relics: [],
     deck: [], packed: false, map: LAYOUT.map(opts => shuffle(opts)), path: [],
@@ -284,8 +286,7 @@ function newRun(ladderId) {
   run.deck = recommendedBag(lad).map(k => mk(k.split("#")[0]));   // the tutorial plays with the recommended bag
   meta.runs++; save();
   setScene(ladderId);
-  const tutorial = !meta.tutorial && STORY[ladderId].tutorial;
-  playStory(STORY[ladderId].intro, tutorial ? () => playStory(STORY[ladderId].tutorial, startTutorial) : showPack);
+  playStory(STORY[ladderId].intro, () => offerTutorial(lad));
 }
 
 // ---------- story scenes ----------
@@ -385,7 +386,7 @@ function showHeroes() {
   app.innerHTML = `<main class="panel"><h2 class="fraktur">Wer bist du?</h2><p class="sub">Choose your hero · Wähle deine Heldin oder deinen Helden</p>
     <div class="heroes">${Object.entries(HEROES).map(([id, h]) => `<button class="hero-card" data-act="pick-hero" data-h="${id}">
       ${heroArt(id, "hero-pic")}<b class="hero-name">${h.name}</b><span class="hero-role">${h.role} aus ${h.from}<small class="en">${h.roleEn} from ${h.fromEn}</small></span>
-      <span class="hero-bonus">${h.bonusEn}<small class="en">${h.bonus}</small></span></button>`).join("")}</div>
+      <span class="hero-bonus">✨ <b>${h.powerEn}</b> – ${h.powerTextEn}<small class="en">${h.power}: ${h.powerText}</small></span></button>`).join("")}</div>
     <button class="btn ghost" data-act="title">← Back</button></main>`;
 }
 function showTower() {
@@ -472,46 +473,80 @@ function startFight(eid) {
   fight = {
     eid, enemy: { hp: e.hp + scale, max: e.hp + scale, block: 0, str: 0, move: 0 },
     draw: shuffle(run.deck.filter(c => deckable(c.id)).map(c => ({ ...c }))), hand: [], discard: [], sentence: [],
-    bar: PRONOUNS.map(id => mk(id)), field: Array(FIELD_SLOTS).fill(null), tapped: [], placed: false, placing: null,
-    energy: 3, block: 0, turn: 0, eselUsed: false, busy: false
+    bar: [], field: Array(FIELD_SLOTS).fill(null), tapped: [], placed: false, placing: null,
+    energy: 3, block: 0, turn: 0, eselUsed: false, busy: false, powerUsed: false, boost: false, reveal: false
   };
   view = "fight";
   startTurn();
 }
 // ---------- tutorial: Frau Huber coaches the very first fight ----------
 // Each step glows one card or button; other taps are ignored until the step is done.
+// info steps point at a part of the screen and wait for "OK"; card/act steps wait for that tap
 const TUT = [
-  { card: "sehen", at: "hand", de: "Verben kommen aufs <b>Feld</b> und bleiben dort – ein Verb pro Zug, gratis. Tippe auf <b>sehen</b>.",
-    en: "Verbs go on the <b>field</b> and stay there – one verb per turn, for free. Tap <b>sehen</b> (to see)." },
-  { card: "ich", at: "bar", de: "Pronomen hast du immer. Ein Satz beginnt mit dem Subjekt – wer? Tippe auf <b>ich</b>.", en: "Pronouns are always there. A sentence starts with the subject – who? Tap <b>ich</b> (I)." },
-  { card: "sehen", at: "field", de: "Jetzt das Verb vom Feld – es steht immer an Position 2.", en: "Now the verb from the field – it always goes in position 2." },
-  { card: "Hund", at: "hand", de: "Was siehst du? „sehen“ braucht ein Objekt. Tippe auf <b>Hund</b>.", en: "What do you see? “sehen” needs an object. Tap <b>Hund</b> (dog)." },
-  { act: "cast", de: "Der Satz steht! Jetzt <b>schmieden</b>.", en: "Your sentence is ready! Now <b>forge</b> it." },
-  { act: "end", de: "Jedes Verb wirkt einmal pro Zug – <b>sehen</b> ruht jetzt. Beende deinen Zug.", en: "Each verb works once per turn – <b>sehen</b> is resting now. End your turn." },
-  { card: "laufen", at: "hand", de: "Neuer Zug, neues Verb: <b>laufen</b> gibt 🛡️ Schild und braucht kein Objekt. Leg es aufs Feld.",
-    en: "New turn, new verb: <b>laufen</b> (to run) gives 🛡️ shield and needs no object. Put it on the field." },
-  { card: "heute", at: "hand", free: true, de: "Zwei Verben auf dem Feld! Profi-Tipp: Beginne mit einem Zeitwort – das Verb bleibt an Position 2: <b>Heute sehe ich …</b> Jetzt du!",
-    en: "Two verbs on the field! Pro tip: start with a time word – the verb stays in position 2: <b>Heute sehe ich …</b> (Today I see …). Your turn!" }
+  { info: ".intent", de: "Oben siehst du, was das Monster als Nächstes macht: <b>Angriff 5</b>. Du bist zuerst dran!",
+    en: "At the top you see what the monster does next: <b>Attack 5</b>. You go first!" },
+  { info: ".energy-orbs", de: "Das ist deine <b>Energie ⚡</b>: 3 pro Zug. Die rote Zahl auf einer Karte ist ihr Preis. Verben und Nomen kosten 1, Pronomen und Zeitwörter 0.",
+    en: "This is your <b>energy ⚡</b>: 3 per turn. The red number on a card is its cost. Verbs and nouns cost 1, pronouns and time words 0." },
+  { card: "sehen", at: "hand", de: "Verben kommen aufs <b>Feld</b> – ein Verb pro Zug, gratis. Tippe auf <b>sehen</b>.",
+    en: "Verbs go on the <b>field</b> – one verb per turn, for free. Tap <b>sehen</b> (to see)." },
+  { info: ".vtile", de: "Ein Verb auf dem Feld hat <b>3 Ladungen</b> (die Punkte). Jeder Satz verbraucht eine. Danach geht es zurück in deinen Stapel.",
+    en: "A verb on the field has <b>3 charges</b> (the dots). Each sentence uses one. Then it goes back to your deck." },
+  { info: ".pron-bar", de: "Jeden Zug bekommst du <b>2 Pronomen</b>. Heute: <b>ich</b> und <b>du</b>. Achtung: Die Verbform hängt vom Pronomen ab!",
+    en: "Each turn you're dealt <b>2 pronouns</b>. Today: <b>ich</b> and <b>du</b>. Careful: the verb form depends on the pronoun!" },
+  { card: "ich", at: "bar", de: "Ein Satz beginnt mit dem Subjekt – wer? Tippe auf <b>ich</b>.", en: "A sentence starts with the subject – who? Tap <b>ich</b> (I)." },
+  { card: "sehen", at: "field", de: "Jetzt das Verb vom Feld – es steht immer an <b>Position 2</b>.", en: "Now the verb from the field – it always goes in <b>position 2</b>." },
+  { card: "Hund", at: "hand", de: "Was siehst du? „sehen“ braucht ein Objekt (+ was?). Tippe auf <b>Hund</b>.", en: "What do you see? “sehen” needs an object (+ what?). Tap <b>Hund</b> (dog)." },
+  { act: "cast", de: "Der Satz steht – und kostet 2 ⚡ (siehst du die leuchtenden Kugeln?). Jetzt <b>schmieden</b>!",
+    en: "The sentence is ready – and costs 2 ⚡ (see the glowing orbs?). Now <b>forge</b> it!" },
+  { info: ".enemy .bar", de: "Treffer! Ein <b>perfekter Satz</b> (alles richtig) wirkt <b>×1,5</b>. Fehler machen ihn schwächer – aber du lernst die richtige Form.",
+    en: "Hit! A <b>perfect sentence</b> (everything right) is <b>×1.5</b> stronger. Mistakes make it weaker – but you learn the right form." },
+  { info: ".enemy .info", de: "Viele Monster haben eine <b>Schwäche</b> (×2), zum Beispiel Akkusativ oder Sätze mit Zeitwort. Tippe im Kampf auf ⓘ.",
+    en: "Many monsters have a <b>weakness</b> (×2), e.g. Akkusativ or sentences starting with a time word. Tap ⓘ in a fight to see it." },
+  { info: ".power-btn", de: "Und das ist deine <b>Spezialkraft</b> – einmal pro Kampf. Heb sie dir für einen schweren Moment auf!",
+    en: "And this is your <b>special power</b> – once per fight. Save it for a tough moment!" },
+  { act: "end", de: "Jedes Verb wirkt nur einmal pro Zug – <b>sehen</b> ruht jetzt. Übrige Energie verfällt. Beende deinen Zug.",
+    en: "Each verb works only once per turn – <b>sehen</b> is resting now. Leftover energy is lost. End your turn." },
+  { card: "laufen", at: "hand", de: "Autsch! Neuer Zug: neue Karten, neue Pronomen (<b>ich</b>, <b>wir</b>). <b>laufen</b> gibt 🛡️ Schild gegen Angriffe. Leg es aufs Feld.",
+    en: "Ouch! New turn: new cards, new pronouns (<b>ich</b>, <b>wir</b>). <b>laufen</b> (to run) gives 🛡️ shield against attacks. Put it on the field." },
+  { card: "heute", at: "hand", free: true, de: "Zwei Verben! Profi-Tipp: Beginne mit einem Zeitwort – das Verb bleibt an Position 2: <b>Heute sehe ich …</b> Besiege die Assel!",
+    en: "Two verbs! Pro tip: start with a time word – the verb stays in position 2: <b>Heute sehe ich …</b> (Today I see …). Defeat the woodlouse!" }
 ];
+// Before every run: a practice round with Frau Huber, or skip it
+function offerTutorial(lad) {
+  const ov = document.createElement("div");
+  ov.className = "incant tut-offer";
+  ov.innerHTML = `<div class="incant-in"><div class="gate-host">${art("assets/npc/huber.jpg", NPCS.huber.e, "event-pic")}
+    <p class="sub"><b>${NPCS.huber.name}:</b> ${L("Möchten Sie eine Übungsrunde mit mir? Ich erkläre Ihnen alles.", "Would you like a practice round with me? I'll explain everything.")}</p></div>
+    <div class="col-btns"><button class="btn ${meta.tutorial ? "" : "hot"}" data-tut="yes">🎓 ${L("Ja, zeig es mir", "Yes, show me")}</button>
+    <button class="btn ${meta.tutorial ? "hot" : "ghost"}" data-tut="no">${L("Überspringen", "Skip")} ⏭</button></div></div>`;
+  ov.onclick = e => {
+    const b = e.target.closest("[data-tut]"); if (!b) return;
+    ov.remove(); sfx("tap");
+    if (b.dataset.tut === "yes") playStory(STORY.a1.tutorial, startTutorial); else showPack();
+  };
+  document.body.append(ov);
+}
 function startTutorial() {
   startFight("assel");
-  // fixed hands: turn 1 = sehen Hund Buch Wasser haben, turn 2 = laufen heute Katze trinken finden (spare copies if needed)
+  // fixed hands and pronouns: turn 1 = sehen Hund Buch Wasser haben + ich/du, turn 2 = laufen heute Katze trinken finden + ich/wir
   const take = id => { const i = fight.draw.findIndex(c => c.id === id); return i < 0 ? mk(id) : fight.draw.splice(i, 1)[0]; };
   fight.draw.push(...fight.hand); fight.hand = [];
   const hand = ["sehen", "Hund", "Buch", "Wasser", "haben"].map(take), next = ["laufen", "heute", "Katze", "trinken", "finden"].map(take).reverse();
   fight.hand = hand; fight.draw = [...fight.draw, ...next];
+  fight.bar = ["ich", "du"].map(id => mk(id)); fight.tutBars = [["ich", "wir"]];
   fight.tut = 0;
   renderFight();
 }
 const tutStep = () => fight && fight.tut != null ? TUT[fight.tut] : null;
 function tutAdvance(kind, id) {
   const st = tutStep();
-  if (st && !st.free && (st.act === kind || (st.card === id && st.at === kind))) fight.tut++;
+  if (st && !st.free && !st.info && (st.act === kind || (st.card === id && st.at === kind))) fight.tut++;
 }
 // While a guided step is active, only its target may be tapped
 function tutBlocks(el, card) {
   const st = tutStep();
   if (!st || st.free) return false;
+  if (st.info) return !(el && el.dataset.act === "tut-ok");
   if (st.card) { const c = card && !el && allCards().find(c => c.uid === +card.dataset.uid); return !(c && c.id === st.card && zoneOf(c) === st.at); }
   return !(el && el.dataset.act === st.act);
 }
@@ -525,11 +560,13 @@ function tutHint(st) {
 function tutCoach() {
   const st = tutStep();
   if (!st) return "";
-  return `<div class="coach">${art("assets/npc/huber.jpg", NPCS.huber.e, "coach-pic")}<div><b>${NPCS.huber.name}</b><div>${L(st.de, st.en)}</div></div></div>`;
+  return `<div class="coach">${art("assets/npc/huber.jpg", NPCS.huber.e, "coach-pic")}<div><b>${NPCS.huber.name}</b> <small>${fight.tut + 1} / ${TUT.length}</small><div>${L(st.de, st.en)}</div>
+    ${st.info ? `<button class="btn hot tut-ok" data-act="tut-ok">OK ▸</button>` : ""}</div></div>`;
 }
 function tutGlow() {
   const st = tutStep();
   if (!st) return;
+  if (st.info) { const t = app.querySelector(st.info); if (t) { t.classList.add("tut-glow"); requestAnimationFrame(() => t.scrollIntoView({ block: "nearest" })); } return; }
   const zone = { bar: fight.bar, field: fight.field.filter(Boolean), hand: fight.hand }[st.at];
   const el = st.card ? (() => { const c = zone.find(c => c.id === st.card && !fight.sentence.includes(c.uid)); return c && app.querySelector(`[data-uid="${c.uid}"]`); })()
     : app.querySelector(`[data-act="${st.act}"]`);
@@ -546,7 +583,8 @@ function startTurn() {
   fight.turn++;
   fight.block = 0; fight.tapped = []; fight.placed = false; fight.placing = null;
   fight.energy = 3 + (fight.turn === 1 && has("kaffee") ? 1 : 0);
-  drawCards(HAND + (has("duden") ? 1 : 0) + (run.hero === "mei" ? 1 : 0));
+  drawCards(HAND + (has("duden") ? 1 : 0));
+  fight.bar = (fight.tutBars && fight.tutBars.length ? fight.tutBars.shift() : sample(PRONOUNS, DEALT)).map(id => mk(id));
   // never stuck: with no verb on the field and none in hand, fetch one from the piles
   const isVerb = c => CARDS[c.id].type === "verb";
   if (!fight.field.some(Boolean) && !fight.hand.some(isVerb)) {
@@ -624,18 +662,22 @@ function renderFight() {
       ${e.weak ? `<div class="weak">${L("Schwäche", "Weakness")}: ${weakLabel(e.weak)} ×2${e.resist ? L(" · sonst nur halber Schaden", " · otherwise half damage") : ""}</div>` : ""}
       <button class="info" data-act="foeinfo" aria-label="About this enemy">ⓘ</button>
     </section>
-    <section class="you"><span class="pill">🛡️ ${L("Schild", "Shield")} ${fight.block}</span><span class="pill energy">⚡ ${fight.energy - sentenceCost()} / ${fight.energy}</span>
+    <section class="you"><span class="pill">🛡️ ${L("Schild", "Shield")} ${fight.block}</span>
+      <button class="power-btn${fight.powerUsed ? " used" : ""}" data-act="power" ${fight.powerUsed || fight.busy ? "disabled" : ""}>${heroArt(run.hero, "power-pic")}<span>✨ ${L(hero().power, hero().powerEn)}<small>${fight.powerUsed ? L("verbraucht", "used") : L("1× pro Kampf", "1× per fight")}</small></span></button>
       <span class="pill dim">${L("Stapel", "Draw")} ${fight.draw.length} · ${L("Ablage", "Discard")} ${fight.discard.length}</span></section>
     <section class="forge">
       <div class="slots">${cards.length ? cards.map(c => cardHtml(c, "mini")).join("") : `<span class="empty">${L("Deine Schmiede ist leer", "Your forge is empty")}</span>`}</div>
       <div class="status ${a.ok ? "ok" : ""}">${a.msg}${a.ok && sentenceCost() > fight.energy ? ` <b>${L("Nicht genug Energie.", "Not enough energy.")}</b>` : ""}</div>
+      <div class="energy-orbs" title="${L("Energie", "Energy")}">${Array.from({ length: Math.max(3, fight.energy) }, (_, i) => {
+        const left = fight.energy - sentenceCost();
+        return `<i class="${i < left ? "full" : i < fight.energy ? "spend" : "empty"}">⚡</i>`;
+      }).join("")}<span>${fight.energy - sentenceCost()} / ${fight.energy} ${L("Energie", "energy")}</span></div>
       <div class="forge-btns"><button class="btn ghost" data-act="clear" ${cards.length ? "" : "disabled"}>✕ ${L("Leeren", "Clear")}</button>
         <button class="btn hot" data-act="cast" ${canCast ? "" : "disabled"}>🔨 ${L("Schmieden", "Forge")}</button></div>
     </section>
     <section class="field">
       <div class="pron-bar">${fight.bar.map(c => `<button class="pron${fight.sentence.includes(c.uid) ? " used" : ""}" data-uid="${c.uid}"><b>${CARDS[c.id].de}</b><small>${esc(CARDS[c.id].en)}</small></button>`).join("")}</div>
-      <div class="verb-field">${fight.field.map(c => c ? cardHtml(c, "mini" + (fight.tapped.includes(c.uid) ? " tapped" : "") + (fight.sentence.includes(c.uid) ? " used" : "") + (fight.placing ? " swap" : ""))
-        : `<div class="vslot">${L("Verb-Platz", "Verb slot")}</div>`).join("")}</div>
+      <div class="verb-field">${fight.field.map(c => c ? verbTile(c) : `<div class="vslot">${L("Verb-Platz", "Verb slot")}</div>`).join("")}</div>
     </section>
     <section class="hand">${fight.hand.map(c => cardHtml(c, (fight.sentence.includes(c.uid) ? "used" : "") + (CARDS[c.id].type === "verb" ? " to-field" + (fight.placing === c.uid ? " placing" : "") : ""))
       .replace("data-uid", `data-field="${L("aufs Feld", "to field")}" data-uid`)).join("")}</section>
@@ -643,6 +685,16 @@ function renderFight() {
       <button class="btn" data-act="end" ${fight.busy ? "disabled" : ""}>${L("Zug beenden", "End turn")} ⏭</button></section>
   </main>`;
   if (fight.tut != null && !fight.busy) { app.querySelector(".fight").insertAdjacentHTML("afterbegin", tutCoach()); tutGlow(); }
+}
+// A verb on the field: a compact tile with its power, object slots and remaining charges
+function verbTile(c) {
+  const d = CARDS[c.id], rest = fight.tapped.includes(c.uid);
+  const need = d.slots.length ? d.slots.map(s => s === "dat" ? L("+ wem?", "+ to whom?") : L("+ was?", "+ what?")).join(" ") : L("ohne Objekt", "no object");
+  return `<button class="vtile${rest ? " tapped" : ""}${fight.sentence.includes(c.uid) ? " used" : ""}${fight.placing ? " swap" : ""}" data-uid="${c.uid}">
+    <span class="cost">${d.cost}</span><b>${d.de}</b><span class="vt-en">${esc(d.en)} · ${need}</span>
+    <span class="vt-pow">${FX[d.fx].icon} ${powOf(c)}</span>
+    <span class="vt-charges">${Array.from({ length: CHARGES }, (_, i) => `<i class="${i < c.charges ? "on" : ""}"></i>`).join("")}</span>
+    ${rest ? `<span class="vt-rest">${L("ruht bis zum nächsten Zug", "resting until next turn")}</span>` : ""}</button>`;
 }
 function toggleCard(uid) {
   if (fight.busy) return;
@@ -658,6 +710,17 @@ function toggleCard(uid) {
   sfx("tap"); renderFight();
 }
 // Verbs work like lands: one per turn goes from the hand onto the field (free) and stays for the whole fight
+// The hero's special power: once per fight
+function usePower() {
+  if (fight.busy || fight.powerUsed) return;
+  fight.powerUsed = true;
+  const h = hero();
+  if (run.hero === "rafa") fight.boost = true;
+  else if (run.hero === "mei") fight.reveal = true;
+  else { run.hp = Math.min(run.maxHp, run.hp + 10); fight.block += 6; }
+  sfx("win"); toast(`✨ <b>${L(h.power, h.powerEn)}</b> – ${L(h.powerText, h.powerTextEn)}`, 2200);
+  tutAdvance("power"); renderFight();
+}
 function playVerb(c) {
   if (fight.placing === c.uid) { fight.placing = null; return renderFight(); }
   if (fight.placed) return toast(L("Nur ein Verb pro Zug aufs Feld.", "Only one verb per turn onto the field."), 1800);
@@ -668,6 +731,7 @@ function playVerb(c) {
 function placeVerb(c, slot) {
   const old = fight.field[slot];
   if (old) { fight.discard.push(old); fight.sentence = fight.sentence.filter(u => u !== old.uid); }
+  c.charges = CHARGES;
   fight.field[slot] = c; fight.hand = fight.hand.filter(x => x !== c);
   fight.placed = true; fight.placing = null;
   sfx("forge"); tutAdvance("hand", c.id); renderFight();
@@ -724,14 +788,14 @@ function sentenceWords(cards, a, steps, answers, upto, final) {
   }).join(" ") + ".";
 }
 function incant(cards, a, steps, i, answers) {
-  let ov = $(".incant");
+  let ov = $(".incant:not(.tut-offer)");
   if (!ov) { ov = document.createElement("div"); ov.className = "incant"; document.body.append(ov); }
-  if (i >= steps.length) { ov.remove(); return resolve(cards, a, steps, answers); }
+  if (i >= steps.length) { ov.remove(); fight.reveal = false; return resolve(cards, a, steps, answers); }
   const st = steps[i];
   ov.innerHTML = `<div class="incant-in"><div class="incant-h">🔨 ${L("Beschwörung", "Incantation")} ${i + 1}/${steps.length}</div>
     <div class="incant-s">${sentenceWords(cards, a, steps, answers, i, false)}</div>
     <div class="incant-q">${st.q}</div>${tutHint(st) ? `<div class="coach small">${art("assets/npc/huber.jpg", NPCS.huber.e, "coach-pic")}<div>${tutHint(st)}</div></div>` : ""}
-    <div class="incant-opts">${st.opts.map(o => `<button class="opt">${o}</button>`).join("")}</div></div>`;
+    <div class="incant-opts">${st.opts.map(o => `<button class="opt${fight.reveal && o === st.right ? " reveal" : ""}">${o}</button>`).join("")}</div></div>`;
   ov.querySelectorAll(".opt").forEach(b => b.onclick = () => { sfx("forge"); incant(cards, a, steps, i + 1, [...answers, b.textContent]); });
 }
 const plainSentence = html => html.replace(/<[^>]+>/g, "");
@@ -756,7 +820,7 @@ function resolve(cards, a, steps, answers) {
   const perfOk = a.perf && okOf(a.verb) && okOf(a.perfCard);
   if (perfect) power = Math.ceil(power * 1.5) + (has("sachertorte") ? 3 : 0);
   if (perfOk && has("meldezettel")) power += 4;
-  if (run.hero === "rafa" && v.fx === "heal" && a.objs.some(o => ["food", "drink"].includes(CARDS[o.c.id].kind))) power += 3;
+  if (fight.boost) { power *= 2; fight.boost = false; notes.push(L("🍳 Doppelte Portion: ×2!", "🍳 Double helping: ×2!")); }
   const flags = { dat: a.objs.some(o => o.cas === "dat" && okOf(o.c)), akk: a.objs.some(o => o.cas === "akk" && okOf(o.c)), inv: a.inv, perfect, long: cards.filter(c => CARDS[c.id].type !== "perf").length >= 5, perf: perfOk };
   let mult = "";
   if (v.fx === "atk" && e.weak) {
@@ -768,7 +832,10 @@ function resolve(cards, a, steps, answers) {
   const used = cards.filter(c => fight.hand.includes(c));
   fight.hand = fight.hand.filter(c => !used.includes(c));
   fight.discard.push(...used); fight.sentence = [];
-  if (fight.field.includes(a.verb)) fight.tapped.push(a.verb.uid);
+  if (fight.field.includes(a.verb)) {
+    fight.tapped.push(a.verb.uid);
+    if (--a.verb.charges <= 0) { fight.field[fight.field.indexOf(a.verb)] = null; fight.discard.push(a.verb); notes.push(L(`${CARDS[a.verb.id].de} ist verbraucht und geht zurück in den Stapel.`, `${CARDS[a.verb.id].de} is used up and goes back to your deck.`)); }
+  }
   run.stats.sentences++; meta.sentences++;
   if (perfect) { run.stats.perfect++; meta.perfect++; }
   run.stats.mistakes += mistakes;
@@ -845,13 +912,12 @@ function enemyTurn() {
 function winFight() {
   const e = ENEMIES[fight.eid];
   if (has("brezel")) run.hp = Math.min(run.maxHp, run.hp + 4);
-  if (run.hero === "amara") run.hp = Math.min(run.maxHp, run.hp + 3);
   const gold = e.boss ? 0 : e.elite ? between(40, 55) : between(14, 24);
   run.gold += gold;
   sfx("win");
   if (e.boss && (run.act || 0) < ACTS - 1 && (ladder().acts || [])[(run.act || 0) + 1]) return actCleared();
   if (e.boss) { run.floor++; save(); return ladderCleared(); }
-  if (fight.tut != null) { meta.tutorial = true; save(); return playStory(STORY[run.ladder].tutorialEnd, showPack); }
+  if (fight.tut != null) { meta.tutorial = true; save(); return playStory(STORY.a1.tutorialEnd, showPack); }
   const relic = e.elite ? rnd(Object.keys(RELICS).filter(r => !run.relics.includes(r))) : null;
   if (relic) gainRelic(relic);
   save();
@@ -1087,16 +1153,15 @@ function overlay(html) {
 function showHelp() {
   overlay(`<div class="incant-h">How to play</div><ol class="help">
     <li><b>Your cards are German words.</b> Tap them in order to build a sentence: <i>Ich · sehe · den Hund</i>.</li>
-    <li><b>Pronouns</b> (ich, du, wir …) are always in the bar. <b>Verbs go on the field:</b> one per turn, for free, and they stay. Each field verb casts once per turn.</li>
+    <li><b>Each turn you're dealt 2 pronouns</b> (ich, du, wir …). <b>Verbs go on the field:</b> one per turn, for free. A field verb casts once per turn and has 3 charges.</li>
+    <li><b>Energy ⚡:</b> 3 per turn – the red seal on a card is its cost. <b>✨ Special power:</b> each hero has one, once per fight.</li>
     <li><b>The verb decides the spell:</b> ⚔️ attack, 🛡️ shield or ❤️ heal. The number is its power.</li>
     <li><b>Word order:</b> the verb is always in <b>position 2</b>. Start with a time word (<i>heute</i>) and the subject moves behind the verb: <i>Heute sehe ich …</i></li>
     <li><b>Incantation:</b> when you forge, pick the right verb form and articles. Perfect sentences are ×1.5 stronger.</li>
     <li><b>⏪ Perfekt</b> (from A2): put it at the end to cast in the past tense – <i>Ich habe den Hund gesehen</i>.</li>
     <li><b>🚪 Trials</b> (floors 4 and 8): Frau Huber's mini-games – you must pass them to go on. <b>🛒 Shop:</b> haggle with Herr Wotruba for 30 % off.</li>
     <li><b>Monsters have weaknesses</b> – tap ⓘ. <b>Energy ⚡:</b> verbs and nouns cost 1; pronouns, time words and ⏪ cost 0.</li>
-  </ol>${meta.tutorial ? `<button class="btn ghost" data-replay-tut>🎓 Replay the tutorial on your next A1 run</button>` : ""}`);
-  const b = $("[data-replay-tut]");
-  if (b) b.onclick = () => { meta.tutorial = false; save(); b.disabled = true; b.textContent = "✓ Frau Huber will coach you again"; };
+  </ol>`);
 }
 function showDeck() {
   const order = ["subj", "verb", "noun", "adv", "perf"];
@@ -1106,7 +1171,7 @@ function showDeck() {
 // ---------- input ----------
 addEventListener("resize", () => { if (view === "map") drawMapLines(); });
 app.addEventListener("click", e => {
-  const el = e.target.closest("[data-act]"), act = el && el.dataset.act, card = e.target.closest(".card, .pron");
+  const el = e.target.closest("[data-act]"), act = el && el.dataset.act, card = e.target.closest(".card, .pron, .vtile");
   if (view === "fight" && (el || card) && act !== "music" && act !== "voice" && tutBlocks(el, card)) { const g = $(".tut-glow"); if (g) { g.classList.remove("nudge"); void g.offsetWidth; g.classList.add("nudge"); } return; }
   if (view === "fight" && card && !act) return toggleCard(+card.dataset.uid);
   if (!act) return;
@@ -1126,6 +1191,8 @@ app.addEventListener("click", e => {
     node: () => enterNode(+el.dataset.i),
     clear: () => { fight.sentence = []; renderFight(); },
     cast, redraw,
+    power: usePower,
+    "tut-ok": () => { fight.tut++; renderFight(); },
     end: endTurn,
     foeinfo: () => { const en = ENEMIES[fight.eid]; toast(`${en.e} <b>${en.name}</b>: ${en.hint}`, 4200); },
     skip: nextFloor,
