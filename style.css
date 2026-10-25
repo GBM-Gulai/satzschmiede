@@ -446,3 +446,9 @@ body[data-ladder="a2"] .foe-name, body[data-ladder="a2"] .map h2, body[data-ladd
 .coach small { color: #8a6a3e; font-weight: 700; }
 .coach .tut-ok { margin-top: 6px; padding: 6px 16px; font-size: 14px; }
 .you { flex-wrap: wrap; justify-content: center; }
+
+/* before the portal: the real, modern Westbahnhof (first frame of the portal video) */
+.story.modern::before { background: var(--bg-modern) center / cover no-repeat, #1b1712; filter: none; }
+
+/* painted medallions bring their own ring: zoom in to the centre so it sits inside ours */
+.node:not(.n-boss) .medal-pic img { transform: scale(1.38); }

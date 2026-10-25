@@ -85,6 +85,9 @@ const clip = id => VIDEO.includes(id) ? `assets/video/${id}.mp4` : "";
 const enemyArt = (id, cls) => art(`assets/enemies/${id}.jpg`, ENEMIES[id].e, cls, cls === "foe-pic" || cls === "portrait" ? clip(id) : "");
 const heroArt = (id, cls) => art(`assets/heroes/${id}.jpg`, HEROES[id].e, cls);
 for (const t of ["subj", "verb", "noun", "adv", "perf"]) document.documentElement.style.setProperty(`--card-${t}`, `url("${src(`assets/cards/${t}.jpg`)}")`);
+// today's Vienna before the portal (first frame of portal.mp4) and the painted language tower
+document.documentElement.style.setProperty("--bg-modern", `url("${src("assets/bg/a1-modern.jpg")}")`);
+document.documentElement.style.setProperty("--bg-tower", `url("${src("assets/tower/tower.jpg")}")`);
 function setScene(id, bg = id) {   // background art per ladder (or per act)
   document.body.dataset.ladder = id || "";
   document.body.style.setProperty("--bg", bg ? `url("${src(`assets/bg/${bg}.jpg`)}"), url("${src(`assets/bg/${id}.jpg`)}")` : "none");
@@ -391,6 +394,7 @@ function showHeroes() {
 }
 function showTower() {
   view = "tower";
+  setScene(""); document.body.style.setProperty("--bg", "var(--bg-tower)");
   const rows = [...LADDERS].reverse().map(l => {
     const i = LADDERS.indexOf(l), open = l.ready && i < meta.unlocked, done = meta.cleared.includes(l.id);
     return `<button class="rung ${open ? "open" : "locked"}${done ? " done" : ""}" data-act="ladder" data-l="${l.id}" ${open ? "" : "disabled"}>
