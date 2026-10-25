@@ -16,7 +16,9 @@ jobs, djb2, OUT = piper_script.jobs, piper_script.djb2, piper_script.OUT
 
 MODEL = "gemini-3.8-flash-tts"
 KEY_FILE = Path(__file__).resolve().parent / "gemini-key.txt"
-CACHE = Path(__file__).resolve().parent / "voice-cache"   # raw batch recordings (git-ignored)
+CACHE = Path(__file__).resolve().parent / "voice-cache"
+SOURCES = Path(__file__).resolve().parent / "voice-sources.json"   # which engine recorded each file (see make-voices-edge.py)
+SRC = json.loads(SOURCES.read_text(encoding="utf-8")) if SOURCES.exists() else {}   # raw batch recordings (git-ignored)
 
 # speaker -> (prebuilt voice, how to speak). Tweak a style and re-run with --all to hear the change.
 VOICES = {
@@ -28,6 +30,10 @@ VOICES = {
     "hero-amara": ("Kore",     "a calm, confident, kind young woman, speaking clearly and a bit slowly like a language learner"),
     "automat":    ("Alnilam",  "a grumpy old ticket machine: flat, mechanical and robotic, staccato, every word clipped and separate"),
     "hydra":      ("Gacrux",   "a huge menacing monster made of paperwork: deep, booming and theatrical, slow and threatening"),
+    "kaese":      ("Algieba",  "a pompous, greedy emperor made of cheese: grand, self-important and a bit ridiculous, rolling his words"),
+    "riesenrad":  ("Fenrir",   "a giant living Ferris wheel: deep, creaky and echoing, slow and eerie, like old metal groaning"),
+    "aktenberg":  ("Gacrux",   "a towering mountain of files: deep, dusty and rumbling, bureaucratic and slow"),
+    "rathausmann":("Orus",     "an ancient iron knight statue: solemn, noble and booming, slow and dignified"),
 }
 
 
@@ -182,7 +188,7 @@ def main():
         if speaker not in VOICES:
             print(f"!! no voice for '{speaker}' – add it to VOICES"); continue
         target = OUT / f"{djb2(f'{speaker}|{text}')}.mp3"
-        if target.exists() and not redo:
+        if target.exists() and not redo and SRC.get(target.stem, "gemini") == "gemini":
             skipped += 1; continue
         voice, style = VOICES[speaker]
         audio = tts(key, text.replace("⏪", "").strip(), voice, style)
@@ -192,7 +198,7 @@ def main():
             fmt = [] if audio[:4] == b"RIFF" else ["-f", "s16le", "-ar", "24000", "-ac", "1"]   # WAV, or raw PCM as fallback
             subprocess.run(["ffmpeg", "-v", "error", "-y", *fmt, "-i", raw, "-af", "loudnorm=I=-16:TP=-1.5",
                             "-ac", "1", "-ar", "24000", "-b:a", "64k", str(target)], check=True)
-        done += 1
+        done += 1; SRC[target.stem] = "gemini"; SOURCES.write_text(json.dumps(SRC, indent=1, sort_keys=True), encoding="utf-8")
         print(f"{target.name}  [{speaker} · {voice}]  {text}")
         time.sleep(1.5)   # stay well inside rate limits
     print(f"\n{done} recorded, {skipped} already existed -> {OUT}")

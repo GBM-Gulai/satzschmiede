@@ -48,7 +48,8 @@ def parse():
         fields = dict(re.findall(r'(\w+): "([^"]*)"', m.group(2)))
         if "name" in fields:
             heroes[m.group(1)] = fields
-    story = src[src.index("const STORY"):]
+    end = src.find("const ENCOUNTERS")   # encounters aren't voiced (they're short and interactive)
+    story = src[src.index("const STORY"):end if end > 0 else None]
     found = re.findall(r'\["(\w+)",\s*"((?:[^"\\]|\\.)*)",\s*"((?:[^"\\]|\\.)*)"(?:,\s*"(\w+)")?\]', story)   # optional 4th item = effect marker
     # lines marked "en" are spoken in English (the hero before learning German)
     lines = [(who, en if fx == "en" else de) for who, de, en, fx in found]
