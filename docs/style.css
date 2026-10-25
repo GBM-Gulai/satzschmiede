@@ -481,3 +481,30 @@ body[data-ladder="a2"] .foe-name, body[data-ladder="a2"] .map h2, body[data-ladd
     mask-image: linear-gradient(90deg, transparent calc(50% - 28vh), #000 calc(50% - 22vh), #000 calc(50% + 22vh), transparent calc(50% + 28vh)); }
   .story.modern::before { background: linear-gradient(180deg, rgba(10, 6, 3, .25), rgba(10, 6, 3, .88) 78%), var(--bg-modern) center / auto 100% no-repeat; filter: saturate(.85); }
 }
+
+
+/* ---------- wide screens (PC) ---------- */
+@media (min-aspect-ratio: 6/5) {
+  /* wide backgrounds when they exist (assets/bg/<name>-wide.jpg) */
+  body.wide-bg::before { background-image: var(--bg-w); }
+  body.wide-bg .story, body.wide-bg .story::before {
+    background: linear-gradient(180deg, rgba(10, 6, 3, .3), rgba(10, 6, 3, .9) 75%), var(--bg-w) center / cover no-repeat, #0b0806;
+    -webkit-mask-image: none; mask-image: none; }
+  .modern-wide body .story.modern, .modern-wide body .story.modern::before {
+    background: linear-gradient(180deg, rgba(10, 6, 3, .3), rgba(10, 6, 3, .9) 75%), var(--bg-modern-w) center / cover no-repeat, #0b0a08;
+    -webkit-mask-image: none; mask-image: none; }
+
+  /* fight in two columns: the monster on the left, your forge, field and hand on the right */
+  #app:has(> main.fight) { max-width: 1320px; }
+  main.fight { max-width: 1320px; display: grid; grid-template-columns: minmax(300px, 5fr) 7fr; column-gap: 22px; row-gap: 10px; align-items: start; }
+  main.fight > .coach { grid-column: 1 / -1; grid-row: 1; max-width: none; }
+  main.fight > .enemy { grid-column: 1; grid-row: 2 / span 2; padding: 18px 16px; }
+  main.fight > .you { grid-column: 1; grid-row: 4 / span 2; align-self: start; }
+  main.fight > .forge { grid-column: 2; grid-row: 2; }
+  main.fight > .field { grid-column: 2; grid-row: 3; max-width: none; }
+  main.fight > .hand { grid-column: 2; grid-row: 4; }
+  main.fight > .actions { grid-column: 2; grid-row: 5; }
+  main.fight .foe-pic { width: clamp(180px, 22vw, 320px); }
+  main.fight .boss .foe-pic { width: clamp(200px, 25vw, 360px); }
+  .topbar, header.top { max-width: 1320px; }
+}

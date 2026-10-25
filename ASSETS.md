@@ -137,6 +137,26 @@ The windows reuse the backgrounds (`assets/bg/<ladder>.jpg`), so B1–C2 also ge
 | `sekretaer.jpg` | Square image of "Der Obersekretär" (elite): a towering, many-armed secretary juggling telephones, typewriters and appointment books. |
 | `rathausmann.jpg` | Square image of "Der Rathausmann" (boss): the iron knight statue from the top of Vienna City Hall, come alive and gigantic, holding a banner lance, armour glinting, dramatic boss lighting. |
 
+## Wide backgrounds for PC (optional) → `assets/bg/<name>-wide.jpg`
+
+The backgrounds are tall (9:16) for phones. On a PC the game shows them sharp in the middle with darkened sides.
+For a full-width picture on PC, make a **wide 16:9 version** – the game picks it automatically on wide screens.
+
+**How:** in Gemini, upload the existing image and send:
+> Recreate this exact scene as a wide 16:9 landscape image. Same painterly storybook style, same colours and light, same place – extend it naturally to the left and right. No people, no text.
+
+| Original | Save the wide version as |
+|---|---|
+| `bg/a1.jpg` (Westbahnhof) | `bg/a1-wide.jpg` |
+| `bg/a1-modern.jpg` (today's station) | `bg/a1-modern-wide.jpg` |
+| `bg/a1-2.jpg` (Naschmarkt) | `bg/a1-2-wide.jpg` |
+| `bg/a1-3.jpg` (Prater) | `bg/a1-3-wide.jpg` |
+| `bg/a2.jpg` (Amt) | `bg/a2-wide.jpg` |
+| `bg/a2-2.jpg` (Archiv) | `bg/a2-2-wide.jpg` |
+| `bg/a2-3.jpg` (Rathaus) | `bg/a2-3-wide.jpg` |
+
+**Portal video for PC (optional):** in Flow, make the portal again in **16:9** (first frame `a1-modern-wide.jpg`, last frame `a1-wide.jpg`, same prompt as in ANIMATIONS.md) and save it as `assets/video/portal-wide.mp4`.
+
 ## Encounters (NEW) → `assets/events/`
 
 The ❓ stops on the map are now little scenes. One picture each (square, like the enemies). Until a picture exists, an emoji stands in.

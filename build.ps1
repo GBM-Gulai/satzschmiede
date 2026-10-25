@@ -82,7 +82,7 @@ if (Test-Path $videoDir) {
   Get-ChildItem $videoDir -Filter *.mp4 | ForEach-Object {
     $small = Join-Path $webDir $_.Name
     if ($ffmpeg -and (-not (Test-Path $small) -or (Get-Item $small).LastWriteTime -lt $_.LastWriteTime)) {
-      $vf = if ($_.BaseName -in "title", "portal") { "scale=720:-2" } else { "crop=ih:ih,scale=480:480" }   # full-screen clips keep their frame
+      $vf = if ($_.BaseName -in "title", "portal", "portal-wide") { "scale=720:-2" } else { "crop=ih:ih,scale=480:480" }   # full-screen clips keep their frame
       & $ffmpeg.Source -v error -y -i $_.FullName -an -vf $vf -c:v libx264 -preset slow -crf 27 -pix_fmt yuv420p -movflags +faststart $small
     }
     $from = if (Test-Path $small) { $small } else { $_.FullName }

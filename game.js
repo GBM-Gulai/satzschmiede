@@ -88,10 +88,27 @@ for (const t of ["subj", "verb", "noun", "adv", "perf"]) document.documentElemen
 // today's Vienna before the portal (first frame of portal.mp4) and the painted language tower
 document.documentElement.style.setProperty("--bg-modern", `url("${src("assets/bg/a1-modern.jpg")}")`);
 document.documentElement.style.setProperty("--bg-tower", `url("${src("assets/tower/tower.jpg")}")`);
+// Wide screens (PC) use assets/bg/<name>-wide.jpg when it exists; phones keep the portrait paintings
+const isWide = () => matchMedia("(min-aspect-ratio: 6/5)").matches;
+const imgOk = {};
+function probe(p, cb) {
+  if (p in imgOk) return cb(imgOk[p]);
+  const i = new Image();
+  i.onload = () => cb(imgOk[p] = true); i.onerror = () => cb(imgOk[p] = false);
+  i.src = src(p);
+}
 function setScene(id, bg = id) {   // background art per ladder (or per act)
   document.body.dataset.ladder = id || "";
+  document.body.dataset.scene = bg || "";
   document.body.style.setProperty("--bg", bg ? `url("${src(`assets/bg/${bg}.jpg`)}"), url("${src(`assets/bg/${id}.jpg`)}")` : "none");
+  document.body.classList.remove("wide-bg"); document.body.style.removeProperty("--bg-w");
+  if (bg) probe(`assets/bg/${bg}-wide.jpg`, ok => {
+    if (!ok || document.body.dataset.scene !== bg) return;
+    document.body.style.setProperty("--bg-w", `url("${src(`assets/bg/${bg}-wide.jpg`)}")`);
+    document.body.classList.add("wide-bg");
+  });
 }
+probe("assets/bg/a1-modern-wide.jpg", ok => { if (ok) { document.documentElement.style.setProperty("--bg-modern-w", `url("${src("assets/bg/a1-modern-wide.jpg")}")`); document.documentElement.classList.add("modern-wide"); } });
 
 // ---------- sound & speech ----------
 let ac;
@@ -380,10 +397,14 @@ function speaker(who) {
 function portal() {
   const ov = document.createElement("div");
   ov.className = "portal";
-  ov.innerHTML = `<div class="portal-burst"></div>` + (HAS_AUDIO ? `<video src="assets/video/portal.mp4" autoplay muted playsinline></video>` : "");
+  ov.innerHTML = `<div class="portal-burst"></div>` + (HAS_AUDIO ? `<video src="assets/video/portal${isWide() ? "-wide" : ""}.mp4" autoplay muted playsinline></video>` : "");
   document.body.append(ov); sfx("win");
   const v = ov.querySelector("video"), close = () => { ov.classList.add("out"); setTimeout(() => ov.remove(), 700); };
-  if (v) { v.onplaying = () => ov.classList.add("has-video"); v.onended = close; v.onerror = () => setTimeout(close, 1900); }
+  if (v) {
+    v.onplaying = () => ov.classList.add("has-video"); v.onended = close;
+    // no wide clip yet: fall back to the portrait one, then to the light burst
+    v.onerror = () => { if (v.src.includes("-wide")) { v.src = "assets/video/portal.mp4"; v.play().catch(() => {}); } else setTimeout(close, 1900); };
+  }
   else setTimeout(close, 1900);
   ov.onclick = close;
 }
