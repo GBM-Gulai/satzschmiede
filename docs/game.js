@@ -23,8 +23,8 @@ const FX = { atk: { icon: "⚔️" }, blk: { icon: "🛡️" }, heal: { icon: "�
 const PERSON = ["ich", "du", "er/sie/es", "wir", "ihr", "sie/Sie"];
 const NODE = { fight: ["⚔️", "Kampf", "Fight"], elite: ["💀", "Elite", "Elite"], rest: ["🔥", "Lager", "Camp"], shop: ["🛒", "Laden", "Shop"], event: ["❓", "Rätsel", "Riddle"], gate: ["🚪", "Prüfung", "Trial"], boss: ["👑", "Boss", "Boss"] };
 // gate = a mandatory trial (mini-game) that everyone has to pass
-const LAYOUT = [["fight", "fight"], ["fight", "event"], ["fight", "shop", "event"], ["gate"], ["rest", "fight"], ["elite", "fight", "event"],
-  ["event", "shop", "fight"], ["gate"], ["rest", "shop", "fight"], ["boss"]];
+const LAYOUT = [["fight", "fight"], ["fight", "fight", "event"], ["fight", "shop", "event"], ["gate"], ["fight", "rest", "fight"], ["elite", "fight", "event"],
+  ["fight", "event", "fight"], ["gate"], ["rest", "shop", "fight"], ["boss"]];
 const forms = d => d.forms.split(" ");
 const nounForm = (d, cas) => cas !== "nom" && d.nForm ? d.nForm : d.de;
 const powOf = c => CARDS[c.id].pow + (c.up ? 2 : 0);
@@ -44,6 +44,7 @@ const FIELD_SLOTS = 3;     // verbs on the field
 const VERB_TURNS = 3;      // a field verb stays this many turns, then goes back to the discard pile
 const DEALT = 2;           // pronouns dealt each turn
 const POWER_CHARGE = 3;    // perfect sentences needed to recharge the hero power
+const powerNeed = () => has("glocke") ? 2 : POWER_CHARGE;
 const placeLimit = () => fight.turn === 1 ? 2 : 1;   // verbs you may put on the field this turn (2 on the opening turn)
 const hero = () => HEROES[run.hero];
 
@@ -257,7 +258,7 @@ function dealPronouns() {
   const verbs = [...fight.field.filter(Boolean), ...fight.hand].filter(c => CARDS[c.id].type === "verb").map(c => c.id);
   const weight = id => 1 + 2 * verbs.reduce((n, v) => n + (meta.mistakes[`conj|${v}|${CARDS[id].p}`] || 0), 0);
   const pool = [...PRONOUNS], out = [];
-  while (out.length < DEALT && pool.length) {
+  while (out.length < (has("wuerfel") ? 3 : DEALT) && pool.length) {
     let r = Math.random() * pool.reduce((n, id) => n + weight(id), 0), i = 0;
     while ((r -= weight(pool[i])) > 0 && i < pool.length - 1) i++;
     out.push(pool.splice(i, 1)[0]);
@@ -573,12 +574,13 @@ function nextFloor() { run.floor++; save(); showMap(); }
 // ---------- combat ----------
 function startFight(eid) {
   music(ENEMIES[eid].boss ? "boss" : "battle");
-  const e = ENEMIES[eid], scale = e.boss ? 0 : run.floor * 2 + (run.act || 0) * 5;
+  const e = ENEMIES[eid], act = run.act || 0, scale = e.boss ? 0 : run.floor * 2 + act * 5;
+  const hp = Math.round((e.hp + scale) * (!e.boss && !e.elite && act ? 1.3 : 1));
   fight = {
-    eid, enemy: { hp: e.hp + scale, max: e.hp + scale, block: 0, str: 0, move: 0 },
+    eid, enemy: { hp, max: hp, block: 0, str: e.boss ? 0 : act, move: 0 },
     draw: shuffle(run.deck.filter(c => deckable(c.id)).map(c => ({ ...c }))), hand: [], discard: [], sentence: [],
     bar: [], field: Array(FIELD_SLOTS).fill(null), tapped: [], placed: false, placing: null,
-    energy: 3, block: 0, turn: 0, eselUsed: false, busy: false, charge: POWER_CHARGE, boost: false, reveal: false, streak: 0, combos: [], recycled: false
+    energy: 3, block: 0, turn: 0, eselUsed: false, busy: false, charge: powerNeed(), boost: 0, reveal: false, streak: 0, combos: [], recycled: false, tapped2: [], castThisTurn: false
   };
   view = "fight";
   startTurn();
@@ -687,7 +689,8 @@ function startTurn() {
   fight.turn++;
   // verbs age: after VERB_TURNS turns on the field they go back to the discard pile
   fight.field.forEach((c, i) => { if (c && fight.turn > 1 && --c.turns <= 0) { fight.field[i] = null; fight.discard.push(c); toast(L(`⌛ <b>${CARDS[c.id].de}</b> verlässt das Feld.`, `⌛ <b>${CARDS[c.id].de}</b> leaves the field.`), 1600); } });
-  fight.block = 0; fight.tapped = []; fight.placed = 0; fight.placing = null; fight.recycled = false;
+  fight.block = 0; fight.tapped = []; fight.tapped2 = []; fight.placed = 0; fight.placing = null; fight.recycled = false; fight.castThisTurn = false;
+  if (fight.turn === 1 && has("heuriger")) fight.block = 6;
   fight.energy = 3 + (run.act || 0) + (fight.turn === 1 && has("kaffee") ? 1 : 0);   // +1 max energy for every act cleared
   drawCards(HAND + (has("duden") ? 1 : 0));
   fight.bar = (fight.tutBars && fight.tutBars.length ? fight.tutBars.shift() : dealPronouns()).map(id => mk(id));
@@ -702,7 +705,8 @@ function startTurn() {
 const allCards = () => [...fight.bar, ...fight.field.filter(Boolean), ...fight.hand];
 const zoneOf = c => fight.bar.includes(c) ? "bar" : fight.field.includes(c) ? "field" : "hand";
 const sentenceCards = () => fight.sentence.map(uid => allCards().find(c => c.uid === uid));
-const sentenceCost = () => sentenceCards().reduce((s, c) => s + CARDS[c.id].cost, 0);
+const sentenceCost = () => sentenceCards().reduce((s, c) => s + CARDS[c.id].cost + (fight.tapped.includes(c.uid) ? 1 : 0), 0);
+const canRecast = uid => (run.act || 0) >= 1 && fight.tapped.includes(uid) && !fight.tapped2.includes(uid);   // act 2+: a second cast for +1 ⚡
 const intent = () => { const e = ENEMIES[fight.eid]; return e.moves[fight.enemy.move % e.moves.length]; };
 function intentHtml() {
   const [k, v] = intent(), str = fight.enemy.str;
@@ -769,8 +773,8 @@ function renderFight() {
       <button class="info" data-act="foeinfo" aria-label="About this enemy">ⓘ</button>
     </section>
     <section class="you"><span class="pill">🛡️ ${L("Schild", "Shield")} ${fight.block}</span>
-      <button class="power-btn${fight.charge < POWER_CHARGE ? " used" : ""}" data-act="power" ${fight.charge < POWER_CHARGE || fight.busy ? "disabled" : ""}>${heroArt(run.hero, "power-pic")}<span>✨ ${L(hero().power, hero().powerEn)}<small>${fight.charge >= POWER_CHARGE ? L("bereit!", "ready!") : L("lädt mit perfekten Sätzen", "charges with perfect sentences")}
-        <span class="pw-pips">${Array.from({ length: POWER_CHARGE }, (_, i) => `<i class="${i < fight.charge ? "on" : ""}"></i>`).join("")}</span></small></span></button>
+      <button class="power-btn${fight.charge < powerNeed() ? " used" : ""}" data-act="power" ${fight.charge < powerNeed() || fight.busy ? "disabled" : ""}>${heroArt(run.hero, "power-pic")}<span>✨ ${L(hero().power, hero().powerEn)}<small>${fight.charge >= powerNeed() ? L("bereit!", "ready!") : L("lädt mit perfekten Sätzen", "charges with perfect sentences")}
+        <span class="pw-pips">${Array.from({ length: powerNeed() }, (_, i) => `<i class="${i < fight.charge ? "on" : ""}"></i>`).join("")}</span></small></span></button>
       <span class="pill dim">${L("Stapel", "Draw")} ${fight.draw.length} · ${L("Ablage", "Discard")} ${fight.discard.length}</span></section>
     <section class="forge">
       <div class="slots">${cards.length ? cards.map(c => cardHtml(c, "mini")).join("") : `<span class="empty">${L("Deine Schmiede ist leer", "Your forge is empty")}</span>`}</div>
@@ -796,13 +800,13 @@ function renderFight() {
 }
 // A verb on the field: a compact tile with its power, object slots and the turns it has left
 function verbTile(c) {
-  const d = CARDS[c.id], rest = fight.tapped.includes(c.uid);
+  const d = CARDS[c.id], rest = fight.tapped.includes(c.uid) && !canRecast(c.uid), again = canRecast(c.uid);
   const need = d.slots.length ? d.slots.map(s => s === "dat" ? L("+ wem?", "+ to whom?") : L("+ was?", "+ what?")).join(" ") : L("ohne Objekt", "no object");
   return `<button class="vtile${rest ? " tapped" : ""}${fight.sentence.includes(c.uid) ? " used" : ""}${fight.placing ? " swap" : ""}" data-uid="${c.uid}">
     <span class="cost">${d.cost}</span><b>${d.de}</b><span class="vt-en">${esc(d.en)} · ${need}</span>
     <span class="vt-pow">${FX[d.fx].icon} ${powOf(c)}</span>
     <span class="vt-charges" title="${L("Züge übrig", "turns left")}">⌛ ${Array.from({ length: VERB_TURNS }, (_, i) => `<i class="${i < c.turns ? "on" : ""}"></i>`).join("")}</span>
-    ${rest ? `<span class="vt-rest">${L("ruht bis zum nächsten Zug", "resting until next turn")}</span>` : ""}</button>`;
+    ${rest ? `<span class="vt-rest">${L("ruht bis zum nächsten Zug", "resting until next turn")}</span>` : again ? `<span class="vt-rest again">${L("nochmal für +1 ⚡", "again for +1 ⚡")}</span>` : ""}</button>`;
 }
 function toggleCard(uid) {
   if (fight.busy) return;
@@ -812,7 +816,7 @@ function toggleCard(uid) {
   if (zone === "field" && fight.placing) return placeVerb(fight.hand.find(x => x.uid === fight.placing), fight.field.indexOf(c));
   if (i >= 0) fight.sentence.splice(i, 1);
   else {
-    if (zone === "field" && fight.tapped.includes(uid)) return toast(L("Dieses Verb hast du in diesem Zug schon benutzt.", "You've already used this verb this turn."), 1600);
+    if (zone === "field" && fight.tapped.includes(uid) && !canRecast(uid)) return toast((run.act || 0) >= 1 ? L("Dieses Verb hast du in diesem Zug schon zweimal benutzt.", "You've already used this verb twice this turn.") : L("Dieses Verb hast du in diesem Zug schon benutzt.", "You've already used this verb this turn."), 1600);
     fight.sentence.push(uid); tutAdvance(zone, c.id);
   }
   sfx("tap"); renderFight();
@@ -820,10 +824,10 @@ function toggleCard(uid) {
 // Verbs work like lands: one per turn goes from the hand onto the field (free) and stays for the whole fight
 // The hero's special power: once per fight
 function usePower() {
-  if (fight.busy || fight.charge < POWER_CHARGE) return;
+  if (fight.busy || fight.charge < powerNeed()) return;
   fight.charge = 0;
   const h = hero();
-  if (run.hero === "rafa") fight.boost = true;
+  if (run.hero === "rafa") fight.boost = 2;
   else if (run.hero === "mei") fight.reveal = true;
   else { run.hp = Math.min(run.maxHp, run.hp + 10); fight.block += 6; }
   sfx("win"); toast(`✨ <b>${L(h.power, h.powerEn)}</b> – ${L(h.powerText, h.powerTextEn)}`, 2200);
@@ -933,19 +937,22 @@ function resolve(cards, a, steps, answers) {
   const perfect = mistakes === 0;
   let power = cards.reduce((s, c) => s + (okOf(c) ? powOf(c) : 0), 0);
   const perfOk = a.perf && okOf(a.verb) && okOf(a.perfCard);
-  const bonus = [];
-  if (!a.perf && okOf(a.verb) && isStrongForm(v, a.person)) bonus.push(`${PERSON[a.person]} ${forms(v)[a.person]}`);
-  if (perfOk && isStrongPart(v)) bonus.push(v.part);
-  for (const o of a.objs) if (o.cas === "dat" && okOf(o.c)) bonus.push("Dativ");
+  const bonus = [], strong = has("grammatik") ? 4 : 2;   // [points, label]
+  if (!a.perf && okOf(a.verb) && isStrongForm(v, a.person)) bonus.push([strong, `${PERSON[a.person]} ${forms(v)[a.person]}`]);
+  if (perfOk && isStrongPart(v)) bonus.push([strong, v.part]);
+  for (const o of a.objs) if (o.cas === "dat" && okOf(o.c)) bonus.push([2 + (has("dativamulett") ? 3 : 0), "Dativ"]);
   const combo = `${a.person}|${a.verb.id}`;
-  if (okOf(a.verb) && !fight.combos.includes(combo)) { fight.combos.push(combo); bonus.push(L("neue Kombi", "new combo")); }
-  power += 2 * bonus.length;
+  if (okOf(a.verb) && !fight.combos.includes(combo)) { fight.combos.push(combo); bonus.push([2, L("neue Kombi", "new combo")]); }
+  if (has("fiaker") && !fight.castThisTurn) bonus.push([3, "Fiaker"]);
+  const bonusPts = bonus.reduce((t, b) => t + b[0], 0);
+  power += bonusPts;
   // perfect streak: ×1.5, then ×1.6, ×1.7 … (max ×2) for perfect sentences in a row; a mistake resets it
   const streakMult = perfect ? Math.min(2, 1.5 + .1 * fight.streak) : 1;
-  if (perfect) { power = Math.ceil(power * streakMult) + (has("sachertorte") ? 3 : 0); fight.streak++; fight.charge = Math.min(POWER_CHARGE, fight.charge + 1); }
-  else fight.streak = 0;
+  if (perfect) { power = Math.ceil(power * streakMult) + (has("sachertorte") ? 3 : 0); fight.streak++; fight.charge = Math.min(powerNeed(), fight.charge + 1); }
+  else fight.streak = has("opernkarte") ? Math.max(0, fight.streak - 1) : 0;
   if (perfOk && has("meldezettel")) power += 4;
-  if (fight.boost) { power *= 2; fight.boost = false; notes.push(L("🍳 Doppelte Portion: ×2!", "🍳 Double helping: ×2!")); }
+  if (fight.boost) { power = Math.ceil(power * 1.5); fight.boost--; notes.push(L("🍳 Doppelte Portion: +50 %!", "🍳 Double helping: +50 %!")); }
+  if (v.fx === "heal" && has("schnitzel")) power += 4;
   const flags = { dat: a.objs.some(o => o.cas === "dat" && okOf(o.c)), akk: a.objs.some(o => o.cas === "akk" && okOf(o.c)), inv: a.inv, perfect, long: cards.filter(c => CARDS[c.id].type !== "perf").length >= 5, perf: perfOk };
   let mult = "";
   if (v.fx === "atk" && e.weak) {
@@ -957,9 +964,7 @@ function resolve(cards, a, steps, answers) {
   const used = cards.filter(c => fight.hand.includes(c));
   fight.hand = fight.hand.filter(c => !used.includes(c));
   fight.discard.push(...used); fight.sentence = [];
-  if (fight.field.includes(a.verb)) {
-    fight.tapped.push(a.verb.uid);
-  }
+  if (fight.field.includes(a.verb)) (fight.tapped.includes(a.verb.uid) ? fight.tapped2 : fight.tapped).push(a.verb.uid);
   run.stats.sentences++; meta.sentences++;
   if (perfect) { run.stats.perfect++; meta.perfect++; }
   run.stats.mistakes += mistakes;
@@ -972,7 +977,10 @@ function resolve(cards, a, steps, answers) {
   } else if (v.fx === "blk") { fight.block += power; line = `🛡️ +<b>${power}</b> ${L("Schild", "shield")}`; }
   else { const before = run.hp; run.hp = Math.min(run.maxHp, run.hp + power); line = `❤️ +<b>${run.hp - before}</b> ${L("Leben", "HP")}`; }
   if (e.leech && mistakes) { en.hp = Math.min(en.max, en.hp + 4 * mistakes); notes.push(L(`${e.e} ${e.name} lebt von deinen Fehlern: +${4 * mistakes}.`, `${e.e} ${e.name} feeds on your mistakes: +${4 * mistakes} HP.`)); }
-  if (bonus.length) line += ` <span class="r-bonus">💪 +${2 * bonus.length}: ${bonus.join(", ")}</span>`;
+  if (bonus.length) line += ` <span class="r-bonus">💪 +${bonusPts}: ${bonus.map(b => b[1]).join(", ")}</span>`;
+  if (flags.long && has("atem")) { fight.block += 5; line += ` · 🌬️ +5 ${L("Schild", "shield")}`; }
+  if (a.inv && has("taschenuhr")) { drawCards(1); line += ` · ⏱️ +1 ${L("Karte", "card")}`; }
+  fight.castThisTurn = true;
   const html = sentenceWords(cards, a, steps, answers, steps.length, true);
   fight.busy = false;
   renderFight();
@@ -1037,7 +1045,7 @@ function enemyTurn() {
 function winFight() {
   const e = ENEMIES[fight.eid];
   if (has("brezel")) run.hp = Math.min(run.maxHp, run.hp + 4);
-  const gold = e.boss ? 0 : e.elite ? between(40, 55) : between(14, 24);
+  const gold = e.boss ? 0 : e.elite ? between(32, 44) : between(11, 19);
   run.gold += gold;
   sfx("win");
   if (e.boss && (run.act || 0) < ACTS - 1 && (ladder().acts || [])[(run.act || 0) + 1]) return actCleared();
@@ -1052,12 +1060,12 @@ function winFight() {
 function actCleared() {
   const done = (run.act || 0) + 1, heal = Math.round((run.maxHp - run.hp) * .6), relic = rnd(Object.keys(RELICS).filter(r => !run.relics.includes(r)));
   run.act = done; run.floor = 0; run.path = []; run.map = LAYOUT.map(opts => shuffle(opts)); run.shop = null; run.gate = null; run.enc = null;
-  run.hp += heal; run.gold += 40; if (relic) gainRelic(relic);
+  run.hp += heal; run.gold += 30; if (relic) gainRelic(relic);
   save();
   playStory(STORY[run.ladder][`act${done}End`] || [], () => {
     music("inn"); view = "act";
     app.innerHTML = `${topbar()}<main class="panel"><h2 class="fraktur">${L(`Akt ${done} geschafft!`, `Act ${done} cleared!`)}</h2>
-      <p class="sub">⚡ +1 ${L("max. Energie", "max energy")} · ❤️ +${heal} · 💰 +40${relic ? ` · ${RELICS[relic].e} <b>${RELICS[relic].name}</b> – ${RELICS[relic].text}` : ""}</p>
+      <p class="sub">⚡ +1 ${L("max. Energie", "max energy")} · ❤️ +${heal} · 💰 +30${relic ? ` · ${RELICS[relic].e} <b>${RELICS[relic].name}</b> – ${RELICS[relic].text}` : ""}</p>
       <p>${L(`Weiter geht's: <b>${stage().name}</b>`, `Next up: <b>${stage().name}</b>`)}</p>
       <button class="btn hot" data-act="continue">${L("Weiter", "Continue")} ➜</button></main>`;
   });
@@ -1100,7 +1108,7 @@ function showShop(haggling) {
   view = "shop";
   if (!run.shop || run.shop.floor !== run.floor) {
     const relic = rnd(Object.keys(RELICS).filter(r => !run.relics.includes(r)));
-    run.shop = { floor: run.floor, cards: sample(rewardPool(), 4).map(id => ({ ...mk(id), price: between(35, 60) })), relic, relicPrice: 110, removed: false, mult: 1, haggled: false };
+    run.shop = { floor: run.floor, cards: sample(rewardPool(), 4).map(id => ({ ...mk(id), price: between(35, 60) })), relic, relicPrice: 150, removed: false, mult: 1, haggled: false };
   }
   const s = run.shop, rm = shopPrice(60);
   const mood = s.mult < 1 ? L("„Na gut, weil Sie so höflich sind: 30 % billiger!“", "“Alright, because you're so polite: 30 % off!”")
@@ -1165,7 +1173,7 @@ function gateReward() {
 }
 // 1) Satz-Puzzle: rebuild a sentence from shuffled words
 function gatePuzzle() {
-  const target = pickBy(run.gate.seed, ladder().puzzles), punct = target.slice(-1), words = target.slice(0, -1).split(" ");
+  const target = pickBy(run.gate.seed, stage().puzzles), punct = target.slice(-1), words = target.slice(0, -1).split(" ");
   gateState = gateState || { order: shuffled(words.map((w, i) => i)), placed: [] };
   const g = gateState, left = g.order.filter(i => !g.placed.includes(i));
   gateFrame("Satz-Puzzle", L("Bring die Wörter in die richtige Reihenfolge.", "Put the words in the right order."),
@@ -1186,7 +1194,7 @@ function gatePuzzle() {
 function gateSort() {
   if (!gateState) {
     const nouns = [...new Set(ladder().start.concat(ladder().pool))].filter(id => CARDS[id] && CARDS[id].type === "noun");
-    gateState = { nouns: sample(nouns, 6), done: {}, sel: null };
+    gateState = { nouns: sample(nouns, 6 + 2 * (run.act || 0)), done: {}, sel: null };
   }
   const g = gateState, open = g.nouns.filter(id => !g.done[id]);
   const bin = a => `<button class="bin g-${a}" data-a="${a}"><b>${a}</b>${g.nouns.filter(id => g.done[id] && CARDS[id].g === a).map(id => `<span>${CARDS[id].de}</span>`).join("")}</button>`;
@@ -1340,7 +1348,7 @@ function overlay(html) {
 function showHelp() {
   overlay(`<div class="incant-h">How to play</div><ol class="help">
     <li><b>Your cards are German words.</b> Tap them in order to build a sentence: <i>Ich · sehe · den Hund</i>.</li>
-    <li><b>Each turn you're dealt 2 pronouns</b> (ich, du, wir …). <b>Verbs go on the field:</b> one per turn, for free. A field verb casts once per turn and stays 3 turns (3 slots).</li>
+    <li><b>Each turn you're dealt 2 pronouns</b> (ich, du, wir …). <b>Verbs go on the field:</b> one per turn, for free. A field verb casts once per turn (from act 2: a second time for +1 ⚡) and stays 3 turns (3 slots).</li>
     <li><b>Energy ⚡:</b> 3 per turn (+1 for every act cleared) – the red seal on a card is its cost. <b>✨ Special power:</b> ready at the start of a fight, then 3 perfect sentences recharge it.</li>
     <li><b>🔥 Streaks:</b> perfect sentences in a row grow stronger (×1.5 → ×1.6 → … ×2). <b>New combos</b> (a pronoun + verb you haven't used this fight) give +2. On the first turn you may place 2 verbs; a verb you can't place can be ♻️ recycled once per turn.</li>
     <li><b>The verb decides the spell:</b> ⚔️ attack, 🛡️ shield or ❤️ heal. The number is its power.</li>

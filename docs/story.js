@@ -3,7 +3,7 @@
 // ---------- heroes ----------
 const HEROES = {
   rafa:  { g: "m", name: "Rafa", from: "Brasilien", fromEn: "Brazil", role: "Koch", roleEn: "Cook", e: "🧑🏽‍🍳",
-           power: "Doppelte Portion", powerEn: "Double helping", powerText: "Dein nächster Satz wirkt doppelt.", powerTextEn: "Your next sentence has double power.",
+           power: "Doppelte Portion", powerEn: "Double helping", powerText: "Deine nächsten 2 Sätze wirken +50 %.", powerTextEn: "Your next 2 sentences get +50 % power.",
            story: "Ich möchte in Wien ein Restaurant eröffnen.", storyEn: "I want to open a restaurant in Vienna.",
            magic: "Mein Kochlöffel … leuchtet ja!", magicEn: "My wooden spoon … it's glowing!" },
   mei:   { g: "f", name: "Mei", from: "Taiwan", fromEn: "Taiwan", role: "Programmiererin", roleEn: "Programmer", e: "👩🏻‍💻",
@@ -31,9 +31,11 @@ const LADDERS = [
     enemies: ["assel", "taube", "kontrolleur", "regen"], easy: ["assel", "taube"], elite: "hausmeister", boss: "automat",
     // acts 2 and 3 (act 1 uses the fields above)
     acts: [{}, { name: "Der Naschmarkt", bg: "a1-2", mapTitle: "Über den Naschmarkt", mapSub: "Stalls, smells and swindlers. The Cheese Emperor sits behind the last stall.",
-                 enemies: ["gurke", "schreier", "wespe", "kraut"], easy: ["gurke", "wespe"], elite: "standlerin", boss: "kaese" },
+                 enemies: ["gurke", "schreier", "wespe", "kraut"], easy: ["gurke", "wespe"], elite: "standlerin", boss: "kaese",
+                 puzzles: ["Ich kaufe heute drei rote Äpfel.", "Was kostet ein Kilo Tomaten?", "Am Samstag gehen wir auf den Markt.", "Der Käse riecht sehr stark.", "Kann ich mit Karte bezahlen?", "Morgen koche ich eine große Suppe."] },
                { name: "Der Prater", bg: "a1-3", mapTitle: "Durch den Prater", mapSub: "Carousels, ghost trains – and a giant wheel that turns all by itself.",
-                 enemies: ["pony", "watte", "spiegel", "fledermaus"], easy: ["pony", "fledermaus"], elite: "watschenmann", boss: "riesenrad" }],
+                 enemies: ["pony", "watte", "spiegel", "fledermaus"], easy: ["pony", "fledermaus"], elite: "watschenmann", boss: "riesenrad",
+                 puzzles: ["Am Abend fahren wir mit dem Riesenrad.", "Die Kinder lachen in der Geisterbahn.", "Ich habe keine Angst vor Gespenstern.", "Heute Abend essen wir Langos im Prater.", "Wie viel kostet eine Fahrt?", "Mein Freund gewinnt einen großen Teddybären."] }],
     start: ["ich", "du", "wir", "sehen", "finden", "haben", "laufen", "trinken", "Hund", "Katze", "Buch", "Wasser", "heute"],
     starter: ["kaufen", "essen", "Mann", "Apfel", "jetzt"],   // extra words in the collection from the very first run
     pool: ["er", "sie", "ihr", "sie_pl", "suchen", "kaufen", "nehmen", "lesen", "brauchen", "essen", "schlafen", "Pferd", "Taube", "Mann", "Frau", "Kind",
@@ -62,9 +64,11 @@ const LADDERS = [
     mapTitle: "Durch die Gänge des Amts", mapSub: "Formulare, Stempel, Warteschlangen. Ganz oben wartet die Formular-Hydra.",
     enemies: ["kobold", "stempel", "schlange", "papagei"], easy: ["kobold", "stempel"], elite: "drache", boss: "hydra",
     acts: [{}, { name: "Das Archiv", bg: "a2-2", mapTitle: "Hinab ins Archiv", mapSub: "Staub, Akten, Dunkelheit. Ganz unten wartet der Aktenberg.",
-                 enemies: ["aktenmaus", "staub", "ordner", "krake"], easy: ["aktenmaus", "krake"], elite: "archivar", boss: "aktenberg" },
+                 enemies: ["aktenmaus", "staub", "ordner", "krake"], easy: ["aktenmaus", "krake"], elite: "archivar", boss: "aktenberg",
+                 puzzles: ["Ich habe meine Akte im Keller gefunden.", "Gestern hat mir der Beamte nicht geholfen.", "Wir sind zwei Stunden im Archiv geblieben.", "Hast du das Formular schon unterschrieben?", "Die Katze ist mir in den Keller gefolgt.", "Er hat dem Archivar einen Brief gegeben."] },
                { name: "Das Rathaus", bg: "a2-3", mapTitle: "Hinauf ins Rathaus", mapSub: "Ballsaal, Wappen, Siegel. Auf dem Turm wartet der Rathausmann.",
-                 enemies: ["loewe", "walzer", "pfau", "siegel"], easy: ["loewe", "walzer"], elite: "sekretaer", boss: "rathausmann" }],
+                 enemies: ["loewe", "walzer", "pfau", "siegel"], easy: ["loewe", "walzer"], elite: "sekretaer", boss: "rathausmann",
+                 puzzles: ["Ich habe dem Bürgermeister das Formular gezeigt.", "Am Samstag sind wir auf den Ball gegangen.", "Der Kellner hat uns eine Torte gebracht.", "Wann haben Sie den Antrag abgegeben?", "Wir haben die ganze Nacht Walzer getanzt.", "Endlich hat mir jemand die Regeln erklärt."] }],
     start: ["ich", "du", "wir", "sehen", "haben", "gehen", "geben", "helfen", "Frau", "Hund", "Formular", "Kaffee", "gestern", "perf"],
     starter: ["kommen", "zeigen", "Brief", "Beamtin", "perf"],
     pool: ["er", "sie", "ihr", "sie_pl", "finden", "suchen", "kaufen", "schreiben", "brauchen", "trinken", "essen", "kommen", "fahren", "laufen", "folgen", "danken",

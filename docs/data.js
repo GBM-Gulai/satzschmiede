@@ -144,5 +144,16 @@ const RELICS = {
   lederhose:   { name: "Lederhose", e: "🩳", text: "+10 max HP." },
   brezel:      { name: "Brezel", e: "🥨", text: "Heal 4 HP after every fight." },
   sachertorte: { name: "Sachertorte", e: "🍰", text: "Perfect sentences give +3 extra power." },
-  meldezettel: { name: "Meldezettel", e: "📄", text: "Perfekt sentences give +4 extra power." }
+  meldezettel: { name: "Meldezettel", e: "📄", text: "Perfekt sentences give +4 extra power." },
+  // grammar relics: each one pushes a different way of building sentences
+  dativamulett:{ name: "Dativ-Amulett", e: "🧿", text: "Correct Dativ objects give +3 extra power." },
+  taschenuhr:  { name: "Taschenuhr", e: "⏱️", text: "Sentences that start with a time word draw a card." },
+  atem:        { name: "Langer Atem", e: "🌬️", text: "Sentences with 5+ words also give 5 shield." },
+  wuerfel:     { name: "Pronomen-Würfel", e: "🎲", text: "You're dealt 3 pronouns each turn instead of 2." },
+  fiaker:      { name: "Fiaker-Peitsche", e: "🐎", text: "Your first sentence each turn gets +3 power." },
+  opernkarte:  { name: "Opernkarte", e: "🎭", text: "A mistake only lowers your perfect streak by 1 instead of resetting it." },
+  schnitzel:   { name: "Wiener Schnitzel", e: "🍖", text: "Healing sentences heal +4." },
+  heuriger:    { name: "Heurigen-Krug", e: "🍷", text: "Start every fight with 6 shield." },
+  glocke:      { name: "Pummerin-Glocke", e: "🔔", text: "Your hero power recharges after 2 perfect sentences instead of 3." },
+  grammatik:   { name: "Grammatikbuch", e: "📗", text: "Strong forms (du siehst, gesehen …) give +4 instead of +2." }
 };

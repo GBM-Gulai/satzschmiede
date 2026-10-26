@@ -515,3 +515,4 @@ body[data-ladder="a2"] .foe-name, body[data-ladder="a2"] .map h2, body[data-ladd
 .pw-pips i { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid #dcd0ff; }
 .pw-pips i.on { background: #dcd0ff; box-shadow: 0 0 6px #c9a6ff; }
 .power-btn.used { filter: saturate(.4); opacity: .75; box-shadow: none; }
+.vtile .vt-rest.again { color: #8c2a17; }
