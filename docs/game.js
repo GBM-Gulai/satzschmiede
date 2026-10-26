@@ -1051,7 +1051,7 @@ function winFight() {
 // Between acts: a story scene, then heal, gold and a relic before the next map
 function actCleared() {
   const done = (run.act || 0) + 1, heal = Math.round((run.maxHp - run.hp) * .6), relic = rnd(Object.keys(RELICS).filter(r => !run.relics.includes(r)));
-  run.act = done; run.floor = 0; run.path = []; run.map = LAYOUT.map(opts => shuffle(opts)); run.shop = null; run.gate = null;
+  run.act = done; run.floor = 0; run.path = []; run.map = LAYOUT.map(opts => shuffle(opts)); run.shop = null; run.gate = null; run.enc = null;
   run.hp += heal; run.gold += 40; if (relic) gainRelic(relic);
   save();
   playStory(STORY[run.ladder][`act${done}End`] || [], () => {
@@ -1230,7 +1230,8 @@ function costText(c) { return c ? ` <small>(${c.gold ? `💰 ${c.gold}` : ""}${c
 function showEncounter() {
   view = "event";
   run.seenEnc = run.seenEnc || [];
-  if (!run.enc || run.enc.floor !== run.floor) {
+  // a remembered encounter must belong to this floor *and* this act's pool (floors restart at 1 in every act)
+  if (!run.enc || run.enc.floor !== run.floor || !encPool().some(e => e.id === run.enc.id)) {
     const fresh = encPool().filter(e => !run.seenEnc.includes(e.id));
     const pick = rnd(fresh.length ? fresh : encPool());
     run.enc = { floor: run.floor, id: pick.id }; run.seenEnc.push(pick.id); save();
