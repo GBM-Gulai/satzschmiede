@@ -29,6 +29,9 @@ VOICES = {
     "riesenrad":   ("de-DE-KillianNeural", "-20%", "-18Hz"),
     "aktenberg":   ("de-DE-ConradNeural", "-18%", "-16Hz"),
     "rathausmann": ("de-AT-JonasNeural", "-15%", "-12Hz"),
+    "amsautomat":  ("de-DE-ConradNeural", "-20%", "-12Hz"),
+    "meeting":     ("de-DE-KillianNeural", "-30%", "-10Hz"),
+    "chef":        ("de-AT-JonasNeural", "-12%", "-8Hz"),
 }
 
 
@@ -58,7 +61,10 @@ async def main():
         spoken = text.replace("⏪", "").strip()
         with tempfile.TemporaryDirectory() as tmp:
             raw = os.path.join(tmp, "raw.mp3")
-            await edge_tts.Communicate(spoken, voice, rate=rate, pitch=pitch).save(raw)
+            try:
+                await edge_tts.Communicate(spoken, voice, rate=rate, pitch=pitch).save(raw)
+            except Exception as e:   # one bad line shouldn't stop the rest
+                print(f"!! skipped ({type(e).__name__}): [{speaker}] {text}"); continue
             subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", raw, "-af", "loudnorm=I=-16:TP=-1.5", "-ac", "1", "-ar", "24000", "-b:a", "64k", str(target)], check=True)
         src[key] = "edge"; done += 1
         print(f"{target.name}  [{speaker} · {voice}]  {text}")

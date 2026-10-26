@@ -51,15 +51,17 @@ const hero = () => HEROES[run.hero];
 // Language of hints & menus grows with the level: A1 English, A2 both, B1+ German
 function uiMode() { return run ? ladder().ui : "both"; }
 function L(de, en) { const m = uiMode(); return m === "en" ? en : m === "both" ? `${de} <small class="en">(${en})</small>` : de; }
-const TYPE_LABEL = () => ({ subj: L("Subjekt", "subject"), verb: L("Verb", "verb"), noun: L("Nomen", "noun"), adv: L("Zeitwort", "time"), perf: "Perfekt" });
+const TYPE_LABEL = () => ({ subj: L("Subjekt", "subject"), verb: L("Verb", "verb"), noun: L("Nomen", "noun"), adv: L("Zeitwort", "time"), perf: "Perfekt",
+  modal: L("Modalverb", "modal verb"), konj: L("Konnektor", "connector") });
 const weakLabel = w => ({ dat: L("Dativ", "Dativ"), akk: L("Akkusativ", "Akkusativ"), inv: L("Satz beginnt mit Zeitwort", "sentence starts with a time word"),
-  perfect: L("perfekte Sätze", "perfect sentences"), long: L("lange Sätze (5+ Wörter)", "long sentences (5+ words)"), perf: L("Perfekt-Sätze ⏪", "Perfekt sentences ⏪") })[w];
+  perfect: L("perfekte Sätze", "perfect sentences"), long: L("lange Sätze (5+ Wörter)", "long sentences (5+ words)"), perf: L("Perfekt-Sätze ⏪", "Perfekt sentences ⏪"),
+  modal: L("Sätze mit Modalverb (muss, kann …)", "sentences with a modal verb"), konj: L("Nebensätze (weil, dass …)", "subordinate clauses (weil, dass …)") })[w];
 
 // ---------- images (assets/…jpg, embedded by build.ps1 for the one-file version) with emoji fallback ----------
 // Optional looping videos (assets/video/<id>.mp4, e.g. made with Google Flow) play over the picture; if missing, the picture stays.
 const ASSET = window.ASSET_DATA || {};
 const src = p => ASSET[p] || p;
-const VIDEO = ["automat", "hydra", "huber", "drache", "hausmeister", "wotruba", "kaese", "riesenrad", "aktenberg", "rathausmann", "standlerin", "watschenmann", "archivar", "sekretaer"];   // ids that may have a clip in assets/video/
+const VIDEO = ["automat", "hydra", "huber", "drache", "hausmeister", "wotruba", "kaese", "riesenrad", "aktenberg", "rathausmann", "standlerin", "watschenmann", "archivar", "sekretaer", "amsautomat", "meeting", "chef"];   // ids that may have a clip in assets/video/
 window.artFail = img => img.parentNode.classList.add("noimg");
 // Screens are redrawn often (every card tap). Videos are kept in a cache and moved into each new screen,
 // so they keep playing instead of restarting: renders only contain <video data-src> placeholders.
@@ -90,7 +92,7 @@ const art = (p, emoji, cls = "", video = "") => `<span class="pic ${cls}"><img s
 const clip = id => VIDEO.includes(id) ? `assets/video/${id}.mp4` : "";
 const enemyArt = (id, cls) => art(`assets/enemies/${id}.jpg`, ENEMIES[id].e, cls, cls === "foe-pic" || cls === "portrait" ? clip(id) : "");
 const heroArt = (id, cls) => art(`assets/heroes/${id}.jpg`, HEROES[id].e, cls);
-for (const t of ["subj", "verb", "noun", "adv", "perf"]) document.documentElement.style.setProperty(`--card-${t}`, `url("${src(`assets/cards/${t}.jpg`)}")`);
+for (const t of ["subj", "verb", "noun", "adv", "perf", "modal", "konj"]) document.documentElement.style.setProperty(`--card-${t}`, `url("${src(`assets/cards/${t}.jpg`)}")`);
 // today's Vienna before the portal (first frame of portal.mp4) and the painted language tower
 document.documentElement.style.setProperty("--bg-modern", `url("${src("assets/bg/a1-modern.jpg")}")`);
 document.documentElement.style.setProperty("--bg-tower", `url("${src("assets/tower/tower.jpg")}")`);
@@ -246,7 +248,7 @@ function isStrongPart(d) {
   return d.part !== "ge" + st + t && d.part !== st + t;
 }
 function stepKey(st, a) {
-  if (st.kind === "conj") return `conj|${st.c.id}|${a.person}`;
+  if (st.kind === "conj") return `conj|${st.c.id}|${st.p ?? a.person}`;
   if (st.kind === "art") return `art|${st.c.id}|${st.cas}`;
   return `${st.kind}|${a.verb.id}`;
 }
@@ -375,7 +377,7 @@ function startClimb() {
 // ---------- run setup ----------
 let pickedHero = null;
 function newRun(ladderId) {
-  const lad = LADDERS.find(l => l.id === ladderId), hp = 50;
+  const lad = LADDERS.find(l => l.id === ladderId), hp = lad.hp || 50;
   run = {
     ladder: ladderId, hero: pickedHero, hp, maxHp: hp, gold: 60, floor: 0, act: 0, relics: [],
     deck: [], packed: false, map: LAYOUT.map(opts => shuffle(opts)), path: [],
@@ -426,13 +428,15 @@ function playStory(lines, done) {
     if (fx === "portal") portal();
     ov.innerHTML = `<div class="story-pic ${who === "hero" ? "left" : "right"}">${s.pic}</div>
       <div class="story-box ${who === "narr" ? "narr" : ""}">${s.name ? `<div class="story-name">${s.name}</div>` : ""}
-        <div class="story-de">${fill(english ? en : de)} <button class="say" data-say aria-label="Anhören">🔊</button></div><div class="story-en">${english ? "🇩🇪 " : ""}${fill(english ? de : en)}</div>
+        <div class="story-de">${fill(english ? en : de)} <button class="say" data-say aria-label="Anhören">🔊</button>${uiMode() === "de" && !english ? ` <button class="en-toggle" data-en aria-label="English">🇬🇧</button>` : ""}</div>
+        <div class="story-en${uiMode() === "de" && !english ? " en-hidden" : ""}">${english ? "🇩🇪 " : ""}${fill(english ? de : en)}</div>
         <div class="story-foot"><span>${i + 1} / ${lines.length}</span><span>${L("Tippen zum Weiterlesen", "Tap to continue")} ▸</span></div></div>
       <button class="story-skip" data-skip>${L("Überspringen", "Skip")} ⏭</button>`;
     playLine(who, fill(english ? en : de), english);
   };
   ov.onclick = e => {
     if (e.target.closest("[data-say]")) return playLine(lines[i][0], fill(lines[i][lines[i][3] === "en" ? 2 : 1]), lines[i][3] === "en");
+    if (e.target.closest("[data-en]")) { ov.querySelector(".story-en").classList.toggle("en-hidden"); return; }
     if (e.target.closest("[data-skip]")) i = lines.length; else i++;
     sfx("tap"); show();
   };
@@ -463,7 +467,8 @@ function cardWord(d) { return d.type === "noun" ? `<span class="art g-${d.g}">${
 function cardHtml(c, extra = "") {
   const d = CARDS[c.id], pow = powOf(c), T = TYPE_LABEL();
   const slots = d.type === "verb" ? (d.slots.length ? d.slots.map(s => s === "dat" ? L("+ wem? (Dat)", "+ to whom? (Dat)") : L("+ was? (Akk)", "+ what? (Akk)")).join(" ") : L("ohne Objekt", "no object"))
-    : d.type === "perf" ? L("ans Satzende", "goes last") : "";
+    : d.type === "perf" ? L("ans Satzende", "goes last") : d.type === "modal" ? L("Position 2 · Verb ans Ende", "position 2 · verb goes last")
+    : d.type === "konj" ? L("Nebensatz · Verb ans Ende", "2nd clause · verb goes last") : "";
   const power = d.type === "verb" ? `${FX[d.fx].icon} ${pow}` : `✦ ${pow}`;
   return `<button class="card t-${d.type}${d.type === "noun" ? " g-" + d.g : ""}${c.up ? " up" : ""} ${extra}" data-uid="${c.uid}">
     <span class="cost">${d.cost}</span><span class="ctype">${T[d.type]}${c.up ? " +" : ""}</span>
@@ -692,8 +697,8 @@ function startTurn() {
   fight.field.forEach((c, i) => { if (c && fight.turn > 1 && --c.turns <= 0) { fight.field[i] = null; fight.discard.push(c); toast(L(`⌛ <b>${CARDS[c.id].de}</b> verlässt das Feld.`, `⌛ <b>${CARDS[c.id].de}</b> leaves the field.`), 1600); } });
   fight.block = 0; fight.tapped = []; fight.tapped2 = []; fight.placed = 0; fight.placing = null; fight.recycled = false; fight.castThisTurn = false;
   if (fight.turn === 1 && has("heuriger")) fight.block = 6;
-  fight.energy = 3 + (run.act || 0) + (fight.turn === 1 && has("kaffee") ? 1 : 0);   // +1 max energy for every act cleared
-  drawCards(HAND + (has("duden") ? 1 : 0));
+  fight.energy = (ladder().energy || 3) + (run.act || 0) + (fight.turn === 1 && has("kaffee") ? 1 : 0);   // +1 max energy for every act cleared (B1+ start with 4)
+  drawCards((ladder().hand || HAND) + (has("duden") ? 1 : 0));
   fight.bar = (fight.tutBars && fight.tutBars.length ? fight.tutBars.shift() : dealPronouns()).map(id => mk(id));
   // never stuck: with no verb on the field and none in hand, fetch one from the piles
   const isVerb = c => CARDS[c.id].type === "verb";
@@ -725,39 +730,83 @@ function needMsg(v) {
   return v.slots[0] === "dat" ? L(`„${v.de}“ braucht ein Dativ-Objekt: <b>wem?</b>`, `“${v.de}” needs a Dativ object: <b>to whom?</b>`)
     : L(`„${v.de}“ braucht ein Akkusativ-Objekt: <b>wen oder was?</b>`, `“${v.de}” needs an Akkusativ object: <b>who or what?</b>`);
 }
+// A sentence is a main clause, optionally followed by a connector (weil, dass, wenn, obwohl) and a second clause.
+// Main clause: [time word] FINITE subject … objects … [participle | infinitive]
+//   FINITE = the field verb – or a modal verb, and then the field verb goes to the end as an infinitive.
+// Second clause: subject … objects … verb (conjugated, at the very end).
 function analyze(cards) {
   if (!cards.length) return { msg: L("Tippe Karten in der richtigen Reihenfolge an, um einen Satz zu schmieden.", "Tap cards in the right order to forge a sentence.") };
-  const d = cards.map(c => CARDS[c.id]), verbs = d.filter(x => x.type === "verb"), perfs = d.filter(x => x.type === "perf");
+  const ks = cards.filter(c => CARDS[c.id].type === "konj");
+  if (ks.length > 1) return { msg: L("Nur <b>ein</b> Konnektor pro Satz.", "Only <b>one</b> connector per sentence.") };
+  const k = cards.indexOf(ks[0]);
+  if (k === 0) return { msg: L("Der Konnektor kommt <b>nach</b> dem Hauptsatz: Ich trinke Kaffee, <b>weil</b> …", "The connector comes <b>after</b> the main clause: Ich trinke Kaffee, <b>weil</b> …") };
+  const main = analyzeMain(k < 0 ? cards : cards.slice(0, k));
+  if (!main.ok || k < 0) return main;
+  const sub = analyzeSub(cards.slice(k + 1), CARDS[cards[k].id]);
+  if (!sub.ok) return sub;
+  return { ...main, konj: cards[k], sub, msg: L("✓ Satz mit Nebensatz – jetzt schmieden!", "✓ Sentence with a second clause – forge it!") };
+}
+// objects must match the verb's slots and make sense
+function checkObjects(v, s, objs) {
+  if (objs.length < v.slots.length) return needMsg(v);
+  if (objs.length > v.slots.length) return v.slots.length ? L(`Zu viele Nomen – „${v.de}“ braucht ${v.slots.length === 1 ? "nur ein Objekt" : "zwei Objekte"}.`, `Too many nouns – “${v.de}” needs ${v.slots.length === 1 ? "only one object" : "two objects"}.`) : needMsg(v);
+  if (s.type === "noun" && !["person", "animal"].includes(s.kind)) return L(`🤨 ${cap(s.g)} ${s.de} kann nicht „${v.de}“ – das Subjekt sollte eine Person oder ein Tier sein.`, `🤨 ${cap(s.g)} ${s.de} can't “${v.de}” – the subject should be a person or an animal.`);
+  for (const [i, c] of objs.entries()) {
+    const slot = v.slots[i], want = v.want && v.want[slot], x = CARDS[c.id];
+    if (want && !want.includes(x.kind)) return L(`🤨 Das ergibt keinen Sinn: <b>${v.de}</b> + <b>${x.de}</b>${slot === "dat" ? " – Dativ heißt <b>wem?</b>, meist eine Person oder ein Tier." : "."}`,
+      `🤨 That makes no sense: <b>${v.de}</b> + <b>${x.de}</b>${slot === "dat" ? " – Dativ means <b>to whom?</b>, usually a person or an animal." : "."}`);
+  }
+  return "";
+}
+function analyzeMain(cards) {
+  const d = cards.map(c => CARDS[c.id]), verbs = d.filter(x => x.type === "verb"), perfs = d.filter(x => x.type === "perf"), modals = d.filter(x => x.type === "modal");
   if (perfs.length > 1) return { msg: L("Nur eine ⏪ Perfekt-Karte pro Satz.", "Only one ⏪ Perfekt card per sentence.") };
-  const perf = perfs.length === 1;
+  if (modals.length > 1) return { msg: L("Nur <b>ein</b> Modalverb pro Satz.", "Only <b>one</b> modal verb per sentence.") };
+  const perf = perfs.length === 1, modal = modals.length === 1;
+  if (perf && modal) return { msg: L("Modalverb und ⏪ Perfekt zusammen – das ist zu viel für einen Satz.", "A modal verb and ⏪ Perfekt together – too much for one sentence.") };
   if (perf && d[d.length - 1].type !== "perf") return { msg: L("⏪ Perfekt gehört ans <b>Ende</b> – das Partizip steht am Satzende (… den Hund <b>gesehen</b>).", "⏪ Perfekt goes <b>last</b> – the participle sits at the end (… den Hund <b>gesehen</b>).") };
   if (!verbs.length) return { msg: L("Es fehlt noch ein Verb.", "You still need a verb.") };
-  if (verbs.length > 1) return { msg: L("Nur <b>ein</b> Verb pro Satz.", "Only <b>one</b> verb per sentence.") };
-  if (d[0].type === "verb") return { msg: L("Das Verb steht an <b>Position 2</b> – am Anfang wäre es eine Frage.", "The verb goes in <b>position 2</b> – at the start it would be a question.") };
+  if (verbs.length > 1) return { msg: L("Nur <b>ein</b> Verb pro Satz – für ein zweites Verb brauchst du einen Konnektor (weil, dass …).", "Only <b>one</b> verb per clause – for a second verb you need a connector (weil, dass …).") };
+  if (d[0].type === "verb" || d[0].type === "modal") return { msg: L("Das Verb steht an <b>Position 2</b> – am Anfang wäre es eine Frage.", "The verb goes in <b>position 2</b> – at the start it would be a question.") };
   if (d[0].type === "perf") return { msg: L("⏪ Perfekt gehört ans Ende.", "⏪ Perfekt goes last.") };
-  const inv = d[0].type === "adv", vi = 1, si = inv ? 2 : 0;
+  const inv = d[0].type === "adv", vi = 1, si = inv ? 2 : 0, finType = modal ? "modal" : "verb";
   if (!d[vi]) return { msg: inv ? L("Nach dem Zeitwort kommt sofort das <b>Verb</b>.", "After the time word comes the <b>verb</b>.") : L("Jetzt das <b>Verb</b> (Position 2).", "Now the <b>verb</b> (position 2).") };
-  if (d[vi].type !== "verb") return { msg: inv ? L("Nach dem Zeitwort kommt sofort das Verb (Position 2).", "Right after the time word comes the verb (position 2).") : L("Das Verb muss an <b>Position 2</b> stehen.", "The verb must be in <b>position 2</b>.") };
+  if (d[vi].type !== finType) return { msg: modal ? L("Das <b>Modalverb</b> steht an Position 2: Ich <b>muss</b> …", "The <b>modal verb</b> goes in position 2: Ich <b>muss</b> …")
+    : inv ? L("Nach dem Zeitwort kommt sofort das Verb (Position 2).", "Right after the time word comes the verb (position 2).") : L("Das Verb muss an <b>Position 2</b> stehen.", "The verb must be in <b>position 2</b>.") };
+  if (modal && d[d.length - 1].type !== "verb") return { msg: L("Mit Modalverb steht das Verb am <b>Ende</b>: Ich muss den Bericht <b>schreiben</b>.", "With a modal verb the verb goes <b>last</b>: Ich muss den Bericht <b>schreiben</b>.") };
   const s = d[si];
-  if (!s || s.type === "perf") return { msg: L("Jetzt das <b>Subjekt</b>: Heute sehe <b>ich</b> …", "Now the <b>subject</b>: Heute sehe <b>ich</b> …") };
+  if (!s || s.type === "perf" || (modal && si === d.length - 1)) return { msg: L("Jetzt das <b>Subjekt</b>: Heute sehe <b>ich</b> …", "Now the <b>subject</b>: Heute sehe <b>ich</b> …") };
   if (s.type !== "subj" && s.type !== "noun") return { msg: inv ? L("Nach Zeitwort + Verb kommt das Subjekt: Heute sehe <b>ich</b> …", "After time word + verb comes the subject: Heute sehe <b>ich</b> …") : L("Der Satz beginnt mit dem <b>Subjekt</b> (wer?) oder einem Zeitwort.", "Start with the <b>subject</b> (who?) or a time word.") };
-  const v = d[vi], objs = [];
+  const vCard = modal ? cards[cards.length - 1] : cards[vi], v = CARDS[vCard.id], objs = [];
   for (const c of cards.slice(si + 1)) {
     const x = CARDS[c.id];
     if (x.type === "subj") return { msg: L("Nur <b>ein</b> Subjekt pro Satz.", "Only <b>one</b> subject per sentence.") };
     if (x.type === "noun") objs.push(c);
   }
-  if (objs.length < v.slots.length) return { msg: needMsg(v) };
-  if (objs.length > v.slots.length) return { msg: v.slots.length ? L(`Zu viele Nomen – „${v.de}“ braucht ${v.slots.length === 1 ? "nur ein Objekt" : "zwei Objekte"}.`, `Too many nouns – “${v.de}” needs ${v.slots.length === 1 ? "only one object" : "two objects"}.`) : needMsg(v) };
-  if (s.type === "noun" && !["person", "animal"].includes(s.kind)) return { msg: L(`🤨 ${cap(s.g)} ${s.de} kann nicht „${v.de}“ – das Subjekt sollte eine Person oder ein Tier sein.`, `🤨 ${cap(s.g)} ${s.de} can't “${v.de}” – the subject should be a person or an animal.`) };
-  for (const [i, c] of objs.entries()) {
-    const slot = v.slots[i], want = v.want && v.want[slot], x = CARDS[c.id];
-    if (want && !want.includes(x.kind)) return { msg: L(`🤨 Das ergibt keinen Sinn: <b>${v.de}</b> + <b>${x.de}</b>${slot === "dat" ? " – Dativ heißt <b>wem?</b>, meist eine Person oder ein Tier." : "."}`,
-      `🤨 That makes no sense: <b>${v.de}</b> + <b>${x.de}</b>${slot === "dat" ? " – Dativ means <b>to whom?</b>, usually a person or an animal." : "."}`) };
-  }
+  const bad = checkObjects(v, s, objs);
+  if (bad) return { msg: bad };
   return { ok: true, msg: L("✓ Der Satz steht – jetzt schmieden!", "✓ Sentence ready – forge it!"), inv, perf, person: s.type === "subj" ? s.p : 2,
-    subj: cards[si], verb: cards[vi], perfCard: perf ? cards[cards.length - 1] : null, objs: objs.map((c, i) => ({ c, cas: v.slots[i] })) };
+    subj: cards[si], verb: vCard, modal: modal ? cards[vi] : null, perfCard: perf ? cards[cards.length - 1] : null, objs: objs.map((c, i) => ({ c, cas: v.slots[i] })) };
 }
+function analyzeSub(cards, k) {
+  const ex = L(`…, <b>${k.de}</b> ich den Kaffee <b>trinke</b>.`, `…, <b>${k.de}</b> ich den Kaffee <b>trinke</b>.`);
+  if (!cards.length) return { msg: L(`Nach „${k.de}“: erst das Subjekt, das Verb ganz ans Ende – ${ex}`, `After “${k.de}”: the subject first, the verb at the very end – ${ex}`) };
+  const d = cards.map(c => CARDS[c.id]);
+  if (d.some(x => ["modal", "perf", "adv"].includes(x.type))) return { msg: L("Im Nebensatz bitte nur Subjekt, Nomen und Verb.", "In the second clause: only subject, nouns and verb, please.") };
+  const s = d[0];
+  if (s.type !== "subj" && s.type !== "noun") return { msg: L(`Nach „${k.de}“ kommt zuerst das <b>Subjekt</b>: ${ex}`, `After “${k.de}” comes the <b>subject</b> first: ${ex}`) };
+  const verbs = d.filter(x => x.type === "verb");
+  if (!verbs.length || d[d.length - 1].type !== "verb") return { msg: L(`Im Nebensatz steht das Verb ganz am <b>Ende</b>: ${ex}`, `In the second clause the verb goes at the very <b>end</b>: ${ex}`) };
+  if (verbs.length > 1) return { msg: L("Nur <b>ein</b> Verb im Nebensatz.", "Only <b>one</b> verb in the second clause.") };
+  const v = d[d.length - 1], objs = cards.slice(1, -1).filter(c => CARDS[c.id].type === "noun");
+  if (cards.slice(1, -1).some(c => CARDS[c.id].type === "subj")) return { msg: L("Nur <b>ein</b> Subjekt im Nebensatz.", "Only <b>one</b> subject in the second clause.") };
+  const bad = checkObjects(v, s, objs);
+  if (bad) return { msg: bad };
+  return { ok: true, subj: cards[0], verb: cards[cards.length - 1], person: s.type === "subj" ? s.p : 2, objs: objs.map((c, i) => ({ c, cas: v.slots[i] })) };
+}
+// grammatical case of a noun card in an analysed sentence
+const caseOf = (a, c) => c === a.subj || (a.sub && c === a.sub.subj) ? "nom" : ([...a.objs, ...(a.sub ? a.sub.objs : [])].find(o => o.c === c) || {}).cas;
+const allObjs = a => [...a.objs, ...(a.sub ? a.sub.objs : [])];
 
 function renderFight() {
   const e = ENEMIES[fight.eid], en = fight.enemy, cards = sentenceCards(), a = analyze(cards);
@@ -865,12 +914,17 @@ function cast() {
   const cards = sentenceCards(), a = analyze(cards);
   if (!a.ok || sentenceCost() > fight.energy) return;
   const steps = [];
+  const conj = (c, d, p) => {
+    const right = forms(d)[p], others = shuffle([...new Set(forms(d))].filter(f => f !== right)).slice(0, 2);
+    steps.push({ c, kind: "conj", p, right, opts: shuffle([right, ...others]), q: L(`Welche Form? <b>${PERSON[p]}</b> + ${d.de}`, `Which form? <b>${PERSON[p]}</b> + ${d.de}`) });
+  };
   for (const c of cards) {
     const d = CARDS[c.id];
-    if (c === a.verb && !a.perf) {
-      const right = forms(d)[a.person], others = shuffle([...new Set(forms(d))].filter(f => f !== right)).slice(0, 2);
-      steps.push({ c, kind: "conj", right, opts: shuffle([right, ...others]), q: L(`Welche Form? <b>${PERSON[a.person]}</b> + ${d.de}`, `Which form? <b>${PERSON[a.person]}</b> + ${d.de}`) });
-    } else if (c === a.verb) {
+    if (c === a.modal) conj(c, d, a.person);
+    else if (a.sub && c === a.sub.verb) conj(c, d, a.sub.person);
+    else if (c === a.verb && a.modal) continue;   // infinitive at the end: no form to choose
+    else if (c === a.verb && !a.perf) conj(c, d, a.person);
+    else if (c === a.verb) {
       const right = AUX[d.aux][a.person], other = AUX[d.aux === "haben" ? "sein" : "haben"][a.person];
       const third = AUX[d.aux].find(f => f !== right) || AUX[d.aux][0];
       steps.push({ c, kind: "aux", right, opts: shuffle([...new Set([right, other, third])]), q: L(`Perfekt: <b>haben</b> oder <b>sein</b>? (${PERSON[a.person]} + ${d.de})`, `Perfekt: <b>haben</b> or <b>sein</b>? (${PERSON[a.person]} + ${d.de})`) });
@@ -878,7 +932,7 @@ function cast() {
       const v = CARDS[a.verb.id];
       steps.push({ c, kind: "part", right: v.part, opts: shuffle([v.part, ...fakeParts(v)]), q: L(`Partizip II von <b>${v.de}</b>?`, `Past participle of <b>${v.de}</b>?`) });
     } else if (d.type === "noun") {
-      const cas = c === a.subj ? "nom" : a.objs.find(o => o.c === c).cas;
+      const cas = caseOf(a, c);
       steps.push({ c, kind: "art", cas, right: ART[cas][d.g], opts: ARTICLES,
         q: L(`Welcher Artikel? <b>${nounForm(d, cas)}</b> als <b>${CASE_NAME[cas]}</b>`, `Which article? <b>${nounForm(d, cas)}</b> as <b>${CASE_NAME[cas]}</b>`) + (cas === "dat" ? L(" (wem?)", " (to whom?)") : cas === "akk" ? L(" (wen/was?)", " (who/what?)") : L(" (wer?)", " (who?)")) });
     }
@@ -889,7 +943,7 @@ function cast() {
 }
 // Builds the sentence word by word: blanks for pending choices, the player's answers (right/wrong), or the correct forms (final)
 function sentenceWords(cards, a, steps, answers, upto, final) {
-  return cards.map((c, i) => {
+  const toks = cards.map((c, i) => {
     const d = CARDS[c.id], si = steps.findIndex(s => s.c === c), first = i === 0;
     const slot = (inner, cls) => `<span class="tok ${cls || ""}">${inner}</span>`;
     const pick = (fallback) => {
@@ -898,13 +952,17 @@ function sentenceWords(cards, a, steps, answers, upto, final) {
       return `<span class="blank${si === upto ? "" : " dim"}">${fallback}</span>`;
     };
     if (d.type === "noun") {
-      const cas = c === a.subj ? "nom" : a.objs.find(o => o.c === c).cas, art = pick("___");
+      const cas = caseOf(a, c), art = pick("___");
       return slot(`${first && final ? cap(art) : art} ${nounForm(d, cas)}`, `case-${cas}`);
     }
-    if (d.type === "verb") return slot(pick(a.perf ? "(haben/sein)" : `(${d.de})`), "verb");
+    if (d.type === "verb" && c === a.verb && a.modal) return slot(d.de, "verb");   // infinitive
+    if (d.type === "verb" || d.type === "modal") return slot(pick(c === a.verb && a.perf ? "(haben/sein)" : `(${d.de})`), "verb");
     if (d.type === "perf") return slot(pick(`(${CARDS[a.verb.id].de} → ?)`), "verb");
+    if (d.type === "konj") return slot(d.de, "konj");
     return slot(first ? cap(d.de) : d.de);
-  }).join(" ") + ".";
+  });
+  // a comma before the connector: „…, weil …“
+  return toks.map((t, i) => cards[i + 1] && CARDS[cards[i + 1].id].type === "konj" ? t + "," : t).join(" ") + ".";
 }
 function incant(cards, a, steps, i, answers) {
   let ov = $(".incant:not(.tut-offer)");
@@ -939,11 +997,13 @@ function resolve(cards, a, steps, answers) {
   let power = cards.reduce((s, c) => s + (okOf(c) ? powOf(c) : 0), 0);
   const perfOk = a.perf && okOf(a.verb) && okOf(a.perfCard);
   const bonus = [], strong = has("grammatik") ? 4 : 2;   // [points, label]
-  if (!a.perf && okOf(a.verb) && isStrongForm(v, a.person)) bonus.push([strong, `${PERSON[a.person]} ${forms(v)[a.person]}`]);
+  const fin = a.modal || a.verb, finD = CARDS[fin.id];
+  if (!a.perf && okOf(fin) && isStrongForm(finD, a.person)) bonus.push([strong, `${PERSON[a.person]} ${forms(finD)[a.person]}`]);
+  if (a.sub && okOf(a.sub.verb) && isStrongForm(CARDS[a.sub.verb.id], a.sub.person)) bonus.push([strong, `${PERSON[a.sub.person]} ${forms(CARDS[a.sub.verb.id])[a.sub.person]}`]);
   if (perfOk && isStrongPart(v)) bonus.push([strong, v.part]);
-  for (const o of a.objs) if (o.cas === "dat" && okOf(o.c)) bonus.push([2 + (has("dativamulett") ? 3 : 0), "Dativ"]);
-  const combo = `${a.person}|${a.verb.id}`;
-  if (okOf(a.verb) && !fight.combos.includes(combo)) { fight.combos.push(combo); bonus.push([2, L("neue Kombi", "new combo")]); }
+  for (const o of allObjs(a)) if (o.cas === "dat" && okOf(o.c)) bonus.push([2 + (has("dativamulett") ? 3 : 0), "Dativ"]);
+  const combo = `${a.person}|${(a.modal || a.verb).id}`;
+  if (okOf(fin) && !fight.combos.includes(combo)) { fight.combos.push(combo); bonus.push([2, L("neue Kombi", "new combo")]); }
   if (has("fiaker") && !fight.castThisTurn) bonus.push([3, "Fiaker"]);
   const bonusPts = bonus.reduce((t, b) => t + b[0], 0);
   power += bonusPts;
@@ -954,7 +1014,8 @@ function resolve(cards, a, steps, answers) {
   if (perfOk && has("meldezettel")) power += 4;
   if (fight.boost) { power = Math.ceil(power * 1.5); fight.boost--; notes.push(L("🍳 Doppelte Portion: +50 %!", "🍳 Double helping: +50 %!")); }
   if (v.fx === "heal" && has("schnitzel")) power += 4;
-  const flags = { dat: a.objs.some(o => o.cas === "dat" && okOf(o.c)), akk: a.objs.some(o => o.cas === "akk" && okOf(o.c)), inv: a.inv, perfect, long: cards.filter(c => CARDS[c.id].type !== "perf").length >= 5, perf: perfOk };
+  const flags = { dat: allObjs(a).some(o => o.cas === "dat" && okOf(o.c)), akk: allObjs(a).some(o => o.cas === "akk" && okOf(o.c)), inv: a.inv, perfect,
+    long: cards.filter(c => CARDS[c.id].type !== "perf").length >= 5, perf: perfOk, modal: !!a.modal && okOf(a.modal), konj: !!a.sub && okOf(a.sub.verb) };
   let mult = "";
   if (v.fx === "atk" && e.weak) {
     if (flags[e.weak]) { power *= 2; mult = L(" · Schwäche getroffen ×2!", " · weakness hit ×2!"); }
@@ -965,7 +1026,7 @@ function resolve(cards, a, steps, answers) {
   const used = cards.filter(c => fight.hand.includes(c));
   fight.hand = fight.hand.filter(c => !used.includes(c));
   fight.discard.push(...used); fight.sentence = [];
-  if (fight.field.includes(a.verb)) (fight.tapped.includes(a.verb.uid) ? fight.tapped2 : fight.tapped).push(a.verb.uid);
+  for (const vc of [a.verb, a.sub && a.sub.verb]) if (vc && fight.field.includes(vc)) (fight.tapped.includes(vc.uid) ? fight.tapped2 : fight.tapped).push(vc.uid);
   run.stats.sentences++; meta.sentences++;
   if (perfect) { run.stats.perfect++; meta.perfect++; }
   run.stats.mistakes += mistakes;
@@ -1234,7 +1295,8 @@ function gateListen() {
 const encPool = () => ENCOUNTERS[`${run.ladder}-${run.act || 0}`] || [];
 const T2 = pair => L(pair[0], pair[1]);
 // scene text: always German, with the English underneath until B1
-const DE2 = pair => uiMode() === "de" ? pair[0] : `${pair[0]}<small class="en-sub">${pair[1]}</small>`;
+const DE2 = pair => uiMode() === "de" ? `${pair[0]} <button class="en-toggle" onclick="this.nextElementSibling.classList.toggle('en-hidden')" aria-label="English">🇬🇧</button><small class="en-sub en-hidden">${pair[1]}</small>`
+  : `${pair[0]}<small class="en-sub">${pair[1]}</small>`;
 function costText(c) { return c ? ` <small>(${c.gold ? `💰 ${c.gold}` : ""}${c.hp ? `❤️ −${c.hp}` : ""})</small>` : ""; }
 function showEncounter() {
   view = "event";
@@ -1351,6 +1413,8 @@ function showHelp() {
     <li><b>Your cards are German words.</b> Tap them in order to build a sentence: <i>Ich · sehe · den Hund</i>.</li>
     <li><b>Each turn you're dealt 2 pronouns</b> (ich, du, wir …). <b>Verbs go on the field:</b> one per turn, for free. A field verb casts once per turn (from act 2: a second time for +1 ⚡) and stays 3 turns (3 slots).</li>
     <li><b>Energy ⚡:</b> 3 per turn (+1 for every act cleared) – the red seal on a card is its cost. <b>✨ Special power:</b> ready at the start of a fight, then 3 perfect sentences recharge it.</li>
+    <li><b>B1 – 🔧 modal verbs</b> (können, müssen …) go in position 2 and send the verb to the end: <i>Ich muss den Bericht schreiben.</i>
+      <b>🔗 Connectors</b> (weil, dass, wenn, obwohl) add a second clause with the verb at the very end: <i>Ich arbeite, weil ich Geld brauche.</i></li>
     <li><b>🔥 Streaks:</b> perfect sentences in a row grow stronger (×1.5 → ×1.6 → … ×2). <b>New combos</b> (a pronoun + verb you haven't used this fight) give +2. On the first turn you may place 2 verbs; a verb you can't place can be ♻️ recycled once per turn.</li>
     <li><b>The verb decides the spell:</b> ⚔️ attack, 🛡️ shield or ❤️ heal. The number is its power.</li>
     <li><b>Word order:</b> the verb is always in <b>position 2</b>. Start with a time word (<i>heute</i>) and the subject moves behind the verb: <i>Heute sehe ich …</i></li>

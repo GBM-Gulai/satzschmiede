@@ -92,8 +92,39 @@ const LADDERS = [
              ["Herr Wotruba: „Siebenundvierzig Euro.“", ["47 €", "74 €", "17 €"]],
              ["Höflich: „___ Sie mir einen Rabatt geben?“", ["Könnten", "Konnte", "Kannst"]],
              ["Was ist ein „Greißler“?", ["ein kleines Lebensmittelgeschäft", "ein Busfahrer", "ein Wiener Kuchen"]]] },
-  { id: "b1", lvl: "B1", name: "Der Job", nameEn: "The Job", place: "Wien heute · ein Büro in der Leopoldstadt", ui: "de", ready: false,
-    teaser: "Zurück in der Gegenwart: Modalverben, weil-Sätze und ein Chef, der nie zufrieden ist." },
+  { id: "b1", lvl: "B1", name: "Der Job", nameEn: "The Job", place: "Wien heute · ein Büro in der Leopoldstadt", ui: "de", ready: true, energy: 4, hand: 6, hp: 60,
+    teaser: "Zurück in der Gegenwart: Modalverben, weil-Sätze und ein Chef, der nie zufrieden ist.",
+    mapTitle: "Beim AMS", mapSub: "Wartenummern, Formulare, Beratung. Ganz am Ende wartet der Termin-Automat.",
+    enemies: ["lurch", "absage", "phantom", "troll"], easy: ["lurch", "absage"], elite: "beraterin", boss: "amsautomat",
+    acts: [{ bg: "b1-1" },
+           { name: "Das Büro", bg: "b1", mapTitle: "Im Büro", mapSub: "Drucker, E-Mails, Kaffeemaschine. Und dann: das Endlos-Meeting.",
+             enemies: ["druckerdaemon", "mailflut", "kaffeekobold", "dauerredner"], easy: ["druckerdaemon", "kaffeekobold"], elite: "hotline", boss: "meeting",
+             puzzles: ["Ich kann den Bericht heute nicht drucken.", "Der Chef will, dass wir länger bleiben.", "Wir dürfen im Büro keinen Alkohol trinken.",
+                       "Obwohl ich müde bin, beantworte ich alle E-Mails.", "Kannst du mir bitte die Datei schicken?", "Ich trinke Kaffee, weil das Meeting lange dauert."] },
+           { name: "Die Präsentation", bg: "b1-3", mapTitle: "Die große Präsentation", mapSub: "Lampenfieber, Folien, Beamer. Ganz oben wartet der Chef.",
+             enemies: ["lampenfieber", "folienkobold", "beamer", "deadline"], easy: ["lampenfieber", "deadline"], elite: "konkurrent", boss: "chef",
+             puzzles: ["Morgen soll ich das Projekt präsentieren.", "Ich bin nervös, weil der Chef zuhört.", "Wenn die Präsentation gut läuft, bekomme ich mehr Gehalt.",
+                       "Wir müssen die Folien noch einmal besprechen.", "Der Kunde möchte den Vertrag sofort unterschreiben.", "Obwohl der Beamer kaputt ist, präsentiere ich weiter."] }],
+    start: ["arbeiten", "schreiben", "drucken", "telefonieren", "Bericht", "Email", "Chef", "Kollegin", "Termin", "müssen", "weil", "heute"],
+    starter: ["können", "dass", "lesen", "beantworten", "Lebenslauf", "Projekt", "Kunde"],
+    pool: ["er", "sie", "wir", "ihr", "vergessen", "besprechen", "verdienen", "präsentieren", "schicken", "warten", "beantworten", "kaufen", "finden", "suchen",
+           "geben", "zeigen", "erklären", "helfen", "Kunde", "Chefin", "Vertrag", "Lebenslauf", "Bewerbung", "Präsentation", "Drucker", "Gehalt", "Projekt",
+           "Laptop", "Kaffee", "Zeitung", "Brief", "dürfen", "sollen", "wollen", "möchten", "dass", "wenn", "obwohl", "morgen", "jetzt", "perf"],
+    riddles: [
+      ["Welcher Satz ist richtig?", ["Ich muss heute arbeiten.", "Ich muss arbeiten heute.", "Ich heute muss arbeiten."]],
+      ["Welcher Satz ist richtig?", ["Ich bleibe zu Hause, weil ich krank bin.", "Ich bleibe zu Hause, weil ich bin krank.", "Ich bleibe zu Hause, weil bin ich krank."]],
+      ["„Ich darf hier nicht rauchen“ heißt …", ["I'm not allowed to smoke here.", "I don't want to smoke here.", "I must not smoke here tomorrow."]]
+    ],
+    puzzles: ["Ich muss heute meinen Lebenslauf schreiben.", "Kann ich morgen einen Termin bekommen?", "Ich lerne Deutsch, weil ich hier arbeiten will.",
+              "Wir müssen das Formular bis Freitag abgeben.", "Ich glaube, dass ich die Stelle bekomme.", "Wenn ich Zeit habe, schreibe ich Bewerbungen."],
+    listen: [["Ich muss um neun Uhr im Büro sein.", "Ich muss um zehn Uhr im Büro sein.", "Ich kann um neun Uhr im Büro sein."],
+             ["Der Termin ist am Dienstag.", "Der Termin ist am Donnerstag.", "Die Termine sind am Dienstag."],
+             ["Ich arbeite hier, weil es mir gefällt.", "Ich arbeite hier, wenn es mir gefällt.", "Ich arbeite hier, obwohl es mir gefällt."],
+             ["Das Gehalt beträgt zweitausend Euro.", "Das Gehalt beträgt zweihundert Euro.", "Das Gehalt beträgt zwölftausend Euro."]],
+    haggle: [["Herr Wotruba: „Das macht zwölf Euro neunzig.“ Wie viel ist das?", ["12,90 €", "20,90 €", "12,19 €"]],
+             ["Wie fragst du höflich nach einem Rabatt?", ["Könnten Sie mir vielleicht einen Rabatt geben?", "Ich will Rabatt!", "Du gibst mir Rabatt."]],
+             ["„Das ist mir zu teuer, weil …“ – was passt?", ["… ich noch kein Gehalt bekomme.", "… ich bekomme noch kein Gehalt.", "… bekomme ich noch kein Gehalt."]],
+             ["Was sagst du, wenn du nur schauen willst?", ["Ich schaue mich nur um, danke.", "Ich kaufe alles!", "Geben Sie mir das!"]]] },
   { id: "b2", lvl: "B2", name: "Die Uni", nameEn: "University", place: "Universität Wien", ui: "de", ready: false,
     teaser: "Konjunktiv II, Passiv und Debatten im Hörsaal." },
   { id: "c1", lvl: "C1", name: "Die Zeitung", nameEn: "The Newspaper", place: "Eine Redaktion am Ring", ui: "de", ready: false,
@@ -204,7 +235,49 @@ const STORY = {
       ["novak", "Willkommen in Wien, {name}. Sie sind jetzt offiziell gemeldet.", "Welcome to Vienna, {name}. You're now officially registered."],
       ["hero", "Endlich! Jetzt brauche ich nur noch … einen Job.", "Finally! Now I just need … a job."],
       ["huber", "Sie haben genug gelernt, {name}. Zeit, ins Wien von heute zurückzukehren.", "You've learned enough, {name}. Time to return to today's Vienna."],
-      ["narr", "Fortsetzung folgt: B1 – zurück in der Gegenwart.", "To be continued: B1 – back in the present."]
+      ["narr", "Neue Leiter freigeschaltet: B1 – Der Job. Zurück in der Gegenwart!", "New ladder unlocked: B1 – The Job. Back in the present!"]
+    ]
+  },
+  b1: {
+    intro: [
+      ["narr", "Das Licht verblasst. {name} steht wieder am Westbahnhof – im Wien von heute. Handys, Rolltreppen, Lärm.", "The light fades. {name} is back at Westbahnhof – in today's Vienna. Phones, escalators, noise."],
+      ["hero", "Ich bin zurück! Und ich verstehe … fast alles!", "I'm back! And I understand … almost everything!"],
+      ["huber", "Sehr gut, {name}. Aber jetzt kommt das echte Leben: Sie brauchen einen Job.", "Very good, {name}. But now comes real life: you need a job."],
+      ["huber", "Im Wien von heute sind die Sätze länger. Sie brauchen Modalverben: Ich muss eine Arbeit finden. Das zweite Verb steht am Ende.", "In today's Vienna the sentences are longer. You need modal verbs: Ich muss eine Arbeit finden. The second verb goes at the end."],
+      ["huber", "Und Nebensätze: Ich lerne Deutsch, weil ich hier arbeiten will. Nach weil steht das Verb ganz am Ende.", "And subordinate clauses: Ich lerne Deutsch, weil ich hier arbeiten will. After weil the verb goes to the very end."],
+      ["hero", "Modalverben und Nebensätze … Ich kann das schaffen!", "Modal verbs and subordinate clauses … I can do this!"],
+      ["narr", "Erste Station: das AMS, das Arbeitsmarktservice. Die Wartenummer: 347.", "First stop: the AMS, the public employment service. Queue number: 347."]
+    ],
+    boss: [
+      ["narr", "Am Ende des Gangs blinkt er: der Termin-Automat.", "At the end of the corridor it blinks: the appointment machine."],
+      ["amsautomat", "IHR TERMIN WURDE VERSCHOBEN. BITTE BEGRÜNDEN SIE IHR ANLIEGEN.", "YOUR APPOINTMENT HAS BEEN POSTPONED. PLEASE STATE YOUR REASON."],
+      ["hero", "Ich brauche einen Termin, weil ich eine Arbeit suche!", "I need an appointment because I'm looking for a job!"]
+    ],
+    act1End: [
+      ["amsautomat", "TERMIN … BESTÄTIGT.", "APPOINTMENT … CONFIRMED."],
+      ["huber", "Bravo! Und schauen Sie: Eine Firma in der Leopoldstadt lädt Sie ein.", "Bravo! And look: a company in the Leopoldstadt is inviting you."],
+      ["narr", "Akt 2: Das Büro. Erster Arbeitstag.", "Act 2: the office. First day at work."]
+    ],
+    boss2: [
+      ["narr", "Um neun Uhr hat es begonnen. Um fünf Uhr läuft es noch immer: das Endlos-Meeting.", "It started at nine. At five it's still going: the endless meeting."],
+      ["meeting", "Nächster Punkt auf der Tagesordnung: Punkt siebenundvierzig von dreihundertzwölf.", "Next item on the agenda: item 47 of 312."],
+      ["hero", "Ich muss jetzt etwas sagen, sonst dauert das ewig!", "I have to say something now, otherwise this will take forever!"]
+    ],
+    act2End: [
+      ["meeting", "Das Meeting … ist … beendet.", "The meeting … is … over."],
+      ["huber", "Morgen ist Ihr großer Tag: Sie präsentieren Ihr Projekt vor dem Chef.", "Tomorrow is your big day: you present your project to the boss."],
+      ["narr", "Akt 3: Die Präsentation.", "Act 3: the presentation."]
+    ],
+    boss3: [
+      ["narr", "Im Konferenzraum sitzt er mit verschränkten Armen: der Chef.", "In the conference room he sits with folded arms: the boss."],
+      ["chef", "Überzeugen Sie mich. Warum sollte ich Sie behalten?", "Convince me. Why should I keep you?"],
+      ["hero", "Weil ich hart arbeite – und weil ich jeden Tag besser Deutsch spreche!", "Because I work hard – and because I speak better German every day!"]
+    ],
+    outro: [
+      ["chef", "Hm. Nicht schlecht. Sie bekommen den Vertrag.", "Hm. Not bad. You get the contract."],
+      ["hero", "Ich habe einen Job in Wien! Ich kann es nicht glauben!", "I have a job in Vienna! I can't believe it!"],
+      ["huber", "Ich wusste, dass Sie es schaffen, {name}.", "I knew you would make it, {name}."],
+      ["narr", "Fortsetzung folgt: B2 – die Universität.", "To be continued: B2 – the university."]
     ]
   }
 };
@@ -300,6 +373,94 @@ const ENCOUNTERS = {
       choices: [
         { label: ["Einsteigen", "Get in"], cost: { hp: 8 }, effect: { rare: true, gold: 20, say: ["Gespenster, Spinnen, Schreie – und am Ende: ein Schatz!", "Ghosts, spiders, screams – and at the end: treasure!"] } },
         { label: ["Zu gruselig", "Too spooky"], effect: {} }] }
+  ],
+  "b1-0": [
+    { id: "wartezimmer", e: "🪑", title: ["Im Wartezimmer", "In the waiting room"], who: "Mann",
+      text: ["Ein Mann neben dir seufzt: „Wie lange warten Sie schon?“", "A man next to you sighs: “How long have you been waiting?”"],
+      choices: [
+        { label: ["Antworten", "Answer"], quiz: { q: ["Was sagst du?", "What do you say?"], opts: ["Ich warte schon seit zwei Stunden.", "Ich warte schon für zwei Stunden.", "Ich warte seit zwei Stunden schon morgen."] },
+          win: { hp: 10, gold: 10, say: ["Ihr plaudert – die Zeit vergeht schneller. Er schenkt dir sein Wartezimmer-Kipferl.", "You chat – time passes faster. He gives you his waiting-room croissant."] },
+          lose: { say: ["Er schaut dich verwirrt an und schläft wieder ein.", "He looks at you, confused, and falls asleep again."] } },
+        { label: ["Weiterlesen", "Keep reading"], effect: {} }] },
+    { id: "bewerbungsfoto", e: "📸", title: ["Das Bewerbungsfoto", "The application photo"], who: "Fotograf",
+      text: ["Ein Fotograf im Gang: „Professionelle Bewerbungsfotos! Nur 20 Gold. Lächeln, bitte!“", "A photographer in the corridor: “Professional application photos! Only 20 gold. Smile, please!”"],
+      choices: [
+        { label: ["Foto machen", "Have a photo taken"], cost: { gold: 20 }, effect: { upgrade: true, say: ["Klick! Mit dem Foto wirkt deine Bewerbung viel stärker.", "Click! With the photo your application looks much stronger."] } },
+        { label: ["Nein, danke", "No, thanks"], effect: {} }] },
+    { id: "telefon", e: "📱", title: ["Ein Anruf", "A phone call"], who: "Firma",
+      text: ["Dein Handy klingelt: „Guten Tag, hier ist die Firma Huber & Söhne. Haben Sie Zeit für ein Gespräch?“", "Your phone rings: “Hello, this is the company Huber & Sons. Do you have time for an interview?”"],
+      choices: [
+        { label: ["Einen Termin ausmachen", "Make an appointment"], quiz: { q: ["Welche Antwort ist richtig?", "Which answer is right?"], opts: ["Ja, ich habe morgen um zehn Uhr Zeit.", "Ja, ich habe Zeit morgen um zehn Uhr.", "Ja, morgen ich habe um zehn Uhr Zeit."] },
+          win: { gold: 25, say: ["„Wunderbar, dann bis morgen!“ Sie zahlen sogar die Fahrtkosten.", "“Wonderful, see you tomorrow!” They even pay your travel costs."] },
+          lose: { say: ["„Äh … wir melden uns.“ Klick.", "“Uh … we'll get back to you.” Click."] } },
+        { label: ["Nicht abheben", "Don't answer"], effect: {} }] },
+    { id: "jobmesse", e: "🎪", title: ["Die Jobmesse", "The job fair"], who: "Personalchefin",
+      text: ["An einem Stand fragt eine Personalchefin: „Was möchten Sie bei uns machen?“", "At a stand an HR manager asks: “What would you like to do with us?”"],
+      choices: [
+        { label: ["Antworten (Modalverb)", "Answer (modal verb)"], quiz: { q: ["Was sagst du?", "What do you say?"], opts: ["Ich möchte im Büro arbeiten.", "Ich möchte im Büro arbeite.", "Ich möchte arbeiten im Büro."] },
+          win: { rare: true, say: ["„Sehr gut!“ Sie gibt dir eine Visitenkarte – und ein starkes Wort.", "“Very good!” She gives you a business card – and a strong word."] },
+          lose: { say: ["„Danke, der Nächste bitte!“", "“Thank you, next please!”"] } },
+        { label: ["Weitergehen", "Walk on"], effect: {} }] }
+  ],
+  "b1-1": [
+    { id: "kaffeekueche", e: "🫖", title: ["In der Kaffeeküche", "In the office kitchen"], who: "Kollegin",
+      text: ["Eine Kollegin sieht dich an: „Warum bist du so müde?“", "A colleague looks at you: “Why are you so tired?”"],
+      choices: [
+        { label: ["Antworten (weil)", "Answer (weil)"], quiz: { q: ["Was sagst du?", "What do you say?"], opts: ["Weil ich gestern lange gearbeitet habe.", "Weil ich habe gestern lange gearbeitet.", "Weil gestern ich lange gearbeitet habe."] },
+          win: { hp: 14, say: ["„Oje! Hier, nimm meinen Kaffee.“", "“Oh dear! Here, take my coffee.”"] },
+          lose: { hp: 4, say: ["Sie lacht – und gibt dir trotzdem einen Keks.", "She laughs – and gives you a biscuit anyway."] } },
+        { label: ["Einfach Kaffee trinken", "Just drink coffee"], effect: { hp: 6 } }] },
+    { id: "druckerstau", e: "🖨️", title: ["Papierstau!", "Paper jam!"], who: "Drucker",
+      text: ["Der Drucker piept, blinkt und frisst dein Dokument. Du rufst die IT an.", "The printer beeps, blinks and eats your document. You call IT."],
+      choices: [
+        { label: ["Das Problem erklären", "Explain the problem"], quiz: { q: ["Was sagst du der IT?", "What do you tell IT?"], opts: ["Der Drucker funktioniert nicht.", "Der Drucker funktionieren nicht.", "Der Drucker nicht funktioniert."] },
+          win: { upgrade: true, say: ["„Ah, verstanden – schon repariert!“ Dein Wort kommt schärfer aus dem Drucker.", "“Ah, got it – fixed!” Your word comes out of the printer sharper."] },
+          lose: { say: ["„Haben Sie ihn schon aus- und wieder eingeschaltet?“", "“Have you tried turning it off and on again?”"] } },
+        { label: ["Gegen den Drucker treten", "Kick the printer"], effect: { hp: -4, gold: 15, say: ["Au! Aber aus dem Drucker fallen ein paar Münzen.", "Ouch! But a few coins fall out of the printer."] } }] },
+    { id: "geburtstag", e: "🎂", title: ["Ein Geburtstag im Büro", "A birthday at the office"], who: "Kollege",
+      text: ["Ein Kollege hat Geburtstag. Auf dem Tisch steht eine riesige Torte.", "A colleague has his birthday. There's a huge cake on the table."],
+      choices: [
+        { label: ["Gratulieren", "Congratulate"], quiz: { q: ["Was sagst du?", "What do you say?"], opts: ["Alles Gute zum Geburtstag!", "Gute Besserung!", "Frohe Ostern!"] },
+          win: { hp: 12, say: ["„Danke! Nimm ein großes Stück!“", "“Thanks! Take a big piece!”"] },
+          lose: { say: ["Alle schauen dich komisch an. Keine Torte für dich.", "Everyone looks at you strangely. No cake for you."] } },
+        { label: ["Ein Geschenk kaufen (10 Gold)", "Buy a present (10 gold)"], cost: { gold: 10 }, effect: { maxHp: 4, hp: 8, say: ["Er freut sich riesig – und du bekommst das größte Stück.", "He's delighted – and you get the biggest piece."] } }] },
+    { id: "homeoffice", e: "🏠", title: ["Homeoffice?", "Working from home?"], who: "Chefin",
+      text: ["Die Chefin kommt vorbei. Morgen willst du von zu Hause arbeiten. Du musst fragen.", "The boss comes by. Tomorrow you want to work from home. You have to ask."],
+      choices: [
+        { label: ["Höflich fragen (Modalverb)", "Ask politely (modal verb)"], quiz: { q: ["Wie fragst du?", "How do you ask?"], opts: ["Darf ich morgen von zu Hause arbeiten?", "Darf ich morgen von zu Hause arbeite?", "Ich darf morgen von zu Hause arbeiten?"] },
+          win: { remove: true, say: ["„Natürlich!“ Zu Hause räumst du auf – ein Wort fliegt aus deinem Deck.", "“Of course!” At home you tidy up – a word leaves your deck."] },
+          lose: { say: ["„Wie bitte? Kommen Sie morgen lieber ins Büro.“", "“Pardon? Better come to the office tomorrow.”"] } },
+        { label: ["Lieber nicht fragen", "Better not ask"], effect: {} }] }
+  ],
+  "b1-2": [
+    { id: "teepause", e: "🍵", title: ["Kurz vor der Präsentation", "Just before the presentation"], who: "Kollegin",
+      text: ["Deine Kollegin bringt dir einen Tee: „Ich glaube, … du das schaffst.“", "Your colleague brings you a tea: “I think … you can do it.”"],
+      choices: [
+        { label: ["Den Satz ergänzen", "Complete the sentence"], quiz: { q: ["Welches Wort fehlt?", "Which word is missing?"], opts: ["dass", "weil", "obwohl"] },
+          win: { hp: 14, say: ["„Genau! Ich glaube, dass du das schaffst.“ Du fühlst dich ruhiger.", "“Exactly! I think that you can do it.” You feel calmer."] },
+          lose: { hp: 4, say: ["Sie lächelt trotzdem. Der Tee hilft ein bisschen.", "She smiles anyway. The tea helps a little."] } },
+        { label: ["Tief durchatmen", "Take a deep breath"], effect: { hp: 6 } }] },
+    { id: "folienfehler", e: "📝", title: ["Ein Fehler auf der Folie", "A mistake on the slide"], who: "Folie",
+      text: ["Auf deiner wichtigsten Folie steht: „Unser Projekt … sehr erfolgreich.“ Ein Wort fehlt!", "Your most important slide says: “Our project … very successful.” A word is missing!"],
+      choices: [
+        { label: ["Schnell korrigieren", "Fix it quickly"], quiz: { q: ["Welches Wort fehlt?", "Which word is missing?"], opts: ["ist", "sind", "bin"] },
+          win: { upgrade: true, say: ["Perfekt korrigiert – eines deiner Wörter wird stärker.", "Perfectly fixed – one of your words gets stronger."] },
+          lose: { say: ["Der Fehler bleibt. Niemand sagt etwas … hoffentlich.", "The mistake stays. Nobody says anything … hopefully."] } },
+        { label: ["Ignorieren", "Ignore it"], effect: {} }] },
+    { id: "kundenfrage", e: "🤝", title: ["Die Frage des Kunden", "The customer's question"], who: "Kunde",
+      text: ["Ein wichtiger Kunde hebt die Hand: „Wann können Sie liefern?“", "An important customer raises his hand: “When can you deliver?”"],
+      choices: [
+        { label: ["Antworten (Modalverb)", "Answer (modal verb)"], quiz: { q: ["Was sagst du?", "What do you say?"], opts: ["Wir können nächste Woche liefern.", "Wir können liefern nächste Woche.", "Wir liefern können nächste Woche."] },
+          win: { gold: 30, say: ["„Ausgezeichnet!“ Der Kunde unterschreibt sofort – du bekommst einen Bonus.", "“Excellent!” The customer signs right away – you get a bonus."] },
+          lose: { hp: -4, say: ["„Aha …“ Der Kunde runzelt die Stirn. Unangenehm.", "“I see …” The customer frowns. Awkward."] } },
+        { label: ["An die Kollegin weitergeben", "Pass it to your colleague"], effect: {} }] },
+    { id: "fahrstuhl", e: "🛗", title: ["Im Fahrstuhl mit dem Chef", "In the lift with the boss"], who: "Chef",
+      text: ["Die Fahrstuhltür geht zu. Neben dir: der Chef. Er fragt: „Wie war Ihr Wochenende?“", "The lift door closes. Next to you: the boss. He asks: “How was your weekend?”"],
+      choices: [
+        { label: ["Small Talk wagen", "Try some small talk"], quiz: { q: ["Was sagst du?", "What do you say?"], opts: ["Es war sehr schön, danke!", "Es ist sehr schön, danke morgen!", "Ich war schön."] },
+          win: { relic: true, say: ["Er lächelt sogar. Beim Aussteigen gibt er dir etwas: „Für Sie. Viel Glück!“", "He even smiles. Getting out, he gives you something: “For you. Good luck!”"] },
+          lose: { hp: -5, say: ["Peinliche Stille bis zum zwölften Stock.", "Awkward silence up to the twelfth floor."] } },
+        { label: ["Schweigen und aufs Handy schauen", "Stay silent and look at your phone"], effect: {} }] }
   ],
   "a2-0": [
     { id: "kaffeeautomat", e: "☕", title: ["Der Kaffeeautomat", "The coffee machine"], who: "Kaffeeautomat",

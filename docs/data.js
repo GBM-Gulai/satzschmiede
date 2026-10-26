@@ -84,7 +84,47 @@ const CARDS = {
   immer:   { type: "adv", de: "immer", en: "always", cost: 1, pow: 4 },
   gestern: { type: "adv", de: "gestern", en: "yesterday", cost: 1, pow: 3 },
 
-  perf:    { type: "perf", de: "⏪ Perfekt", en: "past tense", cost: 0, pow: 4 }
+  perf:    { type: "perf", de: "⏪ Perfekt", en: "past tense", cost: 0, pow: 4 },
+
+  // ---------- B1: modal verbs (position 2, the main verb goes last) ----------
+  können:   { type: "modal", de: "können", en: "can", forms: "kann kannst kann können könnt können", cost: 1, pow: 4 },
+  müssen:   { type: "modal", de: "müssen", en: "must / have to", forms: "muss musst muss müssen müsst müssen", cost: 1, pow: 4 },
+  wollen:   { type: "modal", de: "wollen", en: "want to", forms: "will willst will wollen wollt wollen", cost: 1, pow: 5 },
+  dürfen:   { type: "modal", de: "dürfen", en: "may / be allowed to", forms: "darf darfst darf dürfen dürft dürfen", cost: 1, pow: 5 },
+  sollen:   { type: "modal", de: "sollen", en: "should / be supposed to", forms: "soll sollst soll sollen sollt sollen", cost: 1, pow: 5 },
+  möchten:  { type: "modal", de: "möchten", en: "would like to", forms: "möchte möchtest möchte möchten möchtet möchten", cost: 1, pow: 4 },
+  // ---------- B1: connectors (a second clause, its verb goes to the very end) ----------
+  weil:     { type: "konj", de: "weil", en: "because", cost: 1, pow: 5 },
+  dass:     { type: "konj", de: "dass", en: "that", cost: 1, pow: 5 },
+  wenn:     { type: "konj", de: "wenn", en: "if / when", cost: 1, pow: 5 },
+  obwohl:   { type: "konj", de: "obwohl", en: "although", cost: 1, pow: 6 },
+  // ---------- B1: work verbs ----------
+  arbeiten:     { type: "verb", de: "arbeiten", en: "work", forms: "arbeite arbeitest arbeitet arbeiten arbeitet arbeiten", aux: "haben", part: "gearbeitet", slots: [], fx: "atk", cost: 1, pow: 5 },
+  telefonieren: { type: "verb", de: "telefonieren", en: "make a phone call", forms: "telefoniere telefonierst telefoniert telefonieren telefoniert telefonieren", aux: "haben", part: "telefoniert", slots: [], fx: "blk", cost: 1, pow: 5 },
+  warten:       { type: "verb", de: "warten", en: "wait", forms: "warte wartest wartet warten wartet warten", aux: "haben", part: "gewartet", slots: [], fx: "heal", cost: 1, pow: 4 },
+  drucken:      { type: "verb", de: "drucken", en: "print", forms: "drucke druckst druckt drucken druckt drucken", aux: "haben", part: "gedruckt", slots: ["akk"], fx: "atk", cost: 1, pow: 6, want: { akk: ["read"] } },
+  beantworten:  { type: "verb", de: "beantworten", en: "answer", forms: "beantworte beantwortest beantwortet beantworten beantwortet beantworten", aux: "haben", part: "beantwortet", slots: ["akk"], fx: "blk", cost: 1, pow: 6, want: { akk: ["read"] } },
+  vergessen:    { type: "verb", de: "vergessen", en: "forget", forms: "vergesse vergisst vergisst vergessen vergesst vergessen", aux: "haben", part: "vergessen", slots: ["akk"], fx: "atk", cost: 1, pow: 7 },
+  besprechen:   { type: "verb", de: "besprechen", en: "discuss", forms: "bespreche besprichst bespricht besprechen besprecht besprechen", aux: "haben", part: "besprochen", slots: ["akk"], fx: "blk", cost: 1, pow: 7, want: { akk: ["read", "thing"] } },
+  verdienen:    { type: "verb", de: "verdienen", en: "earn", forms: "verdiene verdienst verdient verdienen verdient verdienen", aux: "haben", part: "verdient", slots: ["akk"], fx: "heal", cost: 1, pow: 5, want: { akk: ["thing"] } },
+  präsentieren: { type: "verb", de: "präsentieren", en: "present", forms: "präsentiere präsentierst präsentiert präsentieren präsentiert präsentieren", aux: "haben", part: "präsentiert", slots: ["akk"], fx: "atk", cost: 1, pow: 8, want: { akk: ["read", "thing"] } },
+  schicken:     { type: "verb", de: "schicken", en: "send", forms: "schicke schickst schickt schicken schickt schicken", aux: "haben", part: "geschickt", slots: ["dat", "akk"], fx: "atk", cost: 1, pow: 10, want: { dat: ["person"], akk: ["read", "thing"] } },
+  // ---------- B1: work nouns ----------
+  Chef:         { type: "noun", de: "Chef", g: "der", en: "boss", kind: "person", cost: 1, pow: 6 },
+  Chefin:       { type: "noun", de: "Chefin", g: "die", en: "boss (f)", kind: "person", cost: 1, pow: 6 },
+  Kollegin:     { type: "noun", de: "Kollegin", g: "die", en: "colleague (f)", kind: "person", cost: 1, pow: 5 },
+  Kunde:        { type: "noun", de: "Kunde", g: "der", en: "customer", kind: "person", cost: 1, pow: 6, nForm: "Kunden" },
+  Bericht:      { type: "noun", de: "Bericht", g: "der", en: "report", kind: "read", cost: 1, pow: 5 },
+  Email:        { type: "noun", de: "E-Mail", g: "die", en: "email", kind: "read", cost: 1, pow: 4 },
+  Vertrag:      { type: "noun", de: "Vertrag", g: "der", en: "contract", kind: "read", cost: 1, pow: 6 },
+  Lebenslauf:   { type: "noun", de: "Lebenslauf", g: "der", en: "CV", kind: "read", cost: 1, pow: 5 },
+  Bewerbung:    { type: "noun", de: "Bewerbung", g: "die", en: "application", kind: "read", cost: 1, pow: 5 },
+  Präsentation: { type: "noun", de: "Präsentation", g: "die", en: "presentation", kind: "read", cost: 1, pow: 6 },
+  Termin:       { type: "noun", de: "Termin", g: "der", en: "appointment", kind: "thing", cost: 1, pow: 4 },
+  Drucker:      { type: "noun", de: "Drucker", g: "der", en: "printer", kind: "thing", cost: 1, pow: 4 },
+  Gehalt:       { type: "noun", de: "Gehalt", g: "das", en: "salary", kind: "thing", cost: 1, pow: 5 },
+  Projekt:      { type: "noun", de: "Projekt", g: "das", en: "project", kind: "thing", cost: 1, pow: 5 },
+  Laptop:       { type: "noun", de: "Laptop", g: "der", en: "laptop", kind: "thing", cost: 1, pow: 4 }
 };
 
 // ---------- enemies ----------
@@ -133,7 +173,28 @@ const ENEMIES = {
   pfau:        { name: "Protokoll-Pfau", e: "🦚", hp: 34, moves: [["buff", 3], ["atk", 9], ["atk", 11]], weak: "dat", resist: true, hint: "Pompous. Only Dativ impresses it – everything else does half damage." },
   siegel:      { name: "Siegel-Golem", e: "🔴", hp: 36, moves: [["blk", 11], ["atk", 13]], weak: "perf", hint: "Made of hot sealing wax. Perfekt sentences (⏪) crack it." },
   sekretaer:   { name: "Der Obersekretär", e: "☎️", hp: 68, moves: [["atk", 9], ["atk", 9], ["atk", 15], ["buff", 2]], weak: "long", leech: true, elite: true, hint: "Elite. Six arms, six phones. Feeds on mistakes (+4 each). Weak to long sentences." },
-  rathausmann: { name: "Der Rathausmann", e: "🗡️", hp: 140, moves: [["atk", 14], ["blk", 15], ["atk", 18], ["buff", 3], ["atk", 13]], weak: "perf", boss: true, hint: "Final boss of A2. The iron knight of the Rathaus – tell him your story: Perfekt deals double damage." }
+  rathausmann: { name: "Der Rathausmann", e: "🗡️", hp: 140, moves: [["atk", 14], ["blk", 15], ["atk", 18], ["buff", 3], ["atk", 13]], weak: "perf", boss: true, hint: "Final boss of A2. The iron knight of the Rathaus – tell him your story: Perfekt deals double damage." },
+  // B1 · Act 1 – AMS (job centre)
+  lurch:       { name: "Lebenslauf-Lurch", e: "🦎", hp: 32, moves: [["atk", 7], ["atk", 8], ["blk", 6]], weak: "modal", hint: "Hides the gaps in your CV. Sentences with a modal verb (Ich kann …, Ich muss …) deal double damage." },
+  absage:      { name: "Absage-Taube", e: "🕊️", hp: 30, moves: [["atk", 9], ["atk", 6], ["blk", 5]], weak: "konj", hint: "Delivers rejection letters. Sentences with weil / dass / wenn / obwohl deal double damage." },
+  phantom:     { name: "Formular-Phantom", e: "👻", hp: 34, moves: [["blk", 8], ["atk", 10]], weak: "akk", hint: "A form that fills itself in – wrongly. Weak to Akkusativ objects." },
+  troll:       { name: "Warteschlangen-Troll", e: "🧌", hp: 38, moves: [["atk", 8], ["buff", 2], ["atk", 9]], weak: "long", hint: "Guards the queue. Weak to long sentences (5+ words)." },
+  beraterin:   { name: "Die Beraterin", e: "👩‍💼", hp: 60, moves: [["atk", 10], ["blk", 9], ["atk", 12], ["buff", 2]], weak: "modal", resist: true, elite: true, hint: "Elite. „Was wollen Sie? Was können Sie?“ Only modal sentences convince her – everything else does half damage." },
+  amsautomat:  { name: "Der Termin-Automat", e: "🖥️", hp: 100, moves: [["blk", 10], ["atk", 11], ["buff", 2], ["atk", 13], ["atk", 16]], weak: "konj", boss: true, hint: "Boss. BITTE BEGRÜNDEN SIE IHR ANLIEGEN. Explain why: sentences with weil / dass deal double damage." },
+  // B1 · Act 2 – Das Büro
+  druckerdaemon:{ name: "Drucker-Dämon", e: "🖨️", hp: 34, moves: [["atk", 8], ["atk", 8], ["blk", 7]], weak: "akk", hint: "Jams on everything. Weak to Akkusativ objects." },
+  mailflut:    { name: "Die E-Mail-Flut", e: "📧", hp: 32, moves: [["atk", 5], ["atk", 5], ["atk", 12]], weak: "konj", hint: "347 unread messages. Sentences with weil / dass … deal double damage." },
+  kaffeekobold:{ name: "Kaffeemaschinen-Kobold", e: "☕", hp: 30, moves: [["atk", 9], ["heal", 8], ["atk", 9]], weak: "perfect", hint: "Lives in the office coffee machine. Perfect sentences (×2)." },
+  dauerredner: { name: "Der Dauerredner", e: "🗣️", hp: 36, moves: [["buff", 3], ["atk", 9], ["atk", 10]], weak: "modal", resist: true, hint: "The colleague who never stops talking. Interrupt him with a modal verb (Ich muss jetzt …) – everything else does half damage." },
+  hotline:     { name: "Die IT-Hotline", e: "📞", hp: 78, moves: [["atk", 10], ["atk", 10], ["blk", 12], ["atk", 16]], weak: "dat", leech: true, elite: true, hint: "Elite. „Haben Sie es schon aus- und wieder eingeschaltet?“ Feeds on mistakes (+4 each). Weak to Dativ." },
+  meeting:     { name: "Das Endlos-Meeting", e: "📅", hp: 135, moves: [["blk", 14], ["atk", 13], ["buff", 3], ["atk", 16], ["atk", 21]], weak: "long", boss: true, hint: "Boss. Item 47 of 312. Long sentences (5+ words) deal double damage." },
+  // B1 · Act 3 – Die Präsentation
+  lampenfieber:{ name: "Das Lampenfieber", e: "😰", hp: 34, moves: [["atk", 10], ["atk", 7], ["buff", 2]], weak: "perfect", hint: "Stage fright. Only perfect sentences calm it down (×2)." },
+  folienkobold:{ name: "Der Folien-Kobold", e: "📊", hp: 36, moves: [["atk", 8], ["atk", 11], ["blk", 8]], weak: "konj", hint: "Mixes up your slides. Sentences with weil / dass … deal double damage." },
+  beamer:      { name: "Der Beamer-Zyklop", e: "📽️", hp: 40, moves: [["blk", 10], ["atk", 14]], weak: "inv", hint: "One big glowing eye. Start with a time word (Heute …, Morgen …)." },
+  deadline:    { name: "Die Deadline", e: "⏳", hp: 38, moves: [["atk", 6], ["atk", 9], ["atk", 12]], weak: "modal", hint: "Gets closer every turn. Modal sentences (Ich muss …) deal double damage." },
+  konkurrent:  { name: "Der Konkurrent", e: "🕴️", hp: 84, moves: [["atk", 12], ["blk", 12], ["atk", 15], ["buff", 3]], weak: "dat", resist: true, elite: true, hint: "Elite. Wants your job. Only Dativ impresses him – everything else does half damage." },
+  chef:        { name: "Der Chef", e: "👔", hp: 165, moves: [["atk", 13], ["blk", 14], ["atk", 17], ["buff", 3], ["atk", 20]], weak: "konj", boss: true, hint: "Final boss of B1. Never satisfied – explain WHY: sentences with weil / dass deal double damage." }
 };
 
 // ---------- relics ----------

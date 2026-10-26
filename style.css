@@ -516,3 +516,11 @@ body[data-ladder="a2"] .foe-name, body[data-ladder="a2"] .map h2, body[data-ladd
 .pw-pips i.on { background: #dcd0ff; box-shadow: 0 0 6px #c9a6ff; }
 .power-btn.used { filter: saturate(.4); opacity: .75; box-shadow: none; }
 .vtile .vt-rest.again { color: #8c2a17; }
+
+/* B1 card types */
+.card.t-modal { --tc: #2f7a6b; --card-img: var(--card-modal); } .card.t-konj { --tc: #b0306a; --card-img: var(--card-konj); }
+.tok.konj { color: #ff8fc4; font-weight: 800; }
+
+/* German-only ladders: English on tap */
+.en-hidden { display: none !important; }
+.en-toggle { display: inline-grid; place-items: center; width: 30px; height: 26px; border-radius: 8px; font-size: 15px; background: rgba(255, 255, 255, .1); border: 1px solid rgba(217, 164, 65, .4); vertical-align: middle; }

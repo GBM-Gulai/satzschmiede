@@ -34,6 +34,9 @@ VOICES = {
     "riesenrad":  ("Fenrir",   "a giant living Ferris wheel: deep, creaky and echoing, slow and eerie, like old metal groaning"),
     "aktenberg":  ("Gacrux",   "a towering mountain of files: deep, dusty and rumbling, bureaucratic and slow"),
     "rathausmann":("Orus",     "an ancient iron knight statue: solemn, noble and booming, slow and dignified"),
+    "amsautomat": ("Alnilam",  "a cold, robotic government appointment machine: flat, loud, mechanical, every word in capitals"),
+    "meeting":    ("Gacrux",   "an endless boring meeting come alive: droning, monotone, sleepy and slow"),
+    "chef":       ("Orus",     "a strict, demanding Viennese boss: cool, sceptical, slow and authoritative"),
 }
 
 
