@@ -1,6 +1,6 @@
 # Satzschmiede – B1 art list 🎨 (today's Vienna)
 
-Everything the new level **B1 "Der Job"** still needs – **34 images**. Until an image exists, the game shows an emoji, so you can make them in any order.
+Everything the new level **B1 "Der Job"** still needs – **35 images**. Until an image exists, the game shows an emoji, so you can make them in any order.
 The ☐ column is for ticking off what you've done.
 
 ## How to make them
@@ -28,7 +28,10 @@ The ☐ column is for ticking off what you've done.
 
 **Optional for PC:** a wide 16:9 version of each background, e.g. `b1-1-wide.jpg`, `b1-wide.jpg`, `b1-3-wide.jpg` (upload the tall one to Gemini and ask: *"Recreate this exact scene as a wide 16:9 landscape image, same style, extend it to the left and right."*).
 
-## 2 · Bosses and elites first (6) → `assets/enemies/`
+## 2 · Bosses and elites first (7)
+
+The B1 final boss depends on the hero: **der Chef** (Mei) and **der Bankdirektor** (Rafa) share `chef.jpg`; **die Pflegedirektorin** (Amara) has her own picture.
+ → `assets/enemies/`
 
 These are seen most (big fights, story scenes):
 
@@ -40,6 +43,7 @@ These are seen most (big fights, story scenes):
 | ☐ | `assets/enemies/meeting.jpg` | Square image: "Das Endlos-Meeting" (boss): a giant monster made of a conference table, chairs and a calendar, with a clock face showing it's late, dramatic boss lighting. |
 | ☐ | `assets/enemies/konkurrent.jpg` | Square image: "Der Konkurrent" (elite): a smug rival in a sharp suit with slicked hair, holding a gleaming briefcase, arms crossed. |
 | ☐ | `assets/enemies/chef.jpg` | Square image: "Der Chef" (boss): a stern Viennese boss in an expensive suit sitting in a leather chair, arms folded, a skyline window behind him, dramatic boss lighting. |
+| ☐ | `assets/enemies/pflegedirektorin.jpg` | Square image: "Die Pflegedirektorin" (boss, Amara's story): a strict but fair head of nursing in her fifties, white hospital coat over a smart blouse, reading glasses, arms folded behind a desk with files, a hospital corridor behind her, dramatic boss lighting. |
 
 ## 3 · Other enemies (12) → `assets/enemies/`
 

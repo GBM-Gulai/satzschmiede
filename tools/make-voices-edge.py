@@ -32,6 +32,7 @@ VOICES = {
     "amsautomat":  ("de-DE-ConradNeural", "-20%", "-12Hz"),
     "meeting":     ("de-DE-KillianNeural", "-30%", "-10Hz"),
     "chef":        ("de-AT-JonasNeural", "-12%", "-8Hz"),
+    "pflegedirektorin": ("de-AT-IngridNeural", "-8%", "-4Hz"),
 }
 
 
@@ -62,7 +63,7 @@ async def main():
         with tempfile.TemporaryDirectory() as tmp:
             raw = os.path.join(tmp, "raw.mp3")
             try:
-                await edge_tts.Communicate(spoken, voice, rate=rate, pitch=pitch).save(raw)
+                await asyncio.wait_for(edge_tts.Communicate(spoken, voice, rate=rate, pitch=pitch).save(raw), timeout=30)
             except Exception as e:   # one bad line shouldn't stop the rest
                 print(f"!! skipped ({type(e).__name__}): [{speaker}] {text}"); continue
             subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", raw, "-af", "loudnorm=I=-16:TP=-1.5", "-ac", "1", "-ar", "24000", "-b:a", "64k", str(target)], check=True)

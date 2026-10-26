@@ -90,7 +90,7 @@ new MutationObserver(wireVideos).observe(document.body, { childList: true, subtr
 const art = (p, emoji, cls = "", video = "") => `<span class="pic ${cls}"><img src="${src(p)}" alt="" onerror="artFail(this)">` +
   (video && !window.ASSET_DATA ? `<video data-src="${video}"></video>` : "") + `<span class="pic-e">${emoji}</span></span>`;
 const clip = id => VIDEO.includes(id) ? `assets/video/${id}.mp4` : "";
-const enemyArt = (id, cls) => art(`assets/enemies/${id}.jpg`, ENEMIES[id].e, cls, cls === "foe-pic" || cls === "portrait" ? clip(id) : "");
+const enemyArt = (id, cls) => { const img = ENEMIES[id].img || id; return art(`assets/enemies/${img}.jpg`, ENEMIES[id].e, cls, cls === "foe-pic" || cls === "portrait" ? clip(img) : ""); };
 const heroArt = (id, cls) => art(`assets/heroes/${id}.jpg`, HEROES[id].e, cls);
 for (const t of ["subj", "verb", "noun", "adv", "perf", "modal", "konj"]) document.documentElement.style.setProperty(`--card-${t}`, `url("${src(`assets/cards/${t}.jpg`)}")`);
 // today's Vienna before the portal (first frame of portal.mp4) and the painted language tower
@@ -160,7 +160,7 @@ function speak(text, force, english, gender = "") {
   if (gender && (!v || voiceGender(v) !== gender)) u.pitch = gender === "m" ? .7 : 1.15;
   speechSynthesis.speak(u);
 }
-const speakerGender = who => who === "hero" ? HEROES[run.hero].g : who === "huber" ? "f" : "m";
+const speakerGender = who => who === "hero" ? HEROES[run.hero].g : who === "huber" || (HERO_BOSS[who] && HERO_BOSS[who][run.hero] && HERO_BOSS[who][run.hero].voice === "pflegedirektorin") ? "f" : "m";
 
 // ---------- music & story voice-over ----------
 // Music: CC0 tracks in assets/music (see CREDITS.md), crossfaded per screen. Story lines: recorded with Piper (tools/make-voices.py),
@@ -201,7 +201,8 @@ function playLine(who, text, english) {   // story voice-over, starts automatica
   stopLine();
   if (!meta.voice) return;
   if (!HAS_AUDIO) return speak(text, false, english, speakerGender(who));
-  const speakerId = who === "hero" ? "hero-" + run.hero : who, ctx = audioCtx();
+  const alt = HERO_BOSS[who] && HERO_BOSS[who][run.hero];
+  const speakerId = who === "hero" ? "hero-" + run.hero : (alt && alt.voice) || who, ctx = audioCtx();
   buffer(`assets/voice/${djb2(speakerId + "|" + text)}.mp3`).then(buf => {
     const src = ctx.createBufferSource(); src.buffer = buf; src.connect(ctx.destination);
     src.onended = () => { if (voiceSrc === src) { voiceSrc = null; duck(false); } };
@@ -386,6 +387,7 @@ function newRun(ladderId) {
   grantStarter(lad);
   run.deck = recommendedBag(lad).map(k => mk(k.split("#")[0]));   // the tutorial plays with the recommended bag
   meta.runs++; save();
+  applyHeroBosses();
   setScene(ladderId);
   playStory(STORY[ladderId].intro, () => offerTutorial(lad));
 }
@@ -393,8 +395,18 @@ function newRun(ladderId) {
 // ---------- story scenes ----------
 function fill(s) {
   const h = run && hero();
-  return h ? s.replace(/\{name\}/g, h.name).replace(/\{fromEn\}/g, h.fromEn).replace(/\{from\}/g, h.from).replace(/\{storyEn\}/g, h.storyEn).replace(/\{story\}/g, h.story).replace(/\{magicEn\}/g, h.magicEn).replace(/\{magic\}/g, h.magic) : s;
+  return h && s ? s.replace(/\{(\w+)\}/g, (m, k) => h[k] !== undefined ? h[k] : m) : s;
 }
+// apply the hero-specific version of an enemy (name, picture, hint), e.g. the B1 final boss
+const ENEMY_BASE = {};
+function applyHeroBosses() {
+  for (const [id, alts] of Object.entries(HERO_BOSS)) {
+    ENEMY_BASE[id] = ENEMY_BASE[id] || { ...ENEMIES[id] };
+    for (const k of Object.keys(ENEMIES[id])) if (!(k in ENEMY_BASE[id])) delete ENEMIES[id][k];   // drop the previous hero's extras (e.g. img)
+    Object.assign(ENEMIES[id], ENEMY_BASE[id], (run && alts[run.hero]) || (pickedHero && alts[pickedHero]) || {});
+  }
+}
+applyHeroBosses();   // a saved run continues with its hero's boss
 function speaker(who) {
   if (who === "narr") return { name: "", pic: "" };
   if (who === "hero") return { name: hero().name, pic: heroArt(run.hero, "portrait") };
@@ -559,7 +571,7 @@ function showMap() {
     }).join("");
     return `<div class="floor-row${f === run.floor ? " current" : ""}" data-f="${f}"><span class="fl">${f + 1}</span><div class="nodes">${nodes}</div></div>`;
   }).reverse().join("");
-  app.innerHTML = `${topbar()}<main class="map"><h2 class="fraktur">${lad.mapTitle}</h2><p class="sub">${lad.mapSub}</p>
+  app.innerHTML = `${topbar()}<main class="map"><h2 class="fraktur">${fill(lad.mapTitle)}</h2><p class="sub">${fill(lad.mapSub)}</p>
     <div class="map-scroll"><div class="map-rows"><svg class="map-lines"></svg>${rows}</div></div></main>`;
   requestAnimationFrame(() => { drawMapLines(); const cur = $(".floor-row.current"); if (cur) cur.scrollIntoView({ block: "center" }); });
 }
@@ -1128,7 +1140,7 @@ function actCleared() {
     music("inn"); view = "act";
     app.innerHTML = `${topbar()}<main class="panel"><h2 class="fraktur">${L(`Akt ${done} geschafft!`, `Act ${done} cleared!`)}</h2>
       <p class="sub">⚡ +1 ${L("max. Energie", "max energy")} · ❤️ +${heal} · 💰 +30${relic ? ` · ${RELICS[relic].e} <b>${RELICS[relic].name}</b> – ${RELICS[relic].text}` : ""}</p>
-      <p>${L(`Weiter geht's: <b>${stage().name}</b>`, `Next up: <b>${stage().name}</b>`)}</p>
+      <p>${L(`Weiter geht's: <b>${fill(stage().name)}</b>`, `Next up: <b>${fill(stage().name)}</b>`)}</p>
       <button class="btn hot" data-act="continue">${L("Weiter", "Continue")} ➜</button></main>`;
   });
 }

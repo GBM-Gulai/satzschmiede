@@ -43,7 +43,8 @@ def djb2(s: str) -> str:
 def parse():
     src = (ROOT / "story.js").read_text(encoding="utf-8")
     heroes = {}
-    block = src[src.index("const HEROES"):src.index("const NPCS")]
+    stop = src.find("const HERO_BOSS")   # the hero table ends where the boss variants begin
+    block = src[src.index("const HEROES"):stop if stop > 0 else src.index("const NPCS")]
     for m in re.finditer(r'(\w+):\s*\{(.*?)\}', block, re.S):
         fields = dict(re.findall(r'(\w+): "([^"]*)"', m.group(2)))
         if "name" in fields:
@@ -57,9 +58,12 @@ def parse():
 
 
 def fill(text, h):
-    for field in ("fromEn", "storyEn", "magicEn", "name", "from", "story", "magic"):
-        text = text.replace("{" + field + "}", h.get(field, ""))
-    return text
+    # every hero field can be a placeholder ({name}, {b1need}, …)
+    return re.sub(r"\{(\w+)\}", lambda m: h.get(m.group(1), m.group(0)), text)
+
+
+# speakers whose voice depends on the hero (same as HERO_BOSS in story.js)
+SPEAKER_ALT = {("chef", "amara"): "pflegedirektorin"}
 
 
 def jobs():
@@ -68,7 +72,7 @@ def jobs():
         needs_hero = who == "hero" or "{" in de
         for hid, h in (heroes.items() if needs_hero else [(None, None)]):
             text = fill(de, h) if h else de
-            speaker = f"hero-{hid}" if who == "hero" else who
+            speaker = f"hero-{hid}" if who == "hero" else SPEAKER_ALT.get((who, hid), who)
             yield speaker, text
 
 

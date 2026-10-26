@@ -5,15 +5,98 @@ const HEROES = {
   rafa:  { g: "m", name: "Rafa", from: "Brasilien", fromEn: "Brazil", role: "Koch", roleEn: "Cook", e: "🧑🏽‍🍳",
            power: "Doppelte Portion", powerEn: "Double helping", powerText: "Deine nächsten 2 Sätze wirken +50 %.", powerTextEn: "Your next 2 sentences get +50 % power.",
            story: "Ich möchte in Wien ein Restaurant eröffnen.", storyEn: "I want to open a restaurant in Vienna.",
-           magic: "Mein Kochlöffel … leuchtet ja!", magicEn: "My wooden spoon … it's glowing!" },
+           magic: "Mein Kochlöffel … leuchtet ja!", magicEn: "My wooden spoon … it's glowing!" ,
+           b1need: "Für Ihr Restaurant brauchen Sie einen Businessplan – und einen Kredit von der Bank.",
+           b1needEn: "For your restaurant you need a business plan – and a loan from the bank.",
+           b1plan: "Mein eigenes Restaurant in Wien … dafür muss ich einen Plan schreiben!",
+           b1planEn: "My own restaurant in Vienna … for that I have to write a plan!",
+           b1termin: "Ich brauche einen Termin, weil ich ein Restaurant eröffnen will!",
+           b1terminEn: "I need an appointment because I want to open a restaurant!",
+           b1act2: "Bravo! Das Gründerprogramm hat Sie aufgenommen. Jetzt schreiben Sie Ihren Businessplan – in einem Büro in der Leopoldstadt.",
+           b1act2En: "Bravo! The start-up programme has accepted you. Now you write your business plan – in an office in the Leopoldstadt.",
+           b1act2narr: "Akt 2: Das Büro. Zahlen, Tabellen und ein Businessplan.",
+           b1act2narrEn: "Act 2: the office. Numbers, spreadsheets and a business plan.",
+           b1act3: "Morgen ist Ihr großer Tag: Sie präsentieren Ihren Businessplan bei der Bank.",
+           b1act3En: "Tomorrow is your big day: you present your business plan at the bank.",
+           b1act3name: "Die Präsentation",
+           b1act3title: "Die Präsentation bei der Bank",
+           b1boss: "der Bankdirektor",
+           b1bossIntro: "Im Besprechungsraum der Bank sitzt er mit verschränkten Armen: der Bankdirektor.",
+           b1bossIntroEn: "In the bank's meeting room he sits with folded arms: the bank director.",
+           b1bossQ: "Überzeugen Sie mich. Warum sollte die Bank Ihnen einen Kredit geben?",
+           b1bossQEn: "Convince me. Why should the bank give you a loan?",
+           b1answer: "Weil mein Schnitzel das beste in Wien ist – und weil ich jeden Tag besser Deutsch spreche!",
+           b1answerEn: "Because my schnitzel is the best in Vienna – and because I speak better German every day!",
+           b1yes: "Hm. Überzeugend. Sie bekommen den Kredit.",
+           b1yesEn: "Hm. Convincing. You get the loan.",
+           b1joy: "Ich bekomme den Kredit! Mein Restaurant wird Wirklichkeit!",
+           b1joyEn: "I'm getting the loan! My restaurant is becoming reality!" },
   mei:   { g: "f", name: "Mei", from: "Taiwan", fromEn: "Taiwan", role: "Programmiererin", roleEn: "Programmer", e: "👩🏻‍💻",
            power: "Wörterbuch-App", powerEn: "Dictionary app", powerText: "Bei deiner nächsten Beschwörung leuchten die richtigen Antworten.", powerTextEn: "In your next incantation the right answers light up.",
            story: "Ich habe einen neuen Job in einer Wiener Firma.", storyEn: "I have a new job at a Viennese company.",
-           magic: "Mein Tablet … ist jetzt ein Zauberbuch!", magicEn: "My tablet … it's a spellbook now!" },
+           magic: "Mein Tablet … ist jetzt ein Zauberbuch!", magicEn: "My tablet … it's a spellbook now!" ,
+           b1need: "Sie brauchen einen Job.",
+           b1needEn: "You need a job.",
+           b1plan: "Ich suche eine Stelle in einer Wiener Firma.",
+           b1planEn: "I'm looking for a position at a Viennese company.",
+           b1termin: "Ich brauche einen Termin, weil ich eine Arbeit suche!",
+           b1terminEn: "I need an appointment because I'm looking for a job!",
+           b1act2: "Bravo! Und schauen Sie: Eine Firma in der Leopoldstadt lädt Sie ein.",
+           b1act2En: "Bravo! And look: a company in the Leopoldstadt is inviting you.",
+           b1act2narr: "Akt 2: Das Büro. Erster Arbeitstag.",
+           b1act2narrEn: "Act 2: the office. First day at work.",
+           b1act3: "Morgen ist Ihr großer Tag: Sie präsentieren Ihr Projekt vor dem Chef.",
+           b1act3En: "Tomorrow is your big day: you present your project to the boss.",
+           b1act3name: "Die Präsentation",
+           b1act3title: "Die große Präsentation",
+           b1boss: "der Chef",
+           b1bossIntro: "Im Konferenzraum sitzt er mit verschränkten Armen: der Chef.",
+           b1bossIntroEn: "In the conference room he sits with folded arms: the boss.",
+           b1bossQ: "Überzeugen Sie mich. Warum sollte ich Sie behalten?",
+           b1bossQEn: "Convince me. Why should I keep you?",
+           b1answer: "Weil ich hart arbeite – und weil ich jeden Tag besser Deutsch spreche!",
+           b1answerEn: "Because I work hard – and because I speak better German every day!",
+           b1yes: "Hm. Nicht schlecht. Sie bekommen den Vertrag.",
+           b1yesEn: "Hm. Not bad. You get the contract.",
+           b1joy: "Ich habe einen Job in Wien! Ich kann es nicht glauben!",
+           b1joyEn: "I have a job in Vienna! I can't believe it!" },
   amara: { g: "f", name: "Amara", from: "Ghana", fromEn: "Ghana", role: "Krankenpflegerin", roleEn: "Nurse", e: "👩🏿‍⚕️",
            power: "Erste Hilfe", powerEn: "First aid", powerText: "Heile 10 Leben und erhalte 6 Schild.", powerTextEn: "Heal 10 HP and gain 6 shield.",
            story: "Ich möchte hier im Krankenhaus arbeiten.", storyEn: "I want to work here in the hospital.",
-           magic: "Meine Tasche … sie glüht!", magicEn: "My bag … it's glowing!" }
+           magic: "Meine Tasche … sie glüht!", magicEn: "My bag … it's glowing!" ,
+           b1need: "Ihr Diplom muss in Österreich anerkannt werden – erst dann dürfen Sie im Krankenhaus arbeiten.",
+           b1needEn: "Your diploma has to be recognised in Austria – only then may you work at the hospital.",
+           b1plan: "Ich will endlich wieder als Krankenpflegerin arbeiten!",
+           b1planEn: "I finally want to work as a nurse again!",
+           b1termin: "Ich brauche einen Termin, weil ich mein Diplom anerkennen lassen muss!",
+           b1terminEn: "I need an appointment because I have to get my diploma recognised!",
+           b1act2: "Bravo! Ihre Unterlagen sind komplett. Jetzt geht es in die Verwaltung des Krankenhauses.",
+           b1act2En: "Bravo! Your documents are complete. Now it's off to the hospital's administration.",
+           b1act2narr: "Akt 2: Das Büro. Formulare, Formulare, Formulare.",
+           b1act2narrEn: "Act 2: the office. Forms, forms, forms.",
+           b1act3: "Morgen ist Ihr großer Tag: das Vorstellungsgespräch bei der Pflegedirektorin.",
+           b1act3En: "Tomorrow is your big day: the job interview with the head of nursing.",
+           b1act3name: "Das Vorstellungsgespräch",
+           b1act3title: "Das Vorstellungsgespräch",
+           b1boss: "die Pflegedirektorin",
+           b1bossIntro: "Im Büro der Pflegedirektion sitzt sie hinter einem Berg von Akten: die Pflegedirektorin.",
+           b1bossIntroEn: "In the nursing director's office she sits behind a pile of files: the head of nursing.",
+           b1bossQ: "Erzählen Sie mir: Warum sollten wir gerade Sie nehmen?",
+           b1bossQEn: "Tell me: why should we take you, of all people?",
+           b1answer: "Weil ich Menschen helfen will – und weil ich jeden Tag besser Deutsch spreche!",
+           b1answerEn: "Because I want to help people – and because I speak better German every day!",
+           b1yes: "Wunderbar. Sie können am Montag anfangen.",
+           b1yesEn: "Wonderful. You can start on Monday.",
+           b1joy: "Ich darf wieder als Krankenpflegerin arbeiten – in Wien!",
+           b1joyEn: "I can work as a nurse again – in Vienna!" }
+};
+
+// The B1 final boss depends on the hero's goal: Mei's boss, Rafa's bank director, Amara's head of nursing.
+// voice = speaker id for the recorded lines (tools/make-voices*.py know the same mapping)
+const HERO_BOSS = {
+  chef: { rafa: { name: "Der Bankdirektor", hint: "Final boss of B1. Decides about your restaurant loan – explain WHY: sentences with weil / dass deal double damage." },
+          amara: { name: "Die Pflegedirektorin", e: "👩‍⚕️", img: "pflegedirektorin", voice: "pflegedirektorin",
+                   hint: "Final boss of B1. Your job interview – explain WHY: sentences with weil / dass deal double damage." } }
 };
 
 // Non-player characters in the story
@@ -101,7 +184,7 @@ const LADDERS = [
              enemies: ["druckerdaemon", "mailflut", "kaffeekobold", "dauerredner"], easy: ["druckerdaemon", "kaffeekobold"], elite: "hotline", boss: "meeting",
              puzzles: ["Ich kann den Bericht heute nicht drucken.", "Der Chef will, dass wir länger bleiben.", "Wir dürfen im Büro keinen Alkohol trinken.",
                        "Obwohl ich müde bin, beantworte ich alle E-Mails.", "Kannst du mir bitte die Datei schicken?", "Ich trinke Kaffee, weil das Meeting lange dauert."] },
-           { name: "Die Präsentation", bg: "b1-3", mapTitle: "Die große Präsentation", mapSub: "Lampenfieber, Folien, Beamer. Ganz oben wartet der Chef.",
+           { name: "{b1act3name}", bg: "b1-3", mapTitle: "{b1act3title}", mapSub: "Lampenfieber, Folien, Beamer. Ganz oben wartet {b1boss}.",
              enemies: ["lampenfieber", "folienkobold", "beamer", "deadline"], easy: ["lampenfieber", "deadline"], elite: "konkurrent", boss: "chef",
              puzzles: ["Morgen soll ich das Projekt präsentieren.", "Ich bin nervös, weil der Chef zuhört.", "Wenn die Präsentation gut läuft, bekomme ich mehr Gehalt.",
                        "Wir müssen die Folien noch einmal besprechen.", "Der Kunde möchte den Vertrag sofort unterschreiben.", "Obwohl der Beamer kaputt ist, präsentiere ich weiter."] }],
@@ -242,7 +325,8 @@ const STORY = {
     intro: [
       ["narr", "Das Licht verblasst. {name} steht wieder am Westbahnhof – im Wien von heute. Handys, Rolltreppen, Lärm.", "The light fades. {name} is back at Westbahnhof – in today's Vienna. Phones, escalators, noise."],
       ["hero", "Ich bin zurück! Und ich verstehe … fast alles!", "I'm back! And I understand … almost everything!"],
-      ["huber", "Sehr gut, {name}. Aber jetzt kommt das echte Leben: Sie brauchen einen Job.", "Very good, {name}. But now comes real life: you need a job."],
+      ["huber", "Sehr gut, {name}. Aber jetzt kommt das echte Leben: {b1need}", "Very good, {name}. But now comes real life: {b1needEn}"],
+      ["hero", "{b1plan}", "{b1planEn}"],
       ["huber", "Im Wien von heute sind die Sätze länger. Sie brauchen Modalverben: Ich muss eine Arbeit finden. Das zweite Verb steht am Ende.", "In today's Vienna the sentences are longer. You need modal verbs: Ich muss eine Arbeit finden. The second verb goes at the end."],
       ["huber", "Und Nebensätze: Ich lerne Deutsch, weil ich hier arbeiten will. Nach weil steht das Verb ganz am Ende.", "And subordinate clauses: Ich lerne Deutsch, weil ich hier arbeiten will. After weil the verb goes to the very end."],
       ["hero", "Modalverben und Nebensätze … Ich kann das schaffen!", "Modal verbs and subordinate clauses … I can do this!"],
@@ -251,12 +335,12 @@ const STORY = {
     boss: [
       ["narr", "Am Ende des Gangs blinkt er: der Termin-Automat.", "At the end of the corridor it blinks: the appointment machine."],
       ["amsautomat", "IHR TERMIN WURDE VERSCHOBEN. BITTE BEGRÜNDEN SIE IHR ANLIEGEN.", "YOUR APPOINTMENT HAS BEEN POSTPONED. PLEASE STATE YOUR REASON."],
-      ["hero", "Ich brauche einen Termin, weil ich eine Arbeit suche!", "I need an appointment because I'm looking for a job!"]
+      ["hero", "{b1termin}", "{b1terminEn}"]
     ],
     act1End: [
       ["amsautomat", "TERMIN … BESTÄTIGT.", "APPOINTMENT … CONFIRMED."],
-      ["huber", "Bravo! Und schauen Sie: Eine Firma in der Leopoldstadt lädt Sie ein.", "Bravo! And look: a company in the Leopoldstadt is inviting you."],
-      ["narr", "Akt 2: Das Büro. Erster Arbeitstag.", "Act 2: the office. First day at work."]
+      ["huber", "{b1act2}", "{b1act2En}"],
+      ["narr", "{b1act2narr}", "{b1act2narrEn}"]
     ],
     boss2: [
       ["narr", "Um neun Uhr hat es begonnen. Um fünf Uhr läuft es noch immer: das Endlos-Meeting.", "It started at nine. At five it's still going: the endless meeting."],
@@ -265,17 +349,17 @@ const STORY = {
     ],
     act2End: [
       ["meeting", "Das Meeting … ist … beendet.", "The meeting … is … over."],
-      ["huber", "Morgen ist Ihr großer Tag: Sie präsentieren Ihr Projekt vor dem Chef.", "Tomorrow is your big day: you present your project to the boss."],
-      ["narr", "Akt 3: Die Präsentation.", "Act 3: the presentation."]
+      ["huber", "{b1act3}", "{b1act3En}"],
+      ["narr", "Akt 3: {b1act3name}.", "Act 3: {b1act3name}."]
     ],
     boss3: [
-      ["narr", "Im Konferenzraum sitzt er mit verschränkten Armen: der Chef.", "In the conference room he sits with folded arms: the boss."],
-      ["chef", "Überzeugen Sie mich. Warum sollte ich Sie behalten?", "Convince me. Why should I keep you?"],
-      ["hero", "Weil ich hart arbeite – und weil ich jeden Tag besser Deutsch spreche!", "Because I work hard – and because I speak better German every day!"]
+      ["narr", "{b1bossIntro}", "{b1bossIntroEn}"],
+      ["chef", "{b1bossQ}", "{b1bossQEn}"],
+      ["hero", "{b1answer}", "{b1answerEn}"]
     ],
     outro: [
-      ["chef", "Hm. Nicht schlecht. Sie bekommen den Vertrag.", "Hm. Not bad. You get the contract."],
-      ["hero", "Ich habe einen Job in Wien! Ich kann es nicht glauben!", "I have a job in Vienna! I can't believe it!"],
+      ["chef", "{b1yes}", "{b1yesEn}"],
+      ["hero", "{b1joy}", "{b1joyEn}"],
       ["huber", "Ich wusste, dass Sie es schaffen, {name}.", "I knew you would make it, {name}."],
       ["narr", "Fortsetzung folgt: B2 – die Universität.", "To be continued: B2 – the university."]
     ]

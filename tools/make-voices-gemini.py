@@ -37,6 +37,7 @@ VOICES = {
     "amsautomat": ("Alnilam",  "a cold, robotic government appointment machine: flat, loud, mechanical, every word in capitals"),
     "meeting":    ("Gacrux",   "an endless boring meeting come alive: droning, monotone, sleepy and slow"),
     "chef":       ("Orus",     "a strict, demanding Viennese boss: cool, sceptical, slow and authoritative"),
+    "pflegedirektorin": ("Gacrux", "a calm, experienced and strict Viennese head of nursing, warm but demanding, speaking clearly"),
 }
 
 
