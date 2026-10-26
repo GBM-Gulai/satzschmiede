@@ -3,6 +3,9 @@
    Content: data.js (cards, enemies, relics) and story.js (heroes, ladders, story). Images: assets/ (see ASSETS.md). */
 
 // ---------- helpers ----------
+// A new version (service worker update, see the end of the file) is applied only on the title screen, never mid-game
+let updateReady = false;
+const applyUpdate = () => { if (updateReady && view === "title" && !document.querySelector(".story, .incant, .portal")) { updateReady = false; location.reload(); return true; } return false; };
 const $ = (s, r = document) => r.querySelector(s);
 const app = $("#app");
 const rnd = a => a[Math.floor(Math.random() * a.length)];
@@ -469,6 +472,7 @@ function cardHtml(c, extra = "") {
 
 // ---------- title, hero choice, ladder tower ----------
 function showTitle() {
+  if (applyUpdate()) return;
   music("inn");
   view = "title"; fight = null; setScene("");
   app.innerHTML = `<main class="title"><div class="logo fraktur">Satzschmiede</div>
@@ -1411,12 +1415,10 @@ window.addEventListener("keydown", e => {
 showTitle();
 if ("speechSynthesis" in window) speechSynthesis.getVoices();
 
-// Installable app + offline mode on the hosted version (GitHub Pages); reload once when a new version is installed
+// Installable app + offline mode on the hosted version (GitHub Pages).
+// A new version never interrupts play: it's applied on the title screen (right away if you're there, otherwise the next time you get there).
 if ("serviceWorker" in navigator && location.protocol === "https:" && !window.ASSET_DATA) {
   navigator.serviceWorker.register("sw.js").catch(() => {});
-  if (navigator.serviceWorker.controller) {
-    let reloaded = false;
-    navigator.serviceWorker.addEventListener("controllerchange", () => { if (!reloaded) { reloaded = true; location.reload(); } });
-  }
+  if (navigator.serviceWorker.controller) navigator.serviceWorker.addEventListener("controllerchange", () => { updateReady = true; applyUpdate(); });
 }
 if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
