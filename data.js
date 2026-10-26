@@ -97,8 +97,8 @@ const ENEMIES = {
   taube:       { name: "Taschendieb-Taube", e: "🐦", hp: 20, moves: [["atk", 4], ["atk", 7], ["blk", 3]], weak: "akk", hint: "Steals your words. Weak to Akkusativ objects (den, die, das)." },
   kontrolleur: { name: "Der Kontrolleur", e: "👮", hp: 24, moves: [["atk", 6], ["blk", 5], ["atk", 8]], weak: "perfect", hint: "„Fahrkarte, bitte!“ Only perfect sentences impress him (×2)." },
   regen:       { name: "Wiener Regenwolke", e: "🌧️", hp: 22, moves: [["atk", 7], ["atk", 4], ["buff", 2]], weak: "inv", resist: true, hint: "Only sentences that START with a time word get through (Heute sehe ich …)." },
-  hausmeister: { name: "Der Hausmeister", e: "🧹", hp: 44, moves: [["atk", 8], ["blk", 8], ["atk", 12], ["buff", 2]], weak: "long", elite: true, hint: "Elite. Grumbles at short answers – weak to long sentences (5+ words)." },
-  automat:     { name: "Der Fahrkartenautomat", e: "🎫", hp: 85, moves: [["blk", 10], ["atk", 9], ["atk", 12], ["buff", 3], ["atk", 16]], weak: "perfect", boss: true, hint: "Boss. BITTE. WÄHLEN. SIE. Perfect sentences deal double damage." },
+  hausmeister: { name: "Der Hausmeister", e: "🧹", hp: 36, moves: [["atk", 7], ["blk", 6], ["atk", 10], ["buff", 1]], weak: "long", elite: true, hint: "Elite. Grumbles at short answers – weak to long sentences (5+ words)." },
+  automat:     { name: "Der Fahrkartenautomat", e: "🎫", hp: 70, moves: [["blk", 8], ["atk", 8], ["atk", 10], ["buff", 2], ["atk", 13]], weak: "perfect", boss: true, hint: "Boss. BITTE. WÄHLEN. SIE. Perfect sentences deal double damage." },
   // A2 – Das Amt
   kobold:      { name: "Akkusativ-Kobold", e: "👺", hp: 26, moves: [["atk", 7], ["blk", 5], ["atk", 9]], weak: "akk", hint: "Hides in the waiting room. Weak to Akkusativ objects." },
   stempel:     { name: "Stempel-Spinne", e: "🕷️", hp: 28, moves: [["blk", 6], ["atk", 8], ["atk", 8]], weak: "perf", hint: "Stamps everything twice. Weak to Perfekt sentences (⏪)." },

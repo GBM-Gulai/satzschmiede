@@ -574,7 +574,8 @@ function nextFloor() { run.floor++; save(); showMap(); }
 // ---------- combat ----------
 function startFight(eid) {
   music(ENEMIES[eid].boss ? "boss" : "battle");
-  const e = ENEMIES[eid], act = run.act || 0, scale = e.boss ? 0 : run.floor * 2 + act * 5;
+  // act 1 is the beginners' act: monsters grow more slowly per floor there
+  const e = ENEMIES[eid], act = run.act || 0, scale = e.boss ? 0 : run.floor * (act ? 2 : 1) + act * 5;
   const hp = Math.round((e.hp + scale) * (!e.boss && !e.elite && act ? 1.3 : 1));
   fight = {
     eid, enemy: { hp, max: hp, block: 0, str: e.boss ? 0 : act, move: 0 },
