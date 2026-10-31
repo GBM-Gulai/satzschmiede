@@ -431,26 +431,42 @@ function portal() {
   ov.onclick = close;
 }
 function playStory(lines, done) {
-  let i = 0;
+  let i = 0, asking = null;
   const portalAt = lines.findIndex(l => l[3] === "portal");
   const ov = document.createElement("div");
   ov.className = "story";
   const show = () => {
     if (i >= lines.length) { stopLine(); ov.remove(); return done(); }
     const [who, de, en, fx] = lines[i], s = speaker(who), english = fx === "en";
+    const ask = fx && fx.startsWith("ask:") ? ASKS[fx.slice(4)] : null;
+    asking = ask ? { ask, answered: false } : null;
     ov.classList.toggle("modern", portalAt >= 0 && i < portalAt);   // the ordinary, modern city before the portal
     if (fx === "portal") portal();
     ov.innerHTML = `<div class="story-pic ${who === "hero" ? "left" : "right"}">${s.pic}</div>
       <div class="story-box ${who === "narr" ? "narr" : ""}">${s.name ? `<div class="story-name">${s.name}</div>` : ""}
         <div class="story-de">${fill(english ? en : de)} <button class="say" data-say aria-label="Anhören">🔊</button>${uiMode() === "de" && !english ? ` <button class="en-toggle" data-en aria-label="English">🇬🇧</button>` : ""}</div>
         <div class="story-en${uiMode() === "de" && !english ? " en-hidden" : ""}">${english ? "🇩🇪 " : ""}${fill(english ? de : en)}</div>
-        <div class="story-foot"><span>${i + 1} / ${lines.length}</span><span>${L("Tippen zum Weiterlesen", "Tap to continue")} ▸</span></div></div>
+        ${ask ? `<div class="ask-opts">${shuffle(ask.opts).map(o => `<button class="btn ask-opt" data-ask="${esc(o)}">${o}</button>`).join("")}</div>` : ""}
+        <div class="story-foot"><span>${i + 1} / ${lines.length}</span><span>${ask ? L("Wähle eine Antwort", "Choose an answer") : L("Tippen zum Weiterlesen", "Tap to continue")} ▸</span></div></div>
       <button class="story-skip" data-skip>${L("Überspringen", "Skip")} ⏭</button>`;
     playLine(who, fill(english ? en : de), english);
   };
   ov.onclick = e => {
     if (e.target.closest("[data-say]")) return playLine(lines[i][0], fill(lines[i][lines[i][3] === "en" ? 2 : 1]), lines[i][3] === "en");
     if (e.target.closest("[data-en]")) { ov.querySelector(".story-en").classList.toggle("en-hidden"); return; }
+    // a question: wait for an answer, explain it, then continue on the next tap
+    if (asking && !asking.answered && !e.target.closest("[data-skip]")) {
+      const b = e.target.closest("[data-ask]"); if (!b) return;
+      const right = asking.ask.opts[0], good = b.dataset.ask === right;
+      asking.answered = true; sfx(good ? "ok" : "bad");
+      ov.querySelectorAll(".ask-opt").forEach(x => { x.disabled = true; if (x.dataset.ask === right) x.classList.add("right"); else if (x === b) x.classList.add("wrong"); });
+      const fb = good ? asking.ask.ok : asking.ask.no;
+      ov.querySelector(".ask-opts").insertAdjacentHTML("afterend", `<div class="ask-fb ${good ? "ok" : "no"}">${good ? "✓" : "✗"} ${fb[0]}${uiMode() === "de" ? "" : `<small class="en-sub">${fb[1]}</small>`}</div>`);
+      ov.querySelector(".story-foot span:last-child").innerHTML = `${L("Tippen zum Weiterlesen", "Tap to continue")} ▸`;
+      if (good && run) { run.gold += 5; toast("✓ +5 💰", 1200); save(); }
+      speak(right);
+      return;
+    }
     if (e.target.closest("[data-skip]")) i = lines.length; else i++;
     sfx("tap"); show();
   };
@@ -534,7 +550,7 @@ const ICON = {
   elite: '<path d="M15 22a1 1 0 0 0 1-1v-1a2 2 0 0 0 1.56-3.25 8 8 0 1 0-11.12 0A2 2 0 0 0 8 20v1a1 1 0 0 0 1 1z"/><circle cx="15" cy="12" r="1.3"/><circle cx="9" cy="12" r="1.3"/><path d="m12.5 17-.5-1-.5 1h1z"/>',
   rest: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
   shop: '<path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2 2.7 2.7 0 0 1-2-1 2.7 2.7 0 0 1-4 0 2.7 2.7 0 0 1-4 0 2.7 2.7 0 0 1-4 0 2.7 2.7 0 0 1-2 1 2 2 0 0 1-2-2V7"/>',
-  event: '<path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v3h4"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M11 8.5a2 2 0 0 1 3.9.6c0 1.3-2 1.9-2 1.9"/><path d="M12.9 13.5h.01"/>',
+  event: '<path d="M8.5 8.5a3.6 3.6 0 0 1 7 1.2c0 2.4-3.5 3.1-3.5 5.3"/><path d="M12 19.5h.01" stroke-width="3"/>',
   gate: '<path d="M13 4h3a2 2 0 0 1 2 2v14"/><path d="M2 20h3"/><path d="M13 20h9"/><path d="M10 12v.01"/><path d="M13 4.56v16.16a1 1 0 0 1-1.24.97L5 20V5.56a2 2 0 0 1 1.52-1.94l4-1A2 2 0 0 1 13 4.56Z"/>'
 };
 const iconSvg = n => `<svg class="ink" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICON[n]}</svg>`;
@@ -566,7 +582,7 @@ function showMap() {
     const chosen = run.path[f];
     const nodes = opts.map((n, i) => {
       const state = f < run.floor ? (chosen === i ? "done" : "skip") : f === run.floor ? "open" : "future";
-      const icon = n === "boss" ? enemyArt(lad.boss, "medal-pic") : art(`assets/map/${n}.jpg`, iconSvg(n), "medal-pic");
+      const icon = n === "boss" ? enemyArt(lad.boss, "medal-pic") : art(`assets/map/${n === "event" ? "encounter" : n}.jpg`, iconSvg(n), "medal-pic");
       const nudge = ((f * 7 + i * 13) % 5 - 2) * 6;   // a little hand-drawn wobble
       return `<button class="node ${state} n-${n}" data-act="node" data-i="${i}" ${state === "open" ? "" : "disabled"} style="translate:${nudge}px 0">
         <span class="medal">${icon}${state === "done" ? `<span class="seal">✓</span>` : ""}</span><span class="nl">${L(NODE[n][1], NODE[n][2])}</span></button>`;
@@ -595,7 +611,7 @@ function startFight(eid) {
   music(ENEMIES[eid].boss ? "boss" : "battle");
   // act 1 is the beginners' act: monsters grow more slowly per floor there
   const e = ENEMIES[eid], act = run.act || 0, scale = e.boss ? 0 : run.floor * (act ? 2 : 1) + act * 5;
-  const hp = Math.round((e.hp + scale) * (!e.boss && !e.elite && act ? 1.3 : 1));
+  const hp = Math.round((e.hp + scale) * (act && !e.boss ? (e.elite ? 1.2 : 1.5) : 1));   // act 2+: normal monsters +50 %, elites +20 %
   fight = {
     eid, enemy: { hp, max: hp, block: 0, str: e.boss ? 0 : act, move: 0 },
     draw: shuffle(run.deck.filter(c => deckable(c.id)).map(c => ({ ...c }))), hand: [], discard: [], sentence: [],
@@ -867,10 +883,10 @@ function verbTile(c) {
   const d = CARDS[c.id], rest = fight.tapped.includes(c.uid) && !canRecast(c.uid), again = canRecast(c.uid);
   const need = d.slots.length ? d.slots.map(s => s === "dat" ? L("+ wem?", "+ to whom?") : L("+ was?", "+ what?")).join(" ") : L("ohne Objekt", "no object");
   return `<button class="vtile${rest ? " tapped" : ""}${fight.sentence.includes(c.uid) ? " used" : ""}${fight.placing ? " swap" : ""}" data-uid="${c.uid}">
-    <span class="cost">${d.cost}</span><b>${d.de}</b><span class="vt-en">${esc(d.en)} · ${need}</span>
+    <span class="cost${again ? " extra" : ""}">${d.cost + (again ? 1 : 0)}</span><b>${d.de}</b><span class="vt-en">${esc(d.en)} · ${need}</span>
     <span class="vt-pow">${FX[d.fx].icon} ${powOf(c)}</span>
     <span class="vt-charges" title="${LT("Züge übrig", "turns left")}">⌛ ${Array.from({ length: VERB_TURNS }, (_, i) => `<i class="${i < c.turns ? "on" : ""}"></i>`).join("")}</span>
-    ${rest ? `<span class="vt-rest">${L("ruht bis zum nächsten Zug", "resting until next turn")}</span>` : again ? `<span class="vt-rest again">${L("nochmal für +1 ⚡", "again for +1 ⚡")}</span>` : ""}</button>`;
+    ${rest ? `<span class="vt-rest">${L("ruht bis zum nächsten Zug", "resting until next turn")}</span>` : again ? `<span class="vt-rest again">${L(`nochmal für ${d.cost + 1} ⚡`, `again for ${d.cost + 1} ⚡`)}</span>` : ""}</button>`;
 }
 function toggleCard(uid) {
   if (fight.busy) return;
@@ -1045,13 +1061,13 @@ function resolve(cards, a, steps, answers) {
   if (perfect) { run.stats.perfect++; meta.perfect++; }
   run.stats.mistakes += mistakes;
   // effect
-  let line, dmg = 0;
+  let line, dmg = 0, healed = 0;
   if (v.fx === "atk") {
     const absorbed = Math.min(en.block, power); en.block -= absorbed;
     dmg = power - absorbed; en.hp -= dmg; run.stats.dmg += dmg;
     line = `⚔️ <b>${dmg}</b> ${L("Schaden", "damage")}${absorbed ? ` (🛡️ ${absorbed})` : ""}${mult}`;
   } else if (v.fx === "blk") { fight.block += power; line = `🛡️ +<b>${power}</b> ${L("Schild", "shield")}`; }
-  else { const before = run.hp; run.hp = Math.min(run.maxHp, run.hp + power); line = `❤️ +<b>${run.hp - before}</b> ${L("Leben", "HP")}`; }
+  else { const before = run.hp; run.hp = Math.min(run.maxHp, run.hp + power); healed = run.hp - before; line = `❤️ +<b>${healed}</b> ${L("Leben", "HP")}`; }
   if (e.leech && mistakes) { en.hp = Math.min(en.max, en.hp + 4 * mistakes); notes.push(L(`${e.e} ${e.name} lebt von deinen Fehlern: +${4 * mistakes}.`, `${e.e} ${e.name} feeds on your mistakes: +${4 * mistakes} HP.`)); }
   if (bonus.length) line += ` <span class="r-bonus">💪 +${bonusPts}: ${bonus.map(b => b[1]).join(", ")}</span>`;
   if (flags.long && has("atem")) { fight.block += 5; line += ` · 🌬️ +5 ${L("Schild", "shield")}`; }
@@ -1062,10 +1078,58 @@ function resolve(cards, a, steps, answers) {
   renderFight();
   speak(plainSentence(html));
   sfx(perfect ? "ok" : "bad");
-  if (v.fx === "atk") { sfx("hit"); const f = $("#foe"); if (f) { f.classList.add("hit"); floatNum(f, dmg); } }
+  focusFoe();
+  setTimeout(() => fxSpell(v.fx, v.fx === "atk" ? dmg : v.fx === "blk" ? power : healed), narrow() ? 300 : 0);
+  if (en.hp > 0) focusHand(1700);
   showResult(html, perfect, a.perf, line, notes, streakMult);
   save();
   if (en.hp <= 0) setTimeout(winFight, 900);
+}
+// ---------- fight effects: what just happened should be obvious at a glance ----------
+const narrow = () => matchMedia("(max-width: 700px)").matches;
+// phones: the monster sits above the forge and hand – scroll up to show the action, then back down to the cards
+function focusFoe() { if (narrow()) scrollTo({ top: 0, behavior: "smooth" }); }
+function focusHand(delay = 1100) {
+  if (!narrow()) return;
+  setTimeout(() => { if (view === "fight" && fight && !fight.busy) { const f = $(".forge"); if (f) f.scrollIntoView({ behavior: "smooth", block: "start" }); } }, delay);
+}
+function fxFloat(el, text, cls) {
+  if (!el) return;
+  const r = el.getBoundingClientRect(), f = document.createElement("div");
+  f.className = "float " + cls; f.innerHTML = text;
+  f.style.left = r.left + r.width / 2 + "px"; f.style.top = r.top + r.height / 3 + "px";
+  document.body.append(f); setTimeout(() => f.remove(), 1200);
+}
+function fxClass(el, cls, ms = 700) { if (!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); setTimeout(() => el.classList.remove(cls), ms); }
+function fxLayer(el, cls, html, ms = 800) {
+  if (!el) return;
+  const d = document.createElement("div"); d.className = "fx " + cls; d.innerHTML = html || "";
+  el.append(d); setTimeout(() => d.remove(), ms);
+}
+// the player's spell
+function fxSpell(kind, n) {
+  const foe = $("#foe"), you = $(".you");
+  if (kind === "atk") {
+    fxLayer(foe, "slash", "<i></i><i></i><i></i>", 700); fxClass(foe, "hit", 450);
+    fxFloat(foe, "−" + n, "dmg"); sfx("hit");
+  } else if (kind === "blk") {
+    fxLayer(you, "bubble", "", 900); fxFloat(you, "+" + n + " 🛡️", "blk");
+  } else {
+    fxLayer(you, "sparkles", Array.from({ length: 12 }, (_, i) => `<i style="--x:${(i * 37) % 100}%;--d:${(i % 5) * .08}s"></i>`).join(""), 1100);
+    fxFloat(you, "+" + n + " ❤️", "heal");
+  }
+}
+// the monster's move
+function fxEnemy(kind, n, blocked) {
+  const foe = $("#foe"), you = $(".you");
+  if (kind === "atk") {
+    fxClass(foe, "lunge", 600);
+    if (n - blocked > 0) { fxLayer(document.body, "vignette", "", 700); fxClass(document.body, "shake", 350); }
+    if (blocked) fxLayer(you, "bubble crack", "", 900);
+    fxFloat($(".top .hp") || you, n - blocked > 0 ? "−" + (n - blocked) + " ❤️" : "🛡️ " + L("geblockt", "blocked"), n - blocked > 0 ? "dmg" : "blk");
+  } else if (kind === "blk") { fxLayer(foe, "ring", "", 900); fxFloat(foe, "+" + n + " 🛡️", "blk"); }
+  else if (kind === "buff") { fxLayer(foe, "aura", "", 1000); fxFloat(foe, "💪 +" + n, "buff"); }
+  else { fxLayer(foe, "sparkles", Array.from({ length: 10 }, (_, i) => `<i style="--x:${(i * 41) % 100}%;--d:${(i % 4) * .08}s"></i>`).join(""), 1100); fxFloat(foe, "+" + n + " ❤️", "heal"); }
 }
 function floatNum(el, n) {
   const r = el.getBoundingClientRect(), f = document.createElement("div");
@@ -1101,22 +1165,34 @@ function endTurn() {
   renderFight();
   setTimeout(enemyTurn, 450);
 }
+// The monster's turn is shown (phones scroll up to it), then the player's next turn starts
 function enemyTurn() {
-  const en = fight.enemy, [k, v] = intent(), e = ENEMIES[fight.eid];
-  en.block = 0;
-  if (k === "atk") {
-    const dmg = v + en.str, absorbed = Math.min(fight.block, dmg);
-    fight.block -= absorbed; run.hp -= dmg - absorbed;
-    sfx("hit"); document.body.classList.add("shake"); setTimeout(() => document.body.classList.remove("shake"), 350);
-    toast(`${e.e} ${e.name}: <b>${dmg - absorbed}</b> ${L("Schaden", "damage")}${absorbed ? ` (🛡️ ${absorbed})` : ""}`, 1600);
-  } else if (k === "blk") en.block += v;
-  else if (k === "buff") en.str += v;
-  else en.hp = Math.min(en.max, en.hp + v);
-  en.move++;
-  fight.busy = false;
-  if (run.hp <= 0) return gameOver();
-  save();
-  startTurn();
+  focusFoe();
+  setTimeout(() => {
+    if (!fight) return;
+    const en = fight.enemy, [k, v] = intent(), e = ENEMIES[fight.eid];
+    en.block = 0;
+    let shown = v, blocked = 0;
+    if (k === "atk") {
+      const dmg = v + en.str; blocked = Math.min(fight.block, dmg); shown = dmg;
+      fight.block -= blocked; run.hp -= dmg - blocked;
+      sfx("hit");
+      toast(`${e.e} ${e.name}: <b>${dmg - blocked}</b> ${L("Schaden", "damage")}${blocked ? ` (🛡️ ${blocked})` : ""}`, 1600);
+    } else if (k === "blk") en.block += v;
+    else if (k === "buff") en.str += v;
+    else en.hp = Math.min(en.max, en.hp + v);
+    en.move++;
+    renderFight();
+    fxEnemy(k, shown, blocked);
+    setTimeout(() => {
+      if (!fight) return;
+      fight.busy = false;
+      if (run.hp <= 0) return gameOver();
+      save();
+      startTurn();
+      focusHand(500);
+    }, 900);
+  }, narrow() ? 350 : 150);
 }
 function winFight() {
   const e = ENEMIES[fight.eid];
@@ -1163,6 +1239,9 @@ function showReward(gold, relic) {
 
 // ---------- rest site ----------
 function showRest() {
+  const talk = CAMP_TALKS[`${run.ladder}-${run.act || 0}`];
+  run.campTalks = run.campTalks || [];
+  if (talk && !run.campTalks.includes(`${run.ladder}-${run.act || 0}`)) { run.campTalks.push(`${run.ladder}-${run.act || 0}`); save(); return playStory(talk, showRest); }
   view = "rest";
   const heal = Math.round(run.maxHp * .3);
   app.innerHTML = `${topbar()}<main class="panel"><h2 class="fraktur">Lagerfeuer</h2><div class="campfire">🔥</div>
@@ -1222,8 +1301,18 @@ let gateState = null;
 function showGate() {
   view = "gate";
   if (!run.gate || run.gate.floor !== run.floor) {
-    const types = ["puzzle", "sort"].concat("speechSynthesis" in window || HAS_AUDIO ? ["listen"] : []);
-    run.gate = { floor: run.floor, type: rnd(types), seed: Math.random(), done: false };
+    // never the same kind of trial twice in a row, never the same sentence twice in a run
+    run.gateSeen = run.gateSeen || [];
+    const all = ["puzzle", "sort"].concat("speechSynthesis" in window || HAS_AUDIO ? ["listen"] : []);
+    const type = rnd(all.filter(t => t !== run.lastGate).length ? all.filter(t => t !== run.lastGate) : all);
+    const pool = type === "puzzle" ? stage().puzzles : type === "listen" ? stage().listen : null;
+    let item = null;
+    if (pool) {
+      const key = x => type + ":" + (Array.isArray(x) ? x[0] : x), fresh = pool.filter(x => !run.gateSeen.includes(key(x)));
+      item = rnd(fresh.length ? fresh : pool); run.gateSeen.push(key(item));
+    }
+    run.lastGate = type;
+    run.gate = { floor: run.floor, type, seed: Math.random(), item, done: false };
     gateState = null; save();
   }
   if (run.gate.done) return gateReward();
@@ -1249,7 +1338,7 @@ function gateReward() {
 }
 // 1) Satz-Puzzle: rebuild a sentence from shuffled words
 function gatePuzzle() {
-  const target = pickBy(run.gate.seed, stage().puzzles), punct = target.slice(-1), words = target.slice(0, -1).split(" ");
+  const target = run.gate.item || pickBy(run.gate.seed, stage().puzzles), punct = target.slice(-1), words = target.slice(0, -1).split(" ");
   gateState = gateState || { order: shuffled(words.map((w, i) => i)), placed: [] };
   const g = gateState, left = g.order.filter(i => !g.placed.includes(i));
   gateFrame("Satz-Puzzle", L("Bring die Wörter in die richtige Reihenfolge.", "Put the words in the right order."),
@@ -1289,7 +1378,7 @@ function gateSort() {
 }
 // 3) Hörrätsel: which sentence did you hear?
 function gateListen() {
-  const item = pickBy(run.gate.seed, ladder().listen);
+  const item = run.gate.item || pickBy(run.gate.seed, stage().listen);
   gateState = gateState || { opts: shuffle(item), wrong: [] };
   const g = gateState;
   gateFrame("Hörrätsel", L("Hör genau zu: Welchen Satz hörst du?", "Listen carefully: which sentence do you hear?"),

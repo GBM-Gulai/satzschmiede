@@ -259,6 +259,7 @@ The map already has engraved ink icons. If you'd like painted ones instead, make
 | `rest.jpg` | Square round medallion icon, a small cosy campfire with a kettle, painted on aged cream parchment, thin brass ring, painterly storybook style, plain background, no text. |
 | `shop.jpg` | Square round medallion icon, a tiny old Viennese corner shop with a striped awning, painted on aged cream parchment, thin brass ring, painterly storybook style, plain background, no text. |
 | `event.jpg` | Square round medallion icon, a rolled parchment scroll with a question mark seal, painted on aged cream parchment, thin brass ring, painterly storybook style, plain background, no text. |
+| `encounter.jpg` | **(new – used for the ❓ encounters instead of event.jpg)** Square round medallion icon, a large ornate golden question mark engraved on aged cream parchment, thin brass ring, painterly storybook style, plain background, no text. |
 | `gate.jpg` | Square round medallion icon, an ornate old wooden door with a keyhole glowing gold, painted on aged cream parchment, thin brass ring, painterly storybook style, plain background, no text. |
 
 ## Card frames (optional) → `assets/cards/`

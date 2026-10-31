@@ -99,6 +99,64 @@ const HERO_BOSS = {
                    hint: "Final boss of B1. Your job interview – explain WHY: sentences with weil / dass deal double damage." } }
 };
 
+// Questions inside story scenes: ["huber", question, English, "ask:key"]. opts[0] is right.
+const ASKS = {
+  a1_gruss: { opts: ["Grüß Gott!", "Gute Nacht!", "Tschüss!"], ok: ["Genau! „Grüß Gott“ hört man in Wien überall – oder einfach „Hallo“.", "Exactly! You hear “Grüß Gott” everywhere in Vienna – or simply “Hallo”."],
+    no: ["In Wien sagt man „Grüß Gott“ (oder „Hallo“). „Gute Nacht“ sagt man nur vor dem Schlafen.", "In Vienna you say “Grüß Gott” (or “Hallo”). “Gute Nacht” is only for bedtime."] },
+  a1_moechte: { opts: ["Ich möchte zwei Äpfel, bitte.", "Ich will zwei Äpfel!", "Gib mir zwei Äpfel."], ok: ["Genau! „Ich möchte …“ ist höflich – „ich will“ klingt sehr direkt.", "Exactly! “Ich möchte …” is polite – “ich will” sounds very blunt."],
+    no: ["Höflich ist: „Ich möchte zwei Äpfel, bitte.“ – „Ich will“ klingt sehr direkt.", "Polite is: “Ich möchte zwei Äpfel, bitte.” – “Ich will” sounds very blunt."] },
+  a1_halb: { opts: ["um 11:30", "um 12:30", "um 11:00"], ok: ["Richtig! „Halb zwölf“ ist die halbe Stunde vor zwölf.", "Right! “Halb zwölf” is the half hour before twelve."],
+    no: ["Vorsicht: „halb zwölf“ ist 11:30 – die halbe Stunde vor zwölf!", "Careful: “halb zwölf” is 11:30 – the half hour before twelve!"] },
+  a2_sein: { opts: ["bin", "habe", "war"], ok: ["Richtig! Bei Bewegung (gehen, fahren, kommen) nimmt das Perfekt „sein“: Ich bin gegangen.", "Right! With movement (gehen, fahren, kommen) the Perfekt takes “sein”: Ich bin gegangen."],
+    no: ["Bei Bewegung nimmt das Perfekt „sein“: Gestern bin ich ins Amt gegangen.", "With movement the Perfekt takes “sein”: Gestern bin ich ins Amt gegangen."] },
+  a2_dativ: { opts: ["dem", "den", "der"], ok: ["Genau! Wem gebe ich das Formular? → Dativ: dem Beamten.", "Exactly! To whom? → Dativ: dem Beamten."],
+    no: ["Wem gebe ich das Formular? → Dativ: Ich gebe dem Beamten das Formular.", "To whom do I give the form? → Dativ: Ich gebe dem Beamten das Formular."] },
+  b1_du: { opts: ["Kannst du mir helfen?", "Können Sie mir helfen, Kollegin?", "Kann du mir helfen?"], ok: ["Genau! Unter Kollegen sagt man oft „du“ – und dann: kannst du …?", "Exactly! Colleagues often say “du” – and then: kannst du …?"],
+    no: ["Unter Kollegen sagt man meist „du“: „Kannst du mir helfen?“ (du → kannst).", "Colleagues mostly say “du”: “Kannst du mir helfen?” (du → kannst)."] },
+  b1_weil: { opts: ["… präsentieren muss.", "… muss präsentieren.", "… präsentiere muss."], ok: ["Perfekt! Im weil-Satz stehen die Verben am Ende – das Modalverb ganz zuletzt.", "Perfect! In a weil-clause the verbs go to the end – the modal verb last of all."],
+    no: ["Im weil-Satz gehen die Verben ans Ende, das Modalverb ganz zuletzt: …, weil ich morgen präsentieren muss.", "In a weil-clause the verbs go to the end, the modal last: …, weil ich morgen präsentieren muss."] },
+  // campfire talks
+  c_ung: { opts: ["die", "der", "das"], ok: ["Richtig! die Zeitung, die Freiheit, die Möglichkeit – immer „die“.", "Right! die Zeitung, die Freiheit, die Möglichkeit – always “die”."],
+    no: ["Wörter auf -ung, -heit, -keit sind immer „die“: die Zeitung, die Freiheit.", "Words ending in -ung, -heit, -keit are always “die”: die Zeitung, die Freiheit."] },
+  c_chen: { opts: ["das", "der", "die"], ok: ["Genau! das Mädchen, das Brötchen, das Häuschen – „-chen“ macht alles klein und neutral.", "Exactly! das Mädchen, das Brötchen – “-chen” makes everything small and neuter."],
+    no: ["Wörter auf -chen sind immer „das“: das Mädchen, das Brötchen.", "Words ending in -chen are always “das”: das Mädchen, das Brötchen."] },
+  c_hunger: { opts: ["Ich habe Hunger.", "Ich bin Hunger.", "Ich bin hungrig habe."], ok: ["Genau! Auf Deutsch HAT man Hunger, Durst und Angst.", "Exactly! In German you HAVE hunger, thirst and fear."],
+    no: ["Auf Deutsch HAT man Hunger: „Ich habe Hunger.“ (auch: Ich habe Durst, ich habe Angst.)", "In German you HAVE hunger: “Ich habe Hunger.” (also: Ich habe Durst, ich habe Angst.)"] },
+  c_warten: { opts: ["habe", "bin", "hat"], ok: ["Richtig! warten ist keine Bewegung → haben: Ich habe gewartet.", "Right! Waiting isn't movement → haben: Ich habe gewartet."],
+    no: ["warten ist keine Bewegung, also „haben“: Ich habe lange gewartet.", "Waiting isn't movement, so “haben”: Ich habe lange gewartet."] },
+  c_plural: { opts: ["die Formulare", "die Formularen", "die Formulars"], ok: ["Genau! das Formular → die Formulare. Viele Wörter bekommen im Plural ein -e.", "Exactly! das Formular → die Formulare. Many words add -e in the plural."],
+    no: ["Der Plural ist „die Formulare“ – im Plural ist der Artikel immer „die“.", "The plural is “die Formulare” – in the plural the article is always “die”."] },
+  c_mit: { opts: ["Dativ", "Akkusativ", "Nominativ"], ok: ["Richtig! mit dem Bus, mit der Straßenbahn – nach „mit“ kommt immer Dativ.", "Right! mit dem Bus, mit der Straßenbahn – “mit” is always followed by Dativ."],
+    no: ["Nach „mit“ kommt immer Dativ: mit dem Bus, mit der Straßenbahn.", "“mit” is always followed by Dativ: mit dem Bus, mit der Straßenbahn."] },
+  c_darf: { opts: ["darf", "muss", "will"], ok: ["Genau! „nicht dürfen“ heißt: verboten. Hier darf man nicht rauchen.", "Exactly! “nicht dürfen” means: not allowed. Hier darf man nicht rauchen."],
+    no: ["„nicht dürfen“ = verboten: Hier darf man nicht rauchen. („nicht müssen“ heißt nur: nicht nötig!)", "“nicht dürfen” = forbidden: Hier darf man nicht rauchen. (“nicht müssen” only means: not necessary!)"] },
+  c_dass: { opts: ["dass", "das", "weil"], ok: ["Richtig! „dass“ mit ss beginnt einen Nebensatz – das Verb geht ans Ende.", "Right! “dass” with ss starts a second clause – the verb goes to the end."],
+    no: ["Hier braucht man „dass“ (mit ss): Ich weiß, dass du viel arbeitest. „das“ ist Artikel oder Pronomen.", "This needs “dass” (with ss): Ich weiß, dass du viel arbeitest. “das” is an article or pronoun."] },
+  c_wenn: { opts: ["Wenn", "Wann", "Weil"], ok: ["Genau! „wenn“ = if / whenever. „wann“ fragt nur nach der Zeit: Wann kommst du?", "Exactly! “wenn” = if / whenever. “wann” only asks about time: Wann kommst du?"],
+    no: ["„Wenn ich Zeit habe, …“ – „wann“ ist nur ein Fragewort: Wann kommst du?", "“Wenn ich Zeit habe, …” – “wann” is only a question word: Wann kommst du?"] }
+};
+// First camp of each act: Frau Huber sits by the fire and teaches one small thing
+const CAMP_TALKS = {
+  "a1-0": [["narr", "Am Lagerfeuer setzt sich Frau Huber zu Ihnen und wärmt ihre Hände.", "At the campfire Frau Huber sits down next to you and warms her hands."],
+           ["huber", "Ein Trick für die Artikel: Wörter auf -ung, -heit und -keit sind immer …", "A trick for the articles: words ending in -ung, -heit and -keit are always …", "ask:c_ung"]],
+  "a1-1": [["narr", "Frau Huber kauft zwei Brötchen und gibt Ihnen eines.", "Frau Huber buys two bread rolls and gives you one."],
+           ["huber", "Das Brötchen, das Mädchen … Wörter auf -chen sind immer …", "Das Brötchen, das Mädchen … words ending in -chen are always …", "ask:c_chen"]],
+  "a1-2": [["narr", "Der Duft von Lángos zieht über den Prater. Ihr Magen knurrt.", "The smell of lángos drifts over the Prater. Your stomach growls."],
+           ["huber", "Na? Wie sagen Sie das auf Deutsch?", "Well? How do you say that in German?", "ask:c_hunger"]],
+  "a2-0": [["narr", "Im Warteraum gibt es kein Feuer – nur eine flackernde Lampe. Frau Huber setzt sich trotzdem zu Ihnen.", "There's no fire in the waiting room – only a flickering lamp. Frau Huber sits with you anyway."],
+           ["huber", "Erzählen Sie mir von gestern: Ich … lange gewartet.", "Tell me about yesterday: I … waited a long time.", "ask:c_warten"]],
+  "a2-1": [["narr", "Zwischen den Regalen findet Frau Huber eine Kerze und zündet sie an.", "Between the shelves Frau Huber finds a candle and lights it."],
+           ["huber", "So viele Formulare! Wie heißt das im Plural?", "So many forms! What's that in the plural?", "ask:c_plural"]],
+  "a2-2": [["narr", "Vor dem Rathaus warten Sie auf die Straßenbahn. Frau Huber summt einen Walzer.", "In front of the city hall you wait for the tram. Frau Huber hums a waltz."],
+           ["huber", "Mit der Straßenbahn, mit dem Bus … Nach „mit“ kommt immer …", "Mit der Straßenbahn, mit dem Bus … after “mit” always comes …", "ask:c_mit"]],
+  "b1-0": [["narr", "Vor dem AMS: eine kurze Pause in der Sonne. Frau Huber zeigt auf ein Schild.", "Outside the AMS: a short break in the sun. Frau Huber points at a sign."],
+           ["huber", "Da steht: Hier … man nicht rauchen.", "It says: Here one … not smoke.", "ask:c_darf"]],
+  "b1-1": [["narr", "Mittagspause. Frau Huber sitzt plötzlich in der Kantine neben Ihnen.", "Lunch break. Suddenly Frau Huber is sitting next to you in the canteen."],
+           ["huber", "Ich weiß, … Sie viel arbeiten. Welches Wort fehlt?", "I know … you work a lot. Which word is missing?", "ask:c_dass"]],
+  "b1-2": [["narr", "Am Abend vor der großen Präsentation ruft Frau Huber an.", "On the evening before the big presentation Frau Huber calls."],
+           ["huber", "… Sie morgen Zeit haben, rufen Sie mich nach der Präsentation an!", "… you have time tomorrow, call me after the presentation!", "ask:c_wenn"]]
+};
+
 // Non-player characters in the story
 const NPCS = {
   huber: { name: "Frau Huber", e: "👵" },
@@ -115,9 +173,15 @@ const LADDERS = [
     // acts 2 and 3 (act 1 uses the fields above)
     acts: [{}, { name: "Der Naschmarkt", bg: "a1-2", mapTitle: "Über den Naschmarkt", mapSub: "Stalls, smells and swindlers. The Cheese Emperor sits behind the last stall.",
                  enemies: ["gurke", "schreier", "wespe", "kraut"], easy: ["gurke", "wespe"], elite: "standlerin", boss: "kaese",
+                 listen: [["Ein Kilo Äpfel kostet zwei Euro.", "Ein Kilo Äpfel kostet drei Euro.", "Zwei Kilo Äpfel kosten zwei Euro."],
+                          ["Ich nehme den Käse und das Brot.", "Ich nehme den Kaffee und das Brot.", "Ich nehme den Käse und die Brote."],
+                          ["Der Markt ist am Samstag offen.", "Der Markt ist am Sonntag offen.", "Der Markt ist am Samstag zu."]],
                  puzzles: ["Ich kaufe heute drei rote Äpfel.", "Was kostet ein Kilo Tomaten?", "Am Samstag gehen wir auf den Markt.", "Der Käse riecht sehr stark.", "Kann ich mit Karte bezahlen?", "Morgen koche ich eine große Suppe."] },
                { name: "Der Prater", bg: "a1-3", mapTitle: "Durch den Prater", mapSub: "Carousels, ghost trains – and a giant wheel that turns all by itself.",
                  enemies: ["pony", "watte", "spiegel", "fledermaus"], easy: ["pony", "fledermaus"], elite: "watschenmann", boss: "riesenrad",
+                 listen: [["Wir fahren heute mit dem Riesenrad.", "Wir fahren morgen mit dem Riesenrad.", "Wir fahren heute mit dem Rad."],
+                          ["Die Geisterbahn ist sehr dunkel.", "Die Geisterbahn ist sehr bunt.", "Die Geisterbahn ist nicht dunkel."],
+                          ["Eine Fahrt kostet fünf Euro.", "Eine Fahrt kostet neun Euro.", "Eine Fahrt kostet fünfzehn Euro."]],
                  puzzles: ["Am Abend fahren wir mit dem Riesenrad.", "Die Kinder lachen in der Geisterbahn.", "Ich habe keine Angst vor Gespenstern.", "Heute Abend essen wir Langos im Prater.", "Wie viel kostet eine Fahrt?", "Mein Freund gewinnt einen großen Teddybären."] }],
     start: ["ich", "du", "wir", "sehen", "finden", "haben", "laufen", "trinken", "Hund", "Katze", "Buch", "Wasser", "heute"],
     starter: ["kaufen", "essen", "Mann", "Apfel", "jetzt"],   // extra words in the collection from the very first run
@@ -148,9 +212,15 @@ const LADDERS = [
     enemies: ["kobold", "stempel", "schlange", "papagei"], easy: ["kobold", "stempel"], elite: "drache", boss: "hydra",
     acts: [{}, { name: "Das Archiv", bg: "a2-2", mapTitle: "Hinab ins Archiv", mapSub: "Staub, Akten, Dunkelheit. Ganz unten wartet der Aktenberg.",
                  enemies: ["aktenmaus", "staub", "ordner", "krake"], easy: ["aktenmaus", "krake"], elite: "archivar", boss: "aktenberg",
+                 listen: [["Ich habe die Akte im Keller gefunden.", "Ich habe die Akte im Keller gesucht.", "Ich habe die Akten im Keller gefunden."],
+                          ["Wir sind zwei Stunden geblieben.", "Wir sind drei Stunden geblieben.", "Wir haben zwei Stunden geschlafen."],
+                          ["Der Archivar hat mir geholfen.", "Der Archivar hat mich gerufen.", "Die Archivarin hat mir geholfen."]],
                  puzzles: ["Ich habe meine Akte im Keller gefunden.", "Gestern hat mir der Beamte nicht geholfen.", "Wir sind zwei Stunden im Archiv geblieben.", "Hast du das Formular schon unterschrieben?", "Die Katze ist mir in den Keller gefolgt.", "Er hat dem Archivar einen Brief gegeben."] },
                { name: "Das Rathaus", bg: "a2-3", mapTitle: "Hinauf ins Rathaus", mapSub: "Ballsaal, Wappen, Siegel. Auf dem Turm wartet der Rathausmann.",
                  enemies: ["loewe", "walzer", "pfau", "siegel"], easy: ["loewe", "walzer"], elite: "sekretaer", boss: "rathausmann",
+                 listen: [["Wir sind auf den Ball gegangen.", "Wir sind in den Park gegangen.", "Wir haben den Ball gesehen."],
+                          ["Der Bürgermeister hat unterschrieben.", "Der Bürgermeister hat geschrieben.", "Die Bürgermeisterin hat unterschrieben."],
+                          ["Die Torte hat mir sehr geschmeckt.", "Die Torte hat mir nicht geschmeckt.", "Der Tee hat mir sehr geschmeckt."]],
                  puzzles: ["Ich habe dem Bürgermeister das Formular gezeigt.", "Am Samstag sind wir auf den Ball gegangen.", "Der Kellner hat uns eine Torte gebracht.", "Wann haben Sie den Antrag abgegeben?", "Wir haben die ganze Nacht Walzer getanzt.", "Endlich hat mir jemand die Regeln erklärt."] }],
     start: ["ich", "du", "wir", "sehen", "haben", "gehen", "geben", "helfen", "Frau", "Hund", "Formular", "Kaffee", "gestern", "perf"],
     starter: ["kommen", "zeigen", "Brief", "Beamtin", "perf"],
@@ -182,10 +252,16 @@ const LADDERS = [
     acts: [{ bg: "b1-1" },
            { name: "Das Büro", bg: "b1", mapTitle: "Im Büro", mapSub: "Drucker, E-Mails, Kaffeemaschine. Und dann: das Endlos-Meeting.",
              enemies: ["druckerdaemon", "mailflut", "kaffeekobold", "dauerredner"], easy: ["druckerdaemon", "kaffeekobold"], elite: "hotline", boss: "meeting",
+             listen: [["Das Meeting beginnt um halb zehn.", "Das Meeting beginnt um halb elf.", "Das Meeting endet um halb zehn."],
+                      ["Kannst du mir die Datei schicken?", "Kannst du mir die Datei zeigen?", "Kann ich dir die Datei schicken?"],
+                      ["Der Drucker funktioniert schon wieder nicht.", "Der Drucker funktioniert jetzt wieder.", "Der Computer funktioniert schon wieder nicht."]],
              puzzles: ["Ich kann den Bericht heute nicht drucken.", "Der Chef will, dass wir länger bleiben.", "Wir dürfen im Büro keinen Alkohol trinken.",
                        "Obwohl ich müde bin, beantworte ich alle E-Mails.", "Kannst du mir bitte die Datei schicken?", "Ich trinke Kaffee, weil das Meeting lange dauert."] },
            { name: "{b1act3name}", bg: "b1-3", mapTitle: "{b1act3title}", mapSub: "Lampenfieber, Folien, Beamer. Ganz oben wartet {b1boss}.",
              enemies: ["lampenfieber", "folienkobold", "beamer", "deadline"], easy: ["lampenfieber", "deadline"], elite: "konkurrent", boss: "chef",
+             listen: [["Ich präsentiere morgen um neun Uhr.", "Ich präsentiere heute um neun Uhr.", "Ich präsentiere morgen um zehn Uhr."],
+                      ["Ich bin nervös, weil der Chef zuhört.", "Ich bin nervös, obwohl der Chef zuhört.", "Ich bin ruhig, weil der Chef zuhört."],
+                      ["Wir müssen die Folien noch ändern.", "Wir müssen die Folien noch drucken.", "Wir wollen die Folien noch ändern."]],
              puzzles: ["Morgen soll ich das Projekt präsentieren.", "Ich bin nervös, weil der Chef zuhört.", "Wenn die Präsentation gut läuft, bekomme ich mehr Gehalt.",
                        "Wir müssen die Folien noch einmal besprechen.", "Der Kunde möchte den Vertrag sofort unterschreiben.", "Obwohl der Beamer kaputt ist, präsentiere ich weiter."] }],
     start: ["arbeiten", "schreiben", "drucken", "telefonieren", "Bericht", "Email", "Chef", "Kollegin", "Termin", "müssen", "weil", "heute"],
@@ -235,7 +311,8 @@ const STORY = {
       ["narr", "Als {name} die Karten berührt, wirbelt goldenes Licht. Die Zeit dreht sich zurück: Gaslaternen, Dampf, Kutschen – und die Wörter werden lebendig.", "As {name} touches the cards, golden light swirls. Time turns back: gas lamps, steam, carriages – and the words come alive.", "portal"],
       ["huber", "Willkommen im Wien von früher – einer Parallelwelt. Hier lernen Sie, was Sie im Wien von heute brauchen.", "Welcome to the Vienna of the past – a parallel world. Here you'll learn what you need in today's Vienna."],
       ["huber", "Ihre Sachen kommen mit – aber hier sind sie ein bisschen … magisch.", "Your things come with you – but here they're a little … magical."],
-      ["hero", "{magic}", "{magicEn}", "en"]
+      ["hero", "{magic}", "{magicEn}", "en"],
+      ["huber", "Zuerst das Wichtigste: Wie grüßt man in Wien?", "First things first: how do you greet people in Vienna?", "ask:a1_gruss"]
     ],
     // first-run tutorial fight, right after arriving in the past
     tutorial: [
@@ -255,6 +332,8 @@ const STORY = {
     act1End: [
       ["automat", "FAHRKARTE … GÜLTIG.", "TICKET … VALID."],
       ["huber", "Gut gemacht, {name}! Mit der Fahrkarte kommen Sie weiter – zum Naschmarkt.", "Well done, {name}! With the ticket you can go on – to the Naschmarkt."],
+      ["huber", "Am Markt müssen Sie einkaufen. Wie sagt man höflich, was man haben möchte?", "At the market you'll have to shop. How do you say politely what you'd like?", "ask:a1_moechte"],
+      ["huber", "Und Achtung: In Wien heißen Tomaten „Paradeiser“ und Kartoffeln „Erdäpfel“!", "And careful: in Vienna tomatoes are called “Paradeiser” and potatoes “Erdäpfel”!"],
       ["narr", "Akt 2: Der Naschmarkt. Hier riecht alles nach Essen – und nach Ärger.", "Act 2: the Naschmarkt. Everything here smells of food – and of trouble."]
     ],
     boss2: [
@@ -265,6 +344,7 @@ const STORY = {
     act2End: [
       ["kaese", "Mein … Reich … zerbröselt …", "My … empire … is crumbling …"],
       ["huber", "Es wird dunkel. Der Prater wartet – und das Riesenrad dreht sich von allein.", "It's getting dark. The Prater is waiting – and the giant wheel turns all by itself."],
+      ["huber", "Der Prater schließt um halb zwölf. Wann ist das?", "The Prater closes at “halb zwölf”. When is that?", "ask:a1_halb"],
       ["narr", "Akt 3: Der Prater.", "Act 3: the Prater."]
     ],
     boss3: [
@@ -296,6 +376,7 @@ const STORY = {
     act1End: [
       ["hydra", "Der Stempel … ist … gültig …", "The stamp … is … valid …"],
       ["novak", "Gültig, ja. Aber Ihre Akte liegt im Archiv. Im Keller.", "Valid, yes. But your file is in the archive. In the cellar."],
+      ["huber", "Erzählen Sie Herrn Novak, was Sie gemacht haben: Gestern … ich ins Amt gegangen.", "Tell Herr Novak what you did: Yesterday I … gone to the office.", "ask:a2_sein"],
       ["narr", "Akt 2: Das Archiv. Hier unten hat seit hundert Jahren niemand aufgeräumt.", "Act 2: the archive. Nobody has tidied up down here for a hundred years."]
     ],
     boss2: [
@@ -306,6 +387,7 @@ const STORY = {
     act2End: [
       ["aktenberg", "Nehmen … Sie … Ihre … Akte …", "Take … your … file …"],
       ["novak", "Jetzt fehlt nur noch die Unterschrift. Im Rathaus. Ganz oben.", "Now all that's missing is the signature. In the city hall. Right at the top."],
+      ["huber", "Im Rathaus geben Sie das Formular ab. Ich gebe … Beamten das Formular.", "At the city hall you hand in the form. I give … official the form.", "ask:a2_dativ"],
       ["narr", "Akt 3: Das Rathaus.", "Act 3: the city hall."]
     ],
     boss3: [
@@ -340,6 +422,7 @@ const STORY = {
     act1End: [
       ["amsautomat", "TERMIN … BESTÄTIGT.", "APPOINTMENT … CONFIRMED."],
       ["huber", "{b1act2}", "{b1act2En}"],
+      ["huber", "Dort duzen sich alle. Was sagen Sie zu einer Kollegin, wenn Sie Hilfe brauchen?", "Everyone says “du” there. What do you say to a colleague when you need help?", "ask:b1_du"],
       ["narr", "{b1act2narr}", "{b1act2narrEn}"]
     ],
     boss2: [
@@ -350,6 +433,7 @@ const STORY = {
     act2End: [
       ["meeting", "Das Meeting … ist … beendet.", "The meeting … is … over."],
       ["huber", "{b1act3}", "{b1act3En}"],
+      ["huber", "Und wenn jemand fragt, warum Sie nervös sind? „Weil ich morgen …“", "And if someone asks why you're nervous? “Because tomorrow I …”", "ask:b1_weil"],
       ["narr", "Akt 3: {b1act3name}.", "Act 3: {b1act3name}."]
     ],
     boss3: [
