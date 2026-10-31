@@ -51,6 +51,8 @@ const hero = () => HEROES[run.hero];
 // Language of hints & menus grows with the level: A1 English, A2 both, B1+ German
 function uiMode() { return run ? ladder().ui : "both"; }
 function L(de, en) { const m = uiMode(); return m === "en" ? en : m === "both" ? `${de} <small class="en">(${en})</small>` : de; }
+// plain-text version for HTML attributes (title, data-…): L() can contain markup, which would break the attribute
+function LT(de, en) { const m = uiMode(); return m === "en" ? en : m === "both" ? `${de} (${en})` : de; }
 const TYPE_LABEL = () => ({ subj: L("Subjekt", "subject"), verb: L("Verb", "verb"), noun: L("Nomen", "noun"), adv: L("Zeitwort", "time"), perf: "Perfekt",
   modal: L("Modalverb", "modal verb"), konj: L("Konnektor", "connector") });
 const weakLabel = w => ({ dat: L("Dativ", "Dativ"), akk: L("Akkusativ", "Akkusativ"), inv: L("Satz beginnt mit Zeitwort", "sentence starts with a time word"),
@@ -842,7 +844,7 @@ function renderFight() {
       <div class="slots">${cards.length ? cards.map(c => cardHtml(c, "mini")).join("") : `<span class="empty">${L("Deine Schmiede ist leer", "Your forge is empty")}</span>`}</div>
       <div class="status ${a.ok ? "ok" : ""}">${a.msg}${a.ok && sentenceCost() > fight.energy ? ` <b>${L("Nicht genug Energie.", "Not enough energy.")}</b>` : ""}</div>
       ${fight.streak ? `<div class="streak">🔥 ${L("Serie", "Streak")} ${fight.streak} · ${L("nächster perfekter Satz", "next perfect sentence")} ×${Math.min(2, 1.5 + .1 * fight.streak).toFixed(1)}</div>` : ""}
-      <div class="energy-orbs" title="${L("Energie", "Energy")}">${Array.from({ length: Math.max(3, fight.energy) }, (_, i) => {
+      <div class="energy-orbs" title="${LT("Energie", "Energy")}">${Array.from({ length: Math.max(3, fight.energy) }, (_, i) => {
         const left = fight.energy - sentenceCost();
         return `<i class="${i < left ? "full" : i < fight.energy ? "spend" : "empty"}">⚡</i>`;
       }).join("")}<span>${fight.energy - sentenceCost()} / ${fight.energy} ${L("Energie", "energy")}</span></div>
@@ -854,7 +856,7 @@ function renderFight() {
       <div class="verb-field">${fight.field.map(c => c ? verbTile(c) : `<div class="vslot">${L("Verb-Platz", "Verb slot")}</div>`).join("")}</div>
     </section>
     <section class="hand">${fight.hand.map(c => cardHtml(c, (fight.sentence.includes(c.uid) ? "used" : "") + (CARDS[c.id].type === "verb" ? " to-field" + (fight.placing === c.uid ? " placing" : "") : ""))
-      .replace("data-uid", `data-field="${fight.placed >= placeLimit() ? (fight.recycled ? "–" : L("♻️ recyceln", "♻️ recycle")) : L("aufs Feld", "to field")}" data-uid`)).join("")}</section>
+      .replace("data-uid", `data-field="${fight.placed >= placeLimit() ? (fight.recycled ? "–" : LT("♻️ recyceln", "♻️ recycle")) : LT("aufs Feld", "to field")}" data-uid`)).join("")}</section>
     <section class="actions"><button class="btn ghost" data-act="redraw" ${fight.energy - sentenceCost() >= 1 && !fight.busy ? "" : "disabled"}>↻ ${L("Neu ziehen", "Redraw")} (1⚡)</button>
       <button class="btn" data-act="end" ${fight.busy ? "disabled" : ""}>${L("Zug beenden", "End turn")} ⏭</button></section>
   </main>`;
@@ -867,7 +869,7 @@ function verbTile(c) {
   return `<button class="vtile${rest ? " tapped" : ""}${fight.sentence.includes(c.uid) ? " used" : ""}${fight.placing ? " swap" : ""}" data-uid="${c.uid}">
     <span class="cost">${d.cost}</span><b>${d.de}</b><span class="vt-en">${esc(d.en)} · ${need}</span>
     <span class="vt-pow">${FX[d.fx].icon} ${powOf(c)}</span>
-    <span class="vt-charges" title="${L("Züge übrig", "turns left")}">⌛ ${Array.from({ length: VERB_TURNS }, (_, i) => `<i class="${i < c.turns ? "on" : ""}"></i>`).join("")}</span>
+    <span class="vt-charges" title="${LT("Züge übrig", "turns left")}">⌛ ${Array.from({ length: VERB_TURNS }, (_, i) => `<i class="${i < c.turns ? "on" : ""}"></i>`).join("")}</span>
     ${rest ? `<span class="vt-rest">${L("ruht bis zum nächsten Zug", "resting until next turn")}</span>` : again ? `<span class="vt-rest again">${L("nochmal für +1 ⚡", "again for +1 ⚡")}</span>` : ""}</button>`;
 }
 function toggleCard(uid) {
