@@ -560,3 +560,7 @@ body[data-ladder="a2"] .foe-name, body[data-ladder="a2"] .map h2, body[data-ladd
 .ask-opt.right { background: #2f8f5b; color: #fff; } .ask-opt.wrong { background: #a3241a; color: #fff; }
 .ask-fb { margin-top: 10px; padding: 8px 12px; border-radius: 10px; font-weight: 700; line-height: 1.4; }
 .ask-fb.ok { background: rgba(47, 143, 91, .25); border: 1px solid #2f8f5b; } .ask-fb.no { background: rgba(163, 36, 26, .25); border: 1px solid #a3241a; }
+
+/* helper-language picker */
+.lang-row { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 4px; }
+.lang-row .pill { cursor: pointer; } .lang-row .pill.on { border-color: var(--ember2); background: #3a2a1d; box-shadow: 0 0 10px rgba(255, 179, 71, .5); }

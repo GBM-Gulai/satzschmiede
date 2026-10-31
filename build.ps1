@@ -53,6 +53,7 @@ $(Read-Text "style.css")
 <div id="app"></div>
 <script>
 $assetJs
+$(Read-Text "tr.js")
 $(Read-Text "data.js")
 $(Read-Text "story.js")
 $(Read-Text "game.js")
@@ -66,7 +67,7 @@ New-Item -ItemType Directory -Force (Join-Path $root "dist") | Out-Null
 $docs = Join-Path $root "docs"
 if (Test-Path $docs) { Remove-Item $docs -Recurse -Force }
 New-Item -ItemType Directory -Force $docs | Out-Null
-$files = @("index.html", "style.css", "data.js", "story.js", "game.js", "manifest.webmanifest", "icon.svg")
+$files = @("index.html", "style.css", "tr.js", "data.js", "story.js", "game.js", "manifest.webmanifest", "icon.svg")
 foreach ($f in $files) { Copy-Item (Join-Path $root $f) (Join-Path $docs $f) }
 foreach ($rel in $images.Keys) {
   $target = Join-Path $docs $rel.Replace("/", "\")

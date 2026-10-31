@@ -5,7 +5,7 @@ Run after changing story text:   python tools/make-voices.py
 Needs: pip install piper-tts, ffmpeg on PATH, voice models in tools/voices/ (see VOICES below).
 The file name key must match voiceKey() in game.js: djb2 hash of "<speaker>|<German text>".
 """
-import re, subprocess, wave, tempfile, os
+import json, re, subprocess, wave, tempfile, os
 from pathlib import Path
 from piper import PiperVoice, SynthesisConfig
 
@@ -55,9 +55,18 @@ def parse():
     if camp > 0:
         story += src[camp:src.index("\n};", camp)]
     found = re.findall(r'\["(\w+)",\s*"((?:[^"\\]|\\.)*)",\s*"((?:[^"\\]|\\.)*)"(?:,\s*"([\w:]+)")?\]', story)   # optional 4th item = effect marker
-    # lines marked "en" are spoken in English (the hero before learning German)
-    lines = [(who, en if fx == "en" else de) for who, de, en, fx in found]
+    # lines marked "en" are spoken in the helper language (the hero before learning German)
+    lines = [(who, en if fx == "en" else de, fx == "en") for who, de, en, fx in found]
     return heroes, lines
+
+
+def translations():
+    # helper languages from tr.js (made by tools/i18n-build.py): {"pt": {english: translation}, ...}
+    f = ROOT / "tr.js"
+    if not f.exists():
+        return {}
+    js = f.read_text(encoding="utf-8")
+    return json.loads(js[js.index("{"):js.rindex("}") + 1])
 
 
 def fill(text, h):
@@ -71,12 +80,18 @@ SPEAKER_ALT = {("chef", "amara"): "pflegedirektorin"}
 
 def jobs():
     heroes, lines = parse()
-    for who, de in lines:
-        needs_hero = who == "hero" or "{" in de
-        for hid, h in (heroes.items() if needs_hero else [(None, None)]):
-            text = fill(de, h) if h else de
-            speaker = f"hero-{hid}" if who == "hero" else SPEAKER_ALT.get((who, hid), who)
-            yield speaker, text
+    tr = translations()
+    for who, de, english in lines:
+        # helper-language lines exist once per language: English plus every translation (same as T() in game.js)
+        variants = [(de, None)] + ([(t.get(de, de), t) for t in tr.values()] if english else [])
+        for line, t in variants:
+            needs_hero = who == "hero" or "{" in line
+            for hid, h in (heroes.items() if needs_hero else [(None, None)]):
+                if h and t:   # hero fields ending in "En" are translated too
+                    h = {k: (t.get(v, v) if k.endswith("En") else v) for k, v in h.items()}
+                text = fill(line, h) if h else line
+                speaker = f"hero-{hid}" if who == "hero" else SPEAKER_ALT.get((who, hid), who)
+                yield speaker, text
 
 
 def main():

@@ -50,9 +50,25 @@ const hero = () => HEROES[run.hero];
 
 // Language of hints & menus grows with the level: A1 English, A2 both, B1+ German
 function uiMode() { return run ? ladder().ui : "both"; }
-function L(de, en) { const m = uiMode(); return m === "en" ? en : m === "both" ? `${de} <small class="en">(${en})</small>` : de; }
+// The helper language explains German: English, or Portuguese (BR), Spanish (Latin America), French.
+// Translations live in lang/<code>.js as TR.<code> = { "English text": "translation" }. Missing ones fall back to English.
+// Keys with {0}, {1} … stand for texts with values filled in ("{0} damage").
+const LANGS = { en: ["English", "🇬🇧", "en-GB"], pt: ["Português", "🇧🇷", "pt-BR"], es: ["Español", "🌎", "es-MX"], fr: ["Français", "🇫🇷", "fr-FR"] };
+const TR = window.TR || {};
+const trPatterns = {};
+function helperLang() { try { return (meta && meta.lang) || "en"; } catch { return "en"; } }
+function T(en) {
+  const lang = helperLang(), d = TR[lang];
+  if (lang === "en" || !d || en == null || en === "") return en;
+  if (d[en] !== undefined) return d[en];
+  const pats = trPatterns[lang] || (trPatterns[lang] = Object.keys(d).filter(k => /\{\d\}/.test(k))
+    .map(k => [new RegExp("^" + k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\\\{(\d)\\\}/g, "([\\s\\S]*?)") + "$"), d[k]]));
+  for (const [re, tr] of pats) { const m = en.match(re); if (m) return tr.replace(/\{(\d)\}/g, (_, i) => m[+i + 1]); }
+  return en;
+}
+function L(de, en) { const m = uiMode(); en = T(en); return m === "en" ? en : m === "both" ? `${de} <small class="en">(${en})</small>` : de; }
 // plain-text version for HTML attributes (title, data-…): L() can contain markup, which would break the attribute
-function LT(de, en) { const m = uiMode(); return m === "en" ? en : m === "both" ? `${de} (${en})` : de; }
+function LT(de, en) { const m = uiMode(); en = T(en); return m === "en" ? en : m === "both" ? `${de} (${en})` : de; }
 const TYPE_LABEL = () => ({ subj: L("Subjekt", "subject"), verb: L("Verb", "verb"), noun: L("Nomen", "noun"), adv: L("Zeitwort", "time"), perf: "Perfekt",
   modal: L("Modalverb", "modal verb"), konj: L("Konnektor", "connector") });
 const weakLabel = w => ({ dat: L("Dativ", "Dativ"), akk: L("Akkusativ", "Akkusativ"), inv: L("Satz beginnt mit Zeitwort", "sentence starts with a time word"),
@@ -156,8 +172,8 @@ const bestGermanVoice = () => bestVoice("de");
 function speak(text, force, english, gender = "") {
   if (!("speechSynthesis" in window) || (!meta.voice && !force)) return;
   speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text.replace(/[⏪]/g, "")), v = bestVoice(english ? "en" : "de", gender);
-  u.lang = v ? v.lang : english ? "en-GB" : "de-DE"; if (v) u.voice = v; u.rate = .92;
+  const u = new SpeechSynthesisUtterance(text.replace(/[⏪]/g, "")), v = bestVoice(english ? helperLang() : "de", gender);
+  u.lang = v ? v.lang : english ? LANGS[helperLang()][2] : "de-DE"; if (v) u.voice = v; u.rate = .92;
   // no voice of the right gender on this device: shift the pitch instead
   if (gender && (!v || voiceGender(v) !== gender)) u.pitch = gender === "m" ? .7 : 1.15;
   speechSynthesis.speak(u);
@@ -349,11 +365,11 @@ function showPack() {
   view = "pack";
   const lad = ladder(), owned = ownedCopies(lad);
   run.bag = run.bag || recommendedBag(lad);
-  const bag = run.bag, problem = bagCheck(bag), T = TYPE_LABEL();
+  const bag = run.bag, problem = bagCheck(bag), TL = TYPE_LABEL();
   const groups = ["verb", "noun", "adv", "perf"].map(t => {
     const keys = owned.filter(k => CARDS[k.split("#")[0]].type === t);
     if (!keys.length) return "";
-    return `<h3 class="pack-h">${T[t]} <small>${keys.filter(k => bag.includes(k)).length} / ${keys.length}</small></h3>
+    return `<h3 class="pack-h">${TL[t]} <small>${keys.filter(k => bag.includes(k)).length} / ${keys.length}</small></h3>
       <div class="pack-grid">${keys.map(k => cardHtml({ id: k.split("#")[0], uid: k }, "mini" + (bag.includes(k) ? " packed" : ""))).join("")}</div>`;
   }).join("");
   app.innerHTML = `${topbar()}<main class="panel pack"><h2 class="fraktur">${L("Pack deine Tasche", "Pack your bag")}</h2>
@@ -397,7 +413,7 @@ function newRun(ladderId) {
 // ---------- story scenes ----------
 function fill(s) {
   const h = run && hero();
-  return h && s ? s.replace(/\{(\w+)\}/g, (m, k) => h[k] !== undefined ? h[k] : m) : s;
+  return h && s ? s.replace(/\{(\w+)\}/g, (m, k) => h[k] !== undefined ? (k.endsWith("En") ? T(h[k]) : h[k]) : m) : s;
 }
 // apply the hero-specific version of an enemy (name, picture, hint), e.g. the B1 final boss
 const ENEMY_BASE = {};
@@ -444,15 +460,15 @@ function playStory(lines, done) {
     if (fx === "portal") portal();
     ov.innerHTML = `<div class="story-pic ${who === "hero" ? "left" : "right"}">${s.pic}</div>
       <div class="story-box ${who === "narr" ? "narr" : ""}">${s.name ? `<div class="story-name">${s.name}</div>` : ""}
-        <div class="story-de">${fill(english ? en : de)} <button class="say" data-say aria-label="Anhören">🔊</button>${uiMode() === "de" && !english ? ` <button class="en-toggle" data-en aria-label="English">🇬🇧</button>` : ""}</div>
-        <div class="story-en${uiMode() === "de" && !english ? " en-hidden" : ""}">${english ? "🇩🇪 " : ""}${fill(english ? de : en)}</div>
+        <div class="story-de">${fill(english ? T(en) : de)} <button class="say" data-say aria-label="Anhören">🔊</button>${uiMode() === "de" && !english ? ` <button class="en-toggle" data-en aria-label="English">${LANGS[helperLang()][1]}</button>` : ""}</div>
+        <div class="story-en${uiMode() === "de" && !english ? " en-hidden" : ""}">${english ? "🇩🇪 " : ""}${fill(english ? de : T(en))}</div>
         ${ask ? `<div class="ask-opts">${shuffle(ask.opts).map(o => `<button class="btn ask-opt" data-ask="${esc(o)}">${o}</button>`).join("")}</div>` : ""}
         <div class="story-foot"><span>${i + 1} / ${lines.length}</span><span>${ask ? L("Wähle eine Antwort", "Choose an answer") : L("Tippen zum Weiterlesen", "Tap to continue")} ▸</span></div></div>
       <button class="story-skip" data-skip>${L("Überspringen", "Skip")} ⏭</button>`;
-    playLine(who, fill(english ? en : de), english);
+    playLine(who, fill(english ? T(en) : de), english);
   };
   ov.onclick = e => {
-    if (e.target.closest("[data-say]")) return playLine(lines[i][0], fill(lines[i][lines[i][3] === "en" ? 2 : 1]), lines[i][3] === "en");
+    if (e.target.closest("[data-say]")) return playLine(lines[i][0], fill(lines[i][3] === "en" ? T(lines[i][2]) : lines[i][1]), lines[i][3] === "en");
     if (e.target.closest("[data-en]")) { ov.querySelector(".story-en").classList.toggle("en-hidden"); return; }
     // a question: wait for an answer, explain it, then continue on the next tap
     if (asking && !asking.answered && !e.target.closest("[data-skip]")) {
@@ -461,7 +477,7 @@ function playStory(lines, done) {
       asking.answered = true; sfx(good ? "ok" : "bad");
       ov.querySelectorAll(".ask-opt").forEach(x => { x.disabled = true; if (x.dataset.ask === right) x.classList.add("right"); else if (x === b) x.classList.add("wrong"); });
       const fb = good ? asking.ask.ok : asking.ask.no;
-      ov.querySelector(".ask-opts").insertAdjacentHTML("afterend", `<div class="ask-fb ${good ? "ok" : "no"}">${good ? "✓" : "✗"} ${fb[0]}${uiMode() === "de" ? "" : `<small class="en-sub">${fb[1]}</small>`}</div>`);
+      ov.querySelector(".ask-opts").insertAdjacentHTML("afterend", `<div class="ask-fb ${good ? "ok" : "no"}">${good ? "✓" : "✗"} ${fb[0]}${uiMode() === "de" ? "" : `<small class="en-sub">${T(fb[1])}</small>`}</div>`);
       ov.querySelector(".story-foot span:last-child").innerHTML = `${L("Tippen zum Weiterlesen", "Tap to continue")} ▸`;
       if (good && run) { run.gold += 5; toast("✓ +5 💰", 1200); save(); }
       speak(right);
@@ -480,7 +496,7 @@ function topbar() {
     <span class="hero-chip">${heroArt(run.hero, "mini-pic")}<b>${hero().name}</b></span>
     <span class="pill hp">❤️ ${run.hp}/${run.maxHp}</span>
     <span class="pill">💰 ${run.gold}</span>
-    <span class="relics">${run.relics.map(r => `<button class="relic" data-act="relic" data-r="${r}" title="${esc(RELICS[r].name + ": " + RELICS[r].text)}">${RELICS[r].e}</button>`).join("")}</span>
+    <span class="relics">${run.relics.map(r => `<button class="relic" data-act="relic" data-r="${r}" title="${esc(RELICS[r].name + ": " + T(RELICS[r].text))}">${RELICS[r].e}</button>`).join("")}</span>
     <span class="pill floor">${ladder().lvl}${actLabel()} · ${Math.min(run.floor + 1, LAYOUT.length)}/${LAYOUT.length}</span>
     <button class="pill" data-act="deck" title="Deck">🂠 ${run.deck.length}</button>${soundBtn("music")}${soundBtn("voice")}
   </header>`;
@@ -490,19 +506,19 @@ function toast(msg, ms = 2400) {
   t.className = "toast"; t.innerHTML = msg;
   document.body.append(t); setTimeout(() => t.remove(), ms);
 }
-function showRelic(r) { toast(`${RELICS[r].e} <b>${RELICS[r].name}</b> – ${RELICS[r].text}`, 3200); }
+function showRelic(r) { toast(`${RELICS[r].e} <b>${RELICS[r].name}</b> – ${T(RELICS[r].text)}`, 3200); }
 
 // ---------- card rendering ----------
 function cardWord(d) { return d.type === "noun" ? `<span class="art g-${d.g}">${d.g}</span> ${d.de}` : d.de; }
 function cardHtml(c, extra = "") {
-  const d = CARDS[c.id], pow = powOf(c), T = TYPE_LABEL();
+  const d = CARDS[c.id], pow = powOf(c), TL = TYPE_LABEL();
   const slots = d.type === "verb" ? (d.slots.length ? d.slots.map(s => s === "dat" ? L("+ wem? (Dat)", "+ to whom? (Dat)") : L("+ was? (Akk)", "+ what? (Akk)")).join(" ") : L("ohne Objekt", "no object"))
     : d.type === "perf" ? L("ans Satzende", "goes last") : d.type === "modal" ? L("Position 2 · Verb ans Ende", "position 2 · verb goes last")
     : d.type === "konj" ? L("Nebensatz · Verb ans Ende", "2nd clause · verb goes last") : "";
   const power = d.type === "verb" ? `${FX[d.fx].icon} ${pow}` : `✦ ${pow}`;
   return `<button class="card t-${d.type}${d.type === "noun" ? " g-" + d.g : ""}${c.up ? " up" : ""} ${extra}" data-uid="${c.uid}">
-    <span class="cost">${d.cost}</span><span class="ctype">${T[d.type]}${c.up ? " +" : ""}</span>
-    <span class="cword">${cardWord(d)}</span><span class="cen">${esc(d.en)}</span>
+    <span class="cost">${d.cost}</span><span class="ctype">${TL[d.type]}${c.up ? " +" : ""}</span>
+    <span class="cword">${cardWord(d)}</span><span class="cen">${esc(T(d.en))}</span>
     ${slots ? `<span class="cslots">${slots}</span>` : ""}<span class="cpow">${power}</span></button>`;
 }
 
@@ -512,21 +528,22 @@ function showTitle() {
   music("inn");
   view = "title"; fight = null; setScene("");
   app.innerHTML = `<main class="title"><div class="logo fraktur">Satzschmiede</div>
-    <p class="tag">A deckbuilder where your <b>German sentences</b> are your weapons.<br><span class="en">Ein Deckbuilder, in dem deine deutschen Sätze deine Waffen sind.</span></p>
+    <p class="tag">${T("A deckbuilder where your <b>German sentences</b> are your weapons.")}<br><span class="en">Ein Deckbuilder, in dem deine deutschen Sätze deine Waffen sind.</span></p>
     ${window.ASSET_DATA ? `<div class="anvil">⚒️</div>` : `<div class="title-vid"><video data-src="assets/video/title.mp4"></video></div>`}
-    <div class="col-btns">${run ? `<button class="btn hot" data-act="continue">Continue · Weiter (${LADDERS.find(l => l.id === run.ladder).lvl}${actLabel()}, ${run.floor + 1}/${LAYOUT.length})</button>` : ""}
-      <button class="btn ${run ? "" : "hot"}" data-act="heroes">New adventure · Neues Abenteuer</button>
-      <button class="btn ghost" data-act="help">How to play · Wie spielt man?</button></div>
+    <div class="col-btns">${run ? `<button class="btn hot" data-act="continue">${T("Continue")} · Weiter (${LADDERS.find(l => l.id === run.ladder).lvl}${actLabel()}, ${run.floor + 1}/${LAYOUT.length})</button>` : ""}
+      <button class="btn ${run ? "" : "hot"}" data-act="heroes">${T("New adventure")} · Neues Abenteuer</button>
+      <button class="btn ghost" data-act="help">${T("How to play")} · Wie spielt man?</button></div>
+    <div class="lang-row" role="group" aria-label="Language">${Object.entries(LANGS).map(([k, [name, flag]]) => `<button class="pill${helperLang() === k ? " on" : ""}" data-act="lang" data-l="${k}">${flag} ${name}</button>`).join("")}</div>
     <div class="sound-row">${soundBtn("music")} ${soundBtn("voice")}</div>
     <div class="stats"><div><b>${meta.runs}</b>Runs</div><div><b>${meta.cleared.length}</b>Leitern</div><div><b>${meta.sentences}</b>Sätze</div><div><b>${meta.perfect}</b>perfekt</div><div><b>${mistakeCount()}</b>📖 Fehlerheft</div></div></main>`;
 }
 function showHeroes() {
   view = "heroes";
-  app.innerHTML = `<main class="panel"><h2 class="fraktur">Wer bist du?</h2><p class="sub">Choose your hero · Wähle deine Heldin oder deinen Helden</p>
+  app.innerHTML = `<main class="panel"><h2 class="fraktur">Wer bist du?</h2><p class="sub">${T("Choose your hero")} · Wähle deine Heldin oder deinen Helden</p>
     <div class="heroes">${Object.entries(HEROES).map(([id, h]) => `<button class="hero-card" data-act="pick-hero" data-h="${id}">
-      ${heroArt(id, "hero-pic")}<b class="hero-name">${h.name}</b><span class="hero-role">${h.role} aus ${h.from}<small class="en">${h.roleEn} from ${h.fromEn}</small></span>
-      <span class="hero-bonus">✨ <b>${h.powerEn}</b> – ${h.powerTextEn}<small class="en">${h.power}: ${h.powerText}</small></span></button>`).join("")}</div>
-    <button class="btn ghost" data-act="title">← Back</button></main>`;
+      ${heroArt(id, "hero-pic")}<b class="hero-name">${h.name}</b><span class="hero-role">${h.role} aus ${h.from}<small class="en">${T(h.roleEn)} · ${T(h.fromEn)}</small></span>
+      <span class="hero-bonus">✨ <b>${T(h.powerEn)}</b> – ${T(h.powerTextEn)}<small class="en">${h.power}: ${h.powerText}</small></span></button>`).join("")}</div>
+    <button class="btn ghost" data-act="title">← ${T("Back")}</button></main>`;
 }
 function showTower() {
   view = "tower";
@@ -535,12 +552,12 @@ function showTower() {
     const i = LADDERS.indexOf(l), open = l.ready && i < meta.unlocked, done = meta.cleared.includes(l.id);
     return `<button class="rung ${open ? "open" : "locked"}${done ? " done" : ""}" data-act="ladder" data-l="${l.id}" ${open ? "" : "disabled"}>
       <span class="rung-lvl">${l.lvl}</span><span class="rung-txt"><b>${l.name}</b> <small class="en">${l.nameEn}</small><span>${l.place}</span>
-      ${!l.ready ? `<em>Bald verfügbar · coming soon – ${l.teaser}</em>` : !open ? `<em>🔒 Besiege zuerst ${LADDERS[i - 1].lvl} · beat ${LADDERS[i - 1].lvl} first</em>` : ""}</span>
+      ${!l.ready ? `<em>Bald verfügbar · ${T("coming soon")} – ${l.teaser}</em>` : !open ? `<em>🔒 Besiege zuerst ${LADDERS[i - 1].lvl} · ${T(`beat ${LADDERS[i - 1].lvl} first`)}</em>` : ""}</span>
       <span class="rung-state">${done ? "✓" : open ? "▶" : "🔒"}</span></button>`;
   }).join("");
   app.innerHTML = `<main class="panel"><h2 class="fraktur">Die Sprachleiter</h2>
-    <p class="sub">Six ladders from A1 to C2 · Sechs Leitern von A1 bis C2. ${heroArt(pickedHero, "mini-pic")} <b>${HEROES[pickedHero].name}</b></p>
-    <div class="tower">${rows}</div><button class="btn ghost" data-act="heroes">← Held wechseln · change hero</button></main>`;
+    <p class="sub">${T("Six ladders from A1 to C2")} · Sechs Leitern von A1 bis C2. ${heroArt(pickedHero, "mini-pic")} <b>${HEROES[pickedHero].name}</b></p>
+    <div class="tower">${rows}</div><button class="btn ghost" data-act="heroes">← Held wechseln · ${T("change hero")}</button></main>`;
 }
 
 // ---------- map ----------
@@ -589,7 +606,7 @@ function showMap() {
     }).join("");
     return `<div class="floor-row${f === run.floor ? " current" : ""}" data-f="${f}"><span class="fl">${f + 1}</span><div class="nodes">${nodes}</div></div>`;
   }).reverse().join("");
-  app.innerHTML = `${topbar()}<main class="map"><h2 class="fraktur">${fill(lad.mapTitle)}</h2><p class="sub">${fill(lad.mapSub)}</p>
+  app.innerHTML = `${topbar()}<main class="map"><h2 class="fraktur">${fill(lad.mapTitle)}</h2><p class="sub">${fill(T(lad.mapSub))}</p>
     <div class="map-scroll"><div class="map-rows"><svg class="map-lines"></svg>${rows}</div></div></main>`;
   requestAnimationFrame(() => { drawMapLines(); const cur = $(".floor-row.current"); if (cur) cur.scrollIntoView({ block: "center" }); });
 }
@@ -868,7 +885,7 @@ function renderFight() {
         <button class="btn hot" data-act="cast" ${canCast ? "" : "disabled"}>🔨 ${L("Schmieden", "Forge")}</button></div>
     </section>
     <section class="field">
-      <div class="pron-bar">${fight.bar.map(c => `<button class="pron${fight.sentence.includes(c.uid) ? " used" : ""}" data-uid="${c.uid}"><b>${CARDS[c.id].de}</b><small>${esc(CARDS[c.id].en)}</small></button>`).join("")}</div>
+      <div class="pron-bar">${fight.bar.map(c => `<button class="pron${fight.sentence.includes(c.uid) ? " used" : ""}" data-uid="${c.uid}"><b>${CARDS[c.id].de}</b><small>${esc(T(CARDS[c.id].en))}</small></button>`).join("")}</div>
       <div class="verb-field">${fight.field.map(c => c ? verbTile(c) : `<div class="vslot">${L("Verb-Platz", "Verb slot")}</div>`).join("")}</div>
     </section>
     <section class="hand">${fight.hand.map(c => cardHtml(c, (fight.sentence.includes(c.uid) ? "used" : "") + (CARDS[c.id].type === "verb" ? " to-field" + (fight.placing === c.uid ? " placing" : "") : ""))
@@ -883,7 +900,7 @@ function verbTile(c) {
   const d = CARDS[c.id], rest = fight.tapped.includes(c.uid) && !canRecast(c.uid), again = canRecast(c.uid);
   const need = d.slots.length ? d.slots.map(s => s === "dat" ? L("+ wem?", "+ to whom?") : L("+ was?", "+ what?")).join(" ") : L("ohne Objekt", "no object");
   return `<button class="vtile${rest ? " tapped" : ""}${fight.sentence.includes(c.uid) ? " used" : ""}${fight.placing ? " swap" : ""}" data-uid="${c.uid}">
-    <span class="cost${again ? " extra" : ""}">${d.cost + (again ? 1 : 0)}</span><b>${d.de}</b><span class="vt-en">${esc(d.en)} · ${need}</span>
+    <span class="cost${again ? " extra" : ""}">${d.cost + (again ? 1 : 0)}</span><b>${d.de}</b><span class="vt-en">${esc(T(d.en))} · ${need}</span>
     <span class="vt-pow">${FX[d.fx].icon} ${powOf(c)}</span>
     <span class="vt-charges" title="${LT("Züge übrig", "turns left")}">⌛ ${Array.from({ length: VERB_TURNS }, (_, i) => `<i class="${i < c.turns ? "on" : ""}"></i>`).join("")}</span>
     ${rest ? `<span class="vt-rest">${L("ruht bis zum nächsten Zug", "resting until next turn")}</span>` : again ? `<span class="vt-rest again">${L(`nochmal für ${d.cost + 1} ⚡`, `again for ${d.cost + 1} ⚡`)}</span>` : ""}</button>`;
@@ -1217,7 +1234,7 @@ function actCleared() {
   playStory(STORY[run.ladder][`act${done}End`] || [], () => {
     music("inn"); view = "act";
     app.innerHTML = `${topbar()}<main class="panel"><h2 class="fraktur">${L(`Akt ${done} geschafft!`, `Act ${done} cleared!`)}</h2>
-      <p class="sub">⚡ +1 ${L("max. Energie", "max energy")} · ❤️ +${heal} · 💰 +30${relic ? ` · ${RELICS[relic].e} <b>${RELICS[relic].name}</b> – ${RELICS[relic].text}` : ""}</p>
+      <p class="sub">⚡ +1 ${L("max. Energie", "max energy")} · ❤️ +${heal} · 💰 +30${relic ? ` · ${RELICS[relic].e} <b>${RELICS[relic].name}</b> – ${T(RELICS[relic].text)}` : ""}</p>
       <p>${L(`Weiter geht's: <b>${fill(stage().name)}</b>`, `Next up: <b>${fill(stage().name)}</b>`)}</p>
       <button class="btn hot" data-act="continue">${L("Weiter", "Continue")} ➜</button></main>`;
   });
@@ -1230,7 +1247,7 @@ function showReward(gold, relic) {
   view = "reward";
   const picks = sample(rewardPool(), 3).map(id => mk(id));
   app.innerHTML = `${topbar()}<main class="panel"><h2 class="fraktur">Sieg!</h2>
-    <p class="sub">💰 +${gold} Gold${relic ? ` · ${L("Relikt", "Relic")}: ${RELICS[relic].e} <b>${RELICS[relic].name}</b> – ${RELICS[relic].text}` : ""}</p>
+    <p class="sub">💰 +${gold} Gold${relic ? ` · ${L("Relikt", "Relic")}: ${RELICS[relic].e} <b>${RELICS[relic].name}</b> – ${T(RELICS[relic].text)}` : ""}</p>
     <p>${L("Wähle ein neues Wort für dein Deck:", "Choose a new word for your deck:")}</p>
     <div class="choice">${picks.map(c => cardHtml(c)).join("")}</div>
     <button class="btn ghost" data-act="skip">${L("Überspringen", "Skip")}</button></main>`;
@@ -1271,14 +1288,14 @@ function showShop(haggling) {
   let haggle = "";
   if (haggling && !s.haggled) {
     const [q, opts] = rnd(ladder().haggle);
-    haggle = `<div class="haggle"><p class="riddle">${q}</p><div class="row-btns">${shuffle(opts).map(o => `<button class="btn opt-h" data-ok="${o === opts[0] ? 1 : 0}">${o}</button>`).join("")}</div></div>`;
+    haggle = `<div class="haggle"><p class="riddle">${T(q)}</p><div class="row-btns">${shuffle(opts).map(o => `<button class="btn opt-h" data-ok="${o === opts[0] ? 1 : 0}">${T(o)}</button>`).join("")}</div></div>`;
   }
   app.innerHTML = `${topbar()}<main class="panel"><h2 class="fraktur">Wotrubas Greißlerei</h2>
     <div class="gate-host">${art("assets/npc/wotruba.jpg", NPCS.wotruba.e, "event-pic", clip("wotruba"))}<p class="sub"><b>Herr Wotruba:</b> ${mood}</p></div>
     ${s.haggled ? "" : haggle || `<button class="btn" data-act="haggle">🗣️ ${L("Feilschen – löse ein Rätsel für 30 % Rabatt", "Haggle – solve a riddle for 30 % off")}</button>`}
     <div class="choice wrap">${s.cards.map(c => `<div class="ware">${cardHtml(c, c.sold ? "used" : "")}<span class="price">${c.sold ? L("verkauft", "sold") : "💰 " + shopPrice(c.price)}</span></div>`).join("")}</div>
     <div class="row-btns">
-      ${s.relic ? `<button class="btn" data-act="buy-relic" ${run.gold >= shopPrice(s.relicPrice) ? "" : "disabled"}>${RELICS[s.relic].e} ${RELICS[s.relic].name} – 💰 ${shopPrice(s.relicPrice)}<small>${RELICS[s.relic].text}</small></button>` : ""}
+      ${s.relic ? `<button class="btn" data-act="buy-relic" ${run.gold >= shopPrice(s.relicPrice) ? "" : "disabled"}>${RELICS[s.relic].e} ${RELICS[s.relic].name} – 💰 ${shopPrice(s.relicPrice)}<small>${T(RELICS[s.relic].text)}</small></button>` : ""}
       <button class="btn" data-act="buy-remove" ${run.gold >= rm && !s.removed ? "" : "disabled"}>🗑️ ${L("Ein Wort entfernen", "Remove a word")} – 💰 ${rm}</button>
     </div><button class="btn hot" data-act="leave">${L("Weiter", "Continue")} ➜</button></main>`;
   app.querySelectorAll(".opt-h").forEach(b => b.onclick = () => {
@@ -1398,8 +1415,8 @@ function gateListen() {
 const encPool = () => ENCOUNTERS[`${run.ladder}-${run.act || 0}`] || [];
 const T2 = pair => L(pair[0], pair[1]);
 // scene text: always German, with the English underneath until B1
-const DE2 = pair => uiMode() === "de" ? `${pair[0]} <button class="en-toggle" onclick="this.nextElementSibling.classList.toggle('en-hidden')" aria-label="English">🇬🇧</button><small class="en-sub en-hidden">${pair[1]}</small>`
-  : `${pair[0]}<small class="en-sub">${pair[1]}</small>`;
+const DE2 = pair => uiMode() === "de" ? `${pair[0]} <button class="en-toggle" onclick="this.nextElementSibling.classList.toggle('en-hidden')" aria-label="English">${LANGS[helperLang()][1]}</button><small class="en-sub en-hidden">${T(pair[1])}</small>`
+  : `${pair[0]}<small class="en-sub">${T(pair[1])}</small>`;
 function costText(c) { return c ? ` <small>(${c.gold ? `💰 ${c.gold}` : ""}${c.hp ? `❤️ −${c.hp}` : ""})</small>` : ""; }
 function showEncounter() {
   view = "event";
@@ -1465,7 +1482,7 @@ function showEvent() {
   app.querySelectorAll(".opt-r").forEach(b => b.onclick = () => {
     if (b.textContent === right) {
       const left = Object.keys(RELICS).filter(r => !run.relics.includes(r));
-      if (left.length && Math.random() < .4) { const r = rnd(left); gainRelic(r); toast(`✓ ${L("Richtig!", "Correct!")} ${RELICS[r].e} <b>${RELICS[r].name}</b> – ${RELICS[r].text}`, 3500); }
+      if (left.length && Math.random() < .4) { const r = rnd(left); gainRelic(r); toast(`✓ ${L("Richtig!", "Correct!")} ${RELICS[r].e} <b>${RELICS[r].name}</b> – ${T(RELICS[r].text)}`, 3500); }
       else { run.gold += 40; toast(`✓ ${L("Richtig!", "Correct!")} +40 Gold`); }
       sfx("win");
     } else { run.hp = Math.max(1, run.hp - 6); toast(`✗ ${L("Falsch – richtig war", "Wrong – the answer was")} „${right}“. −6 ❤️`, 3500); sfx("bad"); }
@@ -1511,22 +1528,23 @@ function overlay(html) {
   ov.onclick = e => { if (e.target.closest("[data-close]") || e.target === ov) ov.remove(); };
   document.body.append(ov);
 }
+// How to play: each item is translated on its own
+const HELP = [
+  '<b>Your cards are German words.</b> Tap them in order to build a sentence: <i>Ich · sehe · den Hund</i>.',
+  "<b>Each turn you're dealt 2 pronouns</b> (ich, du, wir …). <b>Verbs go on the field:</b> one per turn, for free. A field verb casts once per turn (from act 2: a second time for +1 ⚡) and stays 3 turns (3 slots).",
+  '<b>Energy ⚡:</b> 3 per turn (+1 for every act cleared) – the red seal on a card is its cost. <b>✨ Special power:</b> ready at the start of a fight, then 3 perfect sentences recharge it.',
+  '<b>B1 – 🔧 modal verbs</b> (können, müssen …) go in position 2 and send the verb to the end: <i>Ich muss den Bericht schreiben.</i> <b>🔗 Connectors</b> (weil, dass, wenn, obwohl) add a second clause with the verb at the very end: <i>Ich arbeite, weil ich Geld brauche.</i>',
+  "<b>🔥 Streaks:</b> perfect sentences in a row grow stronger (×1.5 → ×1.6 → … ×2). <b>New combos</b> (a pronoun + verb you haven't used this fight) give +2. On the first turn you may place 2 verbs; a verb you can't place can be ♻️ recycled once per turn.",
+  '<b>The verb decides the spell:</b> ⚔️ attack, 🛡️ shield or ❤️ heal. The number is its power.',
+  '<b>Word order:</b> the verb is always in <b>position 2</b>. Start with a time word (<i>heute</i>) and the subject moves behind the verb: <i>Heute sehe ich …</i>',
+  '<b>Incantation:</b> when you forge, pick the right verb form and articles. Perfect sentences are ×1.5 stronger.',
+  '<b>⏪ Perfekt</b> (from A2): put it at the end to cast in the past tense – <i>Ich habe den Hund gesehen</i>.',
+  "<b>🚪 Trials</b> (floors 4 and 8): Frau Huber's mini-games – you must pass them to go on. <b>🛒 Shop:</b> haggle with Herr Wotruba for 30 % off.",
+  '<b>Monsters have weaknesses</b> – tap ⓘ. <b>Energy ⚡:</b> verbs, nouns and strong time words (morgen, immer …) cost 1; pronouns, heute/jetzt and ⏪ cost 0.',
+  '<b>💪 Strong forms:</b> irregular verb forms (du <i>siehst</i>, er <i>läuft</i>, <i>gesehen</i>) and Dativ objects give +2 power. <b>📖 Fehlerheft:</b> every mistake is saved – practise them at the camp to heal.'
+];
 function showHelp() {
-  overlay(`<div class="incant-h">How to play</div><ol class="help">
-    <li><b>Your cards are German words.</b> Tap them in order to build a sentence: <i>Ich · sehe · den Hund</i>.</li>
-    <li><b>Each turn you're dealt 2 pronouns</b> (ich, du, wir …). <b>Verbs go on the field:</b> one per turn, for free. A field verb casts once per turn (from act 2: a second time for +1 ⚡) and stays 3 turns (3 slots).</li>
-    <li><b>Energy ⚡:</b> 3 per turn (+1 for every act cleared) – the red seal on a card is its cost. <b>✨ Special power:</b> ready at the start of a fight, then 3 perfect sentences recharge it.</li>
-    <li><b>B1 – 🔧 modal verbs</b> (können, müssen …) go in position 2 and send the verb to the end: <i>Ich muss den Bericht schreiben.</i>
-      <b>🔗 Connectors</b> (weil, dass, wenn, obwohl) add a second clause with the verb at the very end: <i>Ich arbeite, weil ich Geld brauche.</i></li>
-    <li><b>🔥 Streaks:</b> perfect sentences in a row grow stronger (×1.5 → ×1.6 → … ×2). <b>New combos</b> (a pronoun + verb you haven't used this fight) give +2. On the first turn you may place 2 verbs; a verb you can't place can be ♻️ recycled once per turn.</li>
-    <li><b>The verb decides the spell:</b> ⚔️ attack, 🛡️ shield or ❤️ heal. The number is its power.</li>
-    <li><b>Word order:</b> the verb is always in <b>position 2</b>. Start with a time word (<i>heute</i>) and the subject moves behind the verb: <i>Heute sehe ich …</i></li>
-    <li><b>Incantation:</b> when you forge, pick the right verb form and articles. Perfect sentences are ×1.5 stronger.</li>
-    <li><b>⏪ Perfekt</b> (from A2): put it at the end to cast in the past tense – <i>Ich habe den Hund gesehen</i>.</li>
-    <li><b>🚪 Trials</b> (floors 4 and 8): Frau Huber's mini-games – you must pass them to go on. <b>🛒 Shop:</b> haggle with Herr Wotruba for 30 % off.</li>
-    <li><b>Monsters have weaknesses</b> – tap ⓘ. <b>Energy ⚡:</b> verbs, nouns and strong time words (morgen, immer …) cost 1; pronouns, heute/jetzt and ⏪ cost 0.</li>
-    <li><b>💪 Strong forms:</b> irregular verb forms (du <i>siehst</i>, er <i>läuft</i>, <i>gesehen</i>) and Dativ objects give +2 power. <b>📖 Fehlerheft:</b> every mistake is saved – practise them at the camp to heal.</li>
-  </ol>`);
+  overlay(`<div class="incant-h">${T("How to play")}</div><ol class="help">${HELP.map(x => `<li>${T(x)}</li>`).join("")}</ol>`);
 }
 function showDeck() {
   const order = ["subj", "verb", "noun", "adv", "perf"];
@@ -1541,13 +1559,14 @@ app.addEventListener("click", e => {
   if (view === "fight" && card && !act) return toggleCard(+card.dataset.uid);
   if (!act) return;
   ({
-    heroes: () => { if (run && !app.querySelector(".confirm")) { el.insertAdjacentHTML("afterend", `<button class="btn confirm" data-act="heroes-yes">Sure? Your current run will be lost · Sicher?</button>`); return; } showHeroes(); },
+    heroes: () => { if (run && !app.querySelector(".confirm")) { el.insertAdjacentHTML("afterend", `<button class="btn confirm" data-act="heroes-yes">${T("Sure? Your current run will be lost")} · Sicher?</button>`); return; } showHeroes(); },
     "heroes-yes": () => { run = null; save(); showHeroes(); },
     "pick-hero": () => { pickedHero = el.dataset.h; sfx("ok"); showTower(); },
     ladder: () => newRun(el.dataset.l),
     tower: showTower,
     continue: () => run.packed === false ? showPack() : showMap(),
     help: showHelp,
+    lang: () => { meta.lang = el.dataset.l; save(); sfx("tap"); showTitle(); },
     title: showTitle,
     deck: showDeck,
     music: () => toggleSound("music"),
@@ -1559,7 +1578,7 @@ app.addEventListener("click", e => {
     power: usePower,
     "tut-ok": () => { fight.tut++; renderFight(); },
     end: endTurn,
-    foeinfo: () => { const en = ENEMIES[fight.eid]; toast(`${en.e} <b>${en.name}</b>: ${en.hint}`, 4200); },
+    foeinfo: () => { const en = ENEMIES[fight.eid]; toast(`${en.e} <b>${en.name}</b>: ${T(en.hint)}`, 4200); },
     skip: nextFloor,
     "rest-review": () => showReview(),
     "rest-heal": () => { run.hp = Math.min(run.maxHp, run.hp + Math.round(run.maxHp * .3)); sfx("ok"); nextFloor(); },

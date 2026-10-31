@@ -1,0 +1,3450 @@
+[
+ {
+  "en": "Act",
+  "ctx": "ui"
+ },
+ {
+  "en": "subject",
+  "ctx": "ui"
+ },
+ {
+  "en": "verb",
+  "ctx": "ui"
+ },
+ {
+  "en": "noun",
+  "ctx": "ui"
+ },
+ {
+  "en": "time",
+  "ctx": "ui"
+ },
+ {
+  "en": "modal verb",
+  "ctx": "ui"
+ },
+ {
+  "en": "connector",
+  "ctx": "ui"
+ },
+ {
+  "en": "Dativ",
+  "ctx": "ui"
+ },
+ {
+  "en": "Akkusativ",
+  "ctx": "ui"
+ },
+ {
+  "en": "sentence starts with a time word",
+  "ctx": "ui"
+ },
+ {
+  "en": "perfect sentences",
+  "ctx": "ui"
+ },
+ {
+  "en": "long sentences (5+ words)",
+  "ctx": "ui"
+ },
+ {
+  "en": "Perfekt sentences ⏪",
+  "ctx": "ui"
+ },
+ {
+  "en": "sentences with a modal verb",
+  "ctx": "ui"
+ },
+ {
+  "en": "subordinate clauses (weil, dass …)",
+  "ctx": "ui"
+ },
+ {
+  "en": "<b>{0}</b> in the {1}",
+  "ctx": "ui"
+ },
+ {
+  "en": "<b>{0}</b>: Perfekt with …?",
+  "ctx": "ui"
+ },
+ {
+  "en": "Past participle of <b>{0}</b>?",
+  "ctx": "ui"
+ },
+ {
+  "en": "{0} entries left in the notebook.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Continue",
+  "ctx": "ui"
+ },
+ {
+  "en": "You got these wrong before. Right now = +5 ❤️",
+  "ctx": "ui"
+ },
+ {
+  "en": "The right answer: <b>{0}</b>",
+  "ctx": "ui"
+ },
+ {
+  "en": "📚 New in your collection: <b>{0}</b>",
+  "ctx": "ui"
+ },
+ {
+  "en": "Pack at least 3 verbs.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Pack some nouns too.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Pack at least 8 words.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Pack your bag",
+  "ctx": "ui"
+ },
+ {
+  "en": "Choose the words for this run. New words you find stay in your collection forever.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Recommended",
+  "ctx": "ui"
+ },
+ {
+  "en": "Clear",
+  "ctx": "ui"
+ },
+ {
+  "en": "📚 Collection: {0} words",
+  "ctx": "ui"
+ },
+ {
+  "en": "Let's go",
+  "ctx": "ui"
+ },
+ {
+  "en": "Your bag is full.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Choose an answer",
+  "ctx": "ui"
+ },
+ {
+  "en": "Tap to continue",
+  "ctx": "ui"
+ },
+ {
+  "en": "Skip",
+  "ctx": "ui"
+ },
+ {
+  "en": "+ to whom? (Dat)",
+  "ctx": "ui"
+ },
+ {
+  "en": "+ what? (Akk)",
+  "ctx": "ui"
+ },
+ {
+  "en": "no object",
+  "ctx": "ui"
+ },
+ {
+  "en": "goes last",
+  "ctx": "ui"
+ },
+ {
+  "en": "position 2 · verb goes last",
+  "ctx": "ui"
+ },
+ {
+  "en": "2nd clause · verb goes last",
+  "ctx": "ui"
+ },
+ {
+  "en": "A deckbuilder where your <b>German sentences</b> are your weapons.",
+  "ctx": "ui"
+ },
+ {
+  "en": "New adventure",
+  "ctx": "ui"
+ },
+ {
+  "en": "How to play",
+  "ctx": "ui"
+ },
+ {
+  "en": "Choose your hero",
+  "ctx": "ui"
+ },
+ {
+  "en": "Back",
+  "ctx": "ui"
+ },
+ {
+  "en": "coming soon",
+  "ctx": "ui"
+ },
+ {
+  "en": "beat {0} first",
+  "ctx": "ui"
+ },
+ {
+  "en": "Six ladders from A1 to C2",
+  "ctx": "ui"
+ },
+ {
+  "en": "change hero",
+  "ctx": "ui"
+ },
+ {
+  "en": "Would you like a practice round with me? I'll explain everything.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Yes, show me",
+  "ctx": "ui"
+ },
+ {
+  "en": "With <b>ich</b> (I) the verb ends in <b>-e</b>: ich {0}.",
+  "ctx": "ui"
+ },
+ {
+  "en": "<b>{0}</b> is {1}. Akkusativ (who/what?): der → <b>den</b>; die and das stay the same.",
+  "ctx": "ui"
+ },
+ {
+  "en": "⌛ <b>{0}</b> leaves the field.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Attack",
+  "ctx": "ui"
+ },
+ {
+  "en": "Defend",
+  "ctx": "ui"
+ },
+ {
+  "en": "Powers up",
+  "ctx": "ui"
+ },
+ {
+  "en": "Heals",
+  "ctx": "ui"
+ },
+ {
+  "en": "“{0}” takes no object.",
+  "ctx": "ui"
+ },
+ {
+  "en": "“{0}” needs two objects: <b>to whom?</b> (Dativ) + <b>what?</b> (Akkusativ) – in that order.",
+  "ctx": "ui"
+ },
+ {
+  "en": "“{0}” needs a Dativ object: <b>to whom?</b>",
+  "ctx": "ui"
+ },
+ {
+  "en": "“{0}” needs an Akkusativ object: <b>who or what?</b>",
+  "ctx": "ui"
+ },
+ {
+  "en": "Tap cards in the right order to forge a sentence.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Only <b>one</b> connector per sentence.",
+  "ctx": "ui"
+ },
+ {
+  "en": "The connector comes <b>after</b> the main clause: Ich trinke Kaffee, <b>weil</b> …",
+  "ctx": "ui"
+ },
+ {
+  "en": "✓ Sentence with a second clause – forge it!",
+  "ctx": "ui"
+ },
+ {
+  "en": "Too many nouns – “{0}” needs {1}.",
+  "ctx": "ui"
+ },
+ {
+  "en": "🤨 {0} {1} can't “{2}” – the subject should be a person or an animal.",
+  "ctx": "ui"
+ },
+ {
+  "en": "🤨 That makes no sense: <b>{0}</b> + <b>{1}</b>{2}",
+  "ctx": "ui"
+ },
+ {
+  "en": "Only one ⏪ Perfekt card per sentence.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Only <b>one</b> modal verb per sentence.",
+  "ctx": "ui"
+ },
+ {
+  "en": "A modal verb and ⏪ Perfekt together – too much for one sentence.",
+  "ctx": "ui"
+ },
+ {
+  "en": "⏪ Perfekt goes <b>last</b> – the participle sits at the end (… den Hund <b>gesehen</b>).",
+  "ctx": "ui"
+ },
+ {
+  "en": "You still need a verb.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Only <b>one</b> verb per clause – for a second verb you need a connector (weil, dass …).",
+  "ctx": "ui"
+ },
+ {
+  "en": "The verb goes in <b>position 2</b> – at the start it would be a question.",
+  "ctx": "ui"
+ },
+ {
+  "en": "⏪ Perfekt goes last.",
+  "ctx": "ui"
+ },
+ {
+  "en": "After the time word comes the <b>verb</b>.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Now the <b>verb</b> (position 2).",
+  "ctx": "ui"
+ },
+ {
+  "en": "The <b>modal verb</b> goes in position 2: Ich <b>muss</b> …",
+  "ctx": "ui"
+ },
+ {
+  "en": "Right after the time word comes the verb (position 2).",
+  "ctx": "ui"
+ },
+ {
+  "en": "The verb must be in <b>position 2</b>.",
+  "ctx": "ui"
+ },
+ {
+  "en": "With a modal verb the verb goes <b>last</b>: Ich muss den Bericht <b>schreiben</b>.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Now the <b>subject</b>: Heute sehe <b>ich</b> …",
+  "ctx": "ui"
+ },
+ {
+  "en": "After time word + verb comes the subject: Heute sehe <b>ich</b> …",
+  "ctx": "ui"
+ },
+ {
+  "en": "Start with the <b>subject</b> (who?) or a time word.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Only <b>one</b> subject per sentence.",
+  "ctx": "ui"
+ },
+ {
+  "en": "✓ Sentence ready – forge it!",
+  "ctx": "ui"
+ },
+ {
+  "en": "…, <b>{0}</b> ich den Kaffee <b>trinke</b>.",
+  "ctx": "ui"
+ },
+ {
+  "en": "After “{0}”: the subject first, the verb at the very end – {1}",
+  "ctx": "ui"
+ },
+ {
+  "en": "In the second clause: only subject, nouns and verb, please.",
+  "ctx": "ui"
+ },
+ {
+  "en": "After “{0}” comes the <b>subject</b> first: {1}",
+  "ctx": "ui"
+ },
+ {
+  "en": "In the second clause the verb goes at the very <b>end</b>: {0}",
+  "ctx": "ui"
+ },
+ {
+  "en": "Only <b>one</b> verb in the second clause.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Only <b>one</b> subject in the second clause.",
+  "ctx": "ui"
+ },
+ {
+  "en": "First put a verb from your hand on the field.",
+  "ctx": "ui"
+ },
+ {
+  "en": "The field is full – tap a verb to swap it out.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Weakness",
+  "ctx": "ui"
+ },
+ {
+  "en": " · otherwise half damage",
+  "ctx": "ui"
+ },
+ {
+  "en": "Shield",
+  "ctx": "ui"
+ },
+ {
+  "en": "ready!",
+  "ctx": "ui"
+ },
+ {
+  "en": "charges with perfect sentences",
+  "ctx": "ui"
+ },
+ {
+  "en": "Draw",
+  "ctx": "ui"
+ },
+ {
+  "en": "Discard",
+  "ctx": "ui"
+ },
+ {
+  "en": "Your forge is empty",
+  "ctx": "ui"
+ },
+ {
+  "en": "Not enough energy.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Streak",
+  "ctx": "ui"
+ },
+ {
+  "en": "next perfect sentence",
+  "ctx": "ui"
+ },
+ {
+  "en": "Energy",
+  "ctx": "ui"
+ },
+ {
+  "en": "energy",
+  "ctx": "ui"
+ },
+ {
+  "en": "Forge",
+  "ctx": "ui"
+ },
+ {
+  "en": "Verb slot",
+  "ctx": "ui"
+ },
+ {
+  "en": "♻️ recycle",
+  "ctx": "ui"
+ },
+ {
+  "en": "to field",
+  "ctx": "ui"
+ },
+ {
+  "en": "Redraw",
+  "ctx": "ui"
+ },
+ {
+  "en": "End turn",
+  "ctx": "ui"
+ },
+ {
+  "en": "+ to whom?",
+  "ctx": "ui"
+ },
+ {
+  "en": "+ what?",
+  "ctx": "ui"
+ },
+ {
+  "en": "turns left",
+  "ctx": "ui"
+ },
+ {
+  "en": "resting until next turn",
+  "ctx": "ui"
+ },
+ {
+  "en": "again for {0} ⚡",
+  "ctx": "ui"
+ },
+ {
+  "en": "You've already used this verb twice this turn.",
+  "ctx": "ui"
+ },
+ {
+  "en": "You've already used this verb this turn.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Only one verb per turn onto the field – and you've already recycled.",
+  "ctx": "ui"
+ },
+ {
+  "en": "♻️ <b>{0}</b> recycled – new card drawn.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Which form? <b>{0}</b> + {1}",
+  "ctx": "ui"
+ },
+ {
+  "en": "Perfekt: <b>haben</b> or <b>sein</b>? ({0} + {1})",
+  "ctx": "ui"
+ },
+ {
+  "en": "Which article? <b>{0}</b> as <b>{1}</b>",
+  "ctx": "ui"
+ },
+ {
+  "en": " (to whom?)",
+  "ctx": "ui"
+ },
+ {
+  "en": " (who/what?)",
+  "ctx": "ui"
+ },
+ {
+  "en": " (who?)",
+  "ctx": "ui"
+ },
+ {
+  "en": "Incantation",
+  "ctx": "ui"
+ },
+ {
+  "en": "in your notebook",
+  "ctx": "ui"
+ },
+ {
+  "en": "🫏 Eselsbrücke saves you: the right answer is <b>{0}</b>.",
+  "ctx": "ui"
+ },
+ {
+  "en": "{0} forms the Perfekt with <b>{1}</b> → {2} <b>{3}</b>",
+  "ctx": "ui"
+ },
+ {
+  "en": " (movement)",
+  "ctx": "ui"
+ },
+ {
+  "en": "{0} in the {1} → <b>{2} {3}</b>",
+  "ctx": "ui"
+ },
+ {
+  "en": "new combo",
+  "ctx": "ui"
+ },
+ {
+  "en": "🍳 Double helping: +50 %!",
+  "ctx": "ui"
+ },
+ {
+  "en": " · weakness hit ×2!",
+  "ctx": "ui"
+ },
+ {
+  "en": " · {0} resists (½)",
+  "ctx": "ui"
+ },
+ {
+  "en": "damage",
+  "ctx": "ui"
+ },
+ {
+  "en": "shield",
+  "ctx": "ui"
+ },
+ {
+  "en": "HP",
+  "ctx": "ui"
+ },
+ {
+  "en": "{0} {1} feeds on your mistakes: +{2} HP.",
+  "ctx": "ui"
+ },
+ {
+  "en": "card",
+  "ctx": "ui"
+ },
+ {
+  "en": "blocked",
+  "ctx": "ui"
+ },
+ {
+  "en": "✨ Perfect sentence! ×{0}",
+  "ctx": "ui"
+ },
+ {
+  "en": "streak",
+  "ctx": "ui"
+ },
+ {
+  "en": "⚒️ Sentence with mistakes",
+  "ctx": "ui"
+ },
+ {
+  "en": "Act {0} cleared!",
+  "ctx": "ui"
+ },
+ {
+  "en": "max energy",
+  "ctx": "ui"
+ },
+ {
+  "en": "Next up: <b>{0}</b>",
+  "ctx": "ui"
+ },
+ {
+  "en": "Relic",
+  "ctx": "ui"
+ },
+ {
+  "en": "Choose a new word for your deck:",
+  "ctx": "ui"
+ },
+ {
+  "en": "Rest",
+  "ctx": "ui"
+ },
+ {
+  "en": "Upgrade a word (+2 power)",
+  "ctx": "ui"
+ },
+ {
+  "en": "Practise your mistakes ({0}) – +5 ❤️ per right answer",
+  "ctx": "ui"
+ },
+ {
+  "en": "No mistakes to practise – great!",
+  "ctx": "ui"
+ },
+ {
+  "en": "“Alright, because you're so polite: 30 % off!”",
+  "ctx": "ui"
+ },
+ {
+  "en": "“Excuse me! Now everything costs more.”",
+  "ctx": "ui"
+ },
+ {
+  "en": "“Grüß Gott! What can I get you?”",
+  "ctx": "ui"
+ },
+ {
+  "en": "Haggle – solve a riddle for 30 % off",
+  "ctx": "ui"
+ },
+ {
+  "en": "sold",
+  "ctx": "ui"
+ },
+ {
+  "en": "Remove a word",
+  "ctx": "ui"
+ },
+ {
+  "en": "✓ Well haggled! Everything 30 % off.",
+  "ctx": "ui"
+ },
+ {
+  "en": "✗ Herr Wotruba is offended: +10 %.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Not enough gold.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Trial",
+  "ctx": "ui"
+ },
+ {
+  "en": "Before you go on: show me what you've learned!",
+  "ctx": "ui"
+ },
+ {
+  "en": "Each mistake costs 3 ❤️ – no skipping.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Passed!",
+  "ctx": "ui"
+ },
+ {
+  "en": "Very good! Take a reward.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Put the words in the right order.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Not quite.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Tap a word, then the right article.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Pick a word first.",
+  "ctx": "ui"
+ },
+ {
+  "en": "{0} isn't “{1}”.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Listen carefully: which sentence do you hear?",
+  "ctx": "ui"
+ },
+ {
+  "en": "Listen",
+  "ctx": "ui"
+ },
+ {
+  "en": "That wasn't it – listen again.",
+  "ctx": "ui"
+ },
+ {
+  "en": "The right answer:",
+  "ctx": "ui"
+ },
+ {
+  "en": "Choose a word",
+  "ctx": "ui"
+ },
+ {
+  "en": "Correct!",
+  "ctx": "ui"
+ },
+ {
+  "en": "Wrong – the answer was",
+  "ctx": "ui"
+ },
+ {
+  "en": "sentences",
+  "ctx": "ui"
+ },
+ {
+  "en": "perfect",
+  "ctx": "ui"
+ },
+ {
+  "en": "mistakes",
+  "ctx": "ui"
+ },
+ {
+  "en": "🎒 Your bag grows: {0} slots",
+  "ctx": "ui"
+ },
+ {
+  "en": "{0} has climbed the “{1}” ladder.",
+  "ctx": "ui"
+ },
+ {
+  "en": "To the language tower",
+  "ctx": "ui"
+ },
+ {
+  "en": "Defeated on floor {0} of {1}. Every sentence counts – try again!",
+  "ctx": "ui"
+ },
+ {
+  "en": "Back to title",
+  "ctx": "ui"
+ },
+ {
+  "en": "Sure? Your current run will be lost",
+  "ctx": "ui"
+ },
+ {
+  "en": "Which word to upgrade?",
+  "ctx": "ui"
+ },
+ {
+  "en": "Which word to remove?",
+  "ctx": "ui"
+ },
+ {
+  "en": "<b>Your cards are German words.</b> Tap them in order to build a sentence: <i>Ich · sehe · den Hund</i>.",
+  "ctx": "ui"
+ },
+ {
+  "en": "<b>Each turn you're dealt 2 pronouns</b> (ich, du, wir …). <b>Verbs go on the field:</b> one per turn, for free. A field verb casts once per turn (from act 2: a second time for +1 ⚡) and stays 3 turns (3 slots).",
+  "ctx": "ui"
+ },
+ {
+  "en": "<b>Energy ⚡:</b> 3 per turn (+1 for every act cleared) – the red seal on a card is its cost. <b>✨ Special power:</b> ready at the start of a fight, then 3 perfect sentences recharge it.",
+  "ctx": "ui"
+ },
+ {
+  "en": "<b>B1 – 🔧 modal verbs</b> (können, müssen …) go in position 2 and send the verb to the end: <i>Ich muss den Bericht schreiben.</i> <b>🔗 Connectors</b> (weil, dass, wenn, obwohl) add a second clause with the verb at the very end: <i>Ich arbeite, weil ich Geld brauche.</i>",
+  "ctx": "ui"
+ },
+ {
+  "en": "<b>🔥 Streaks:</b> perfect sentences in a row grow stronger (×1.5 → ×1.6 → … ×2). <b>New combos</b> (a pronoun + verb you haven't used this fight) give +2. On the first turn you may place 2 verbs; a verb you can't place can be ♻️ recycled once per turn.",
+  "ctx": "ui"
+ },
+ {
+  "en": "<b>The verb decides the spell:</b> ⚔️ attack, 🛡️ shield or ❤️ heal. The number is its power.",
+  "ctx": "ui"
+ },
+ {
+  "en": "<b>Word order:</b> the verb is always in <b>position 2</b>. Start with a time word (<i>heute</i>) and the subject moves behind the verb: <i>Heute sehe ich …</i>",
+  "ctx": "ui"
+ },
+ {
+  "en": "<b>Incantation:</b> when you forge, pick the right verb form and articles. Perfect sentences are ×1.5 stronger.",
+  "ctx": "ui"
+ },
+ {
+  "en": "<b>⏪ Perfekt</b> (from A2): put it at the end to cast in the past tense – <i>Ich habe den Hund gesehen</i>.",
+  "ctx": "ui"
+ },
+ {
+  "en": "<b>🚪 Trials</b> (floors 4 and 8): Frau Huber's mini-games – you must pass them to go on. <b>🛒 Shop:</b> haggle with Herr Wotruba for 30 % off.",
+  "ctx": "ui"
+ },
+ {
+  "en": "<b>Monsters have weaknesses</b> – tap ⓘ. <b>Energy ⚡:</b> verbs, nouns and strong time words (morgen, immer …) cost 1; pronouns, heute/jetzt and ⏪ cost 0.",
+  "ctx": "ui"
+ },
+ {
+  "en": "<b>💪 Strong forms:</b> irregular verb forms (du <i>siehst</i>, er <i>läuft</i>, <i>gesehen</i>) and Dativ objects give +2 power. <b>📖 Fehlerheft:</b> every mistake is saved – practise them at the camp to heal.",
+  "ctx": "ui"
+ },
+ {
+  "en": "Vienna, Westbahnhof. 7:30 a.m.",
+  "ctx": "story a1/intro"
+ },
+ {
+  "en": "Hi! I'm {name}, from {fromEn}.",
+  "ctx": "story a1/intro"
+ },
+ {
+  "en": "I've got a suitcase, a dream … and almost no German.",
+  "ctx": "story a1/intro"
+ },
+ {
+  "en": "Excuse me … could you help me? Where is … the city centre?",
+  "ctx": "story a1/intro"
+ },
+ {
+  "en": "Oh dear – you don't speak German, do you? Well, we'll change that!",
+  "ctx": "story a1/intro"
+ },
+ {
+  "en": "But careful: in Vienna, words are dangerous.",
+  "ctx": "story a1/intro"
+ },
+ {
+  "en": "Take these cards. With good sentences you'll get through anything!",
+  "ctx": "story a1/intro"
+ },
+ {
+  "en": "As {name} touches the cards, golden light swirls. Time turns back: gas lamps, steam, carriages – and the words come alive.",
+  "ctx": "story a1/intro"
+ },
+ {
+  "en": "Welcome to the Vienna of the past – a parallel world. Here you'll learn what you need in today's Vienna.",
+  "ctx": "story a1/intro"
+ },
+ {
+  "en": "Your things come with you – but here they're a little … magical.",
+  "ctx": "story a1/intro"
+ },
+ {
+  "en": "First things first: how do you greet people in Vienna?",
+  "ctx": "story a1/intro"
+ },
+ {
+  "en": "Look – an article woodlouse! Time for a practice round.",
+  "ctx": "story a1/tutorial"
+ },
+ {
+  "en": "I'll explain everything. Just do what I say.",
+  "ctx": "story a1/tutorial"
+ },
+ {
+  "en": "Very good! With every sentence you get stronger.",
+  "ctx": "story a1/tutorialEnd"
+ },
+ {
+  "en": "I … can … do this!",
+  "ctx": "story a1/tutorialEnd"
+ },
+ {
+  "en": "There you go! And now off you go – through the station.",
+  "ctx": "story a1/tutorialEnd"
+ },
+ {
+  "en": "At the end of the station he's waiting: the ticket machine.",
+  "ctx": "story a1/boss"
+ },
+ {
+  "en": "PLEASE. SELECT. YOUR. LANGUAGE.",
+  "ctx": "story a1/boss"
+ },
+ {
+  "en": "German. I choose German!",
+  "ctx": "story a1/boss"
+ },
+ {
+  "en": "TICKET … VALID.",
+  "ctx": "story a1/act1End"
+ },
+ {
+  "en": "Well done, {name}! With the ticket you can go on – to the Naschmarkt.",
+  "ctx": "story a1/act1End"
+ },
+ {
+  "en": "At the market you'll have to shop. How do you say politely what you'd like?",
+  "ctx": "story a1/act1End"
+ },
+ {
+  "en": "And careful: in Vienna tomatoes are called “Paradeiser” and potatoes “Erdäpfel”!",
+  "ctx": "story a1/act1End"
+ },
+ {
+  "en": "Act 2: the Naschmarkt. Everything here smells of food – and of trouble.",
+  "ctx": "story a1/act1End"
+ },
+ {
+  "en": "Behind the last stall he sits on his throne: the Cheese Emperor.",
+  "ctx": "story a1/boss2"
+ },
+ {
+  "en": "Whoever doesn't buy, pays!",
+  "ctx": "story a1/boss2"
+ },
+ {
+  "en": "I'm not buying anything. I'm fighting!",
+  "ctx": "story a1/boss2"
+ },
+ {
+  "en": "My … empire … is crumbling …",
+  "ctx": "story a1/act2End"
+ },
+ {
+  "en": "It's getting dark. The Prater is waiting – and the giant wheel turns all by itself.",
+  "ctx": "story a1/act2End"
+ },
+ {
+  "en": "The Prater closes at “halb zwölf”. When is that?",
+  "ctx": "story a1/act2End"
+ },
+ {
+  "en": "Act 3: the Prater.",
+  "ctx": "story a1/act2End"
+ },
+ {
+  "en": "The giant wheel wakes up. Its cabins glow like eyes.",
+  "ctx": "story a1/boss3"
+ },
+ {
+  "en": "Get in – or go round in circles forever!",
+  "ctx": "story a1/boss3"
+ },
+ {
+  "en": "I'm not afraid!",
+  "ctx": "story a1/boss3"
+ },
+ {
+  "en": "The ride … is … over …",
+  "ctx": "story a1/outro"
+ },
+ {
+  "en": "For a moment today's Vienna flickers into view – glass, trains, people with phones. Then it's gone again.",
+  "ctx": "story a1/outro"
+ },
+ {
+  "en": "Bravo, {name}! But now comes the hardest part: the registration office.",
+  "ctx": "story a1/outro"
+ },
+ {
+  "en": "The office? How bad can it be?",
+  "ctx": "story a1/outro"
+ },
+ {
+  "en": "New ladder unlocked: A2 – The Office.",
+  "ctx": "story a1/outro"
+ },
+ {
+  "en": "The district office. A place where time stands still.",
+  "ctx": "story a2/intro"
+ },
+ {
+  "en": "Number 347! … You need a registration form. And a stamp. And another stamp.",
+  "ctx": "story a2/intro"
+ },
+ {
+  "en": "Yesterday I already waited three hours …",
+  "ctx": "story a2/intro"
+ },
+ {
+  "en": "Only the Dativ helps here – and the past tense. Tell them what happened!",
+  "ctx": "story a2/intro"
+ },
+ {
+  "en": "New card: ⏪ Perfekt. Put it at the end of the sentence: “I have seen the dog.”",
+  "ctx": "story a2/intro"
+ },
+ {
+  "en": "In the last room she grows out of a mountain of paper: the Form Hydra.",
+  "ctx": "story a2/boss"
+ },
+ {
+  "en": "Have you filled in form B-12? And B-13? And B-14?",
+  "ctx": "story a2/boss"
+ },
+ {
+  "en": "I have filled in everything. Everything!",
+  "ctx": "story a2/boss"
+ },
+ {
+  "en": "The stamp … is … valid …",
+  "ctx": "story a2/act1End"
+ },
+ {
+  "en": "Valid, yes. But your file is in the archive. In the cellar.",
+  "ctx": "story a2/act1End"
+ },
+ {
+  "en": "Tell Herr Novak what you did: Yesterday I … gone to the office.",
+  "ctx": "story a2/act1End"
+ },
+ {
+  "en": "Act 2: the archive. Nobody has tidied up down here for a hundred years.",
+  "ctx": "story a2/act1End"
+ },
+ {
+  "en": "Right at the bottom something moves: the mountain of files.",
+  "ctx": "story a2/boss2"
+ },
+ {
+  "en": "I have your file. I have ALL the files!",
+  "ctx": "story a2/boss2"
+ },
+ {
+  "en": "I've already given you everything!",
+  "ctx": "story a2/boss2"
+ },
+ {
+  "en": "Take … your … file …",
+  "ctx": "story a2/act2End"
+ },
+ {
+  "en": "Now all that's missing is the signature. In the city hall. Right at the top.",
+  "ctx": "story a2/act2End"
+ },
+ {
+  "en": "At the city hall you hand in the form. I give … official the form.",
+  "ctx": "story a2/act2End"
+ },
+ {
+  "en": "Act 3: the city hall.",
+  "ctx": "story a2/act2End"
+ },
+ {
+  "en": "On the tower the iron knight awakes: the Rathausmann.",
+  "ctx": "story a2/boss3"
+ },
+ {
+  "en": "Whoever wants to sign here must tell what they have been through!",
+  "ctx": "story a2/boss3"
+ },
+ {
+  "en": "I've been through a lot. Listen!",
+  "ctx": "story a2/boss3"
+ },
+ {
+  "en": "Signed … and … stamped …",
+  "ctx": "story a2/outro"
+ },
+ {
+  "en": "Welcome to Vienna, {name}. You're now officially registered.",
+  "ctx": "story a2/outro"
+ },
+ {
+  "en": "Finally! Now I just need … a job.",
+  "ctx": "story a2/outro"
+ },
+ {
+  "en": "You've learned enough, {name}. Time to return to today's Vienna.",
+  "ctx": "story a2/outro"
+ },
+ {
+  "en": "New ladder unlocked: B1 – The Job. Back in the present!",
+  "ctx": "story a2/outro"
+ },
+ {
+  "en": "The light fades. {name} is back at Westbahnhof – in today's Vienna. Phones, escalators, noise.",
+  "ctx": "story b1/intro"
+ },
+ {
+  "en": "I'm back! And I understand … almost everything!",
+  "ctx": "story b1/intro"
+ },
+ {
+  "en": "Very good, {name}. But now comes real life: {b1needEn}",
+  "ctx": "story b1/intro"
+ },
+ {
+  "en": "In today's Vienna the sentences are longer. You need modal verbs: Ich muss eine Arbeit finden. The second verb goes at the end.",
+  "ctx": "story b1/intro"
+ },
+ {
+  "en": "And subordinate clauses: Ich lerne Deutsch, weil ich hier arbeiten will. After weil the verb goes to the very end.",
+  "ctx": "story b1/intro"
+ },
+ {
+  "en": "Modal verbs and subordinate clauses … I can do this!",
+  "ctx": "story b1/intro"
+ },
+ {
+  "en": "First stop: the AMS, the public employment service. Queue number: 347.",
+  "ctx": "story b1/intro"
+ },
+ {
+  "en": "At the end of the corridor it blinks: the appointment machine.",
+  "ctx": "story b1/boss"
+ },
+ {
+  "en": "YOUR APPOINTMENT HAS BEEN POSTPONED. PLEASE STATE YOUR REASON.",
+  "ctx": "story b1/boss"
+ },
+ {
+  "en": "APPOINTMENT … CONFIRMED.",
+  "ctx": "story b1/act1End"
+ },
+ {
+  "en": "Everyone says “du” there. What do you say to a colleague when you need help?",
+  "ctx": "story b1/act1End"
+ },
+ {
+  "en": "It started at nine. At five it's still going: the endless meeting.",
+  "ctx": "story b1/boss2"
+ },
+ {
+  "en": "Next item on the agenda: item 47 of 312.",
+  "ctx": "story b1/boss2"
+ },
+ {
+  "en": "I have to say something now, otherwise this will take forever!",
+  "ctx": "story b1/boss2"
+ },
+ {
+  "en": "The meeting … is … over.",
+  "ctx": "story b1/act2End"
+ },
+ {
+  "en": "And if someone asks why you're nervous? “Because tomorrow I …”",
+  "ctx": "story b1/act2End"
+ },
+ {
+  "en": "Act 3: {b1act3name}.",
+  "ctx": "story b1/act2End"
+ },
+ {
+  "en": "I knew you would make it, {name}.",
+  "ctx": "story b1/outro"
+ },
+ {
+  "en": "To be continued: B2 – the university.",
+  "ctx": "story b1/outro"
+ },
+ {
+  "en": "At the campfire Frau Huber sits down next to you and warms her hands.",
+  "ctx": "camp a1-0"
+ },
+ {
+  "en": "A trick for the articles: words ending in -ung, -heit and -keit are always …",
+  "ctx": "camp a1-0"
+ },
+ {
+  "en": "Frau Huber buys two bread rolls and gives you one.",
+  "ctx": "camp a1-1"
+ },
+ {
+  "en": "Das Brötchen, das Mädchen … words ending in -chen are always …",
+  "ctx": "camp a1-1"
+ },
+ {
+  "en": "The smell of lángos drifts over the Prater. Your stomach growls.",
+  "ctx": "camp a1-2"
+ },
+ {
+  "en": "Well? How do you say that in German?",
+  "ctx": "camp a1-2"
+ },
+ {
+  "en": "There's no fire in the waiting room – only a flickering lamp. Frau Huber sits with you anyway.",
+  "ctx": "camp a2-0"
+ },
+ {
+  "en": "Tell me about yesterday: I … waited a long time.",
+  "ctx": "camp a2-0"
+ },
+ {
+  "en": "Between the shelves Frau Huber finds a candle and lights it.",
+  "ctx": "camp a2-1"
+ },
+ {
+  "en": "So many forms! What's that in the plural?",
+  "ctx": "camp a2-1"
+ },
+ {
+  "en": "In front of the city hall you wait for the tram. Frau Huber hums a waltz.",
+  "ctx": "camp a2-2"
+ },
+ {
+  "en": "Mit der Straßenbahn, mit dem Bus … after “mit” always comes …",
+  "ctx": "camp a2-2"
+ },
+ {
+  "en": "Outside the AMS: a short break in the sun. Frau Huber points at a sign.",
+  "ctx": "camp b1-0"
+ },
+ {
+  "en": "It says: Here one … not smoke.",
+  "ctx": "camp b1-0"
+ },
+ {
+  "en": "Lunch break. Suddenly Frau Huber is sitting next to you in the canteen.",
+  "ctx": "camp b1-1"
+ },
+ {
+  "en": "I know … you work a lot. Which word is missing?",
+  "ctx": "camp b1-1"
+ },
+ {
+  "en": "On the evening before the big presentation Frau Huber calls.",
+  "ctx": "camp b1-2"
+ },
+ {
+  "en": "… you have time tomorrow, call me after the presentation!",
+  "ctx": "camp b1-2"
+ },
+ {
+  "en": "Exactly! You hear “Grüß Gott” everywhere in Vienna – or simply “Hallo”.",
+  "ctx": "ask a1_gruss"
+ },
+ {
+  "en": "In Vienna you say “Grüß Gott” (or “Hallo”). “Gute Nacht” is only for bedtime.",
+  "ctx": "ask a1_gruss"
+ },
+ {
+  "en": "Exactly! “Ich möchte …” is polite – “ich will” sounds very blunt.",
+  "ctx": "ask a1_moechte"
+ },
+ {
+  "en": "Polite is: “Ich möchte zwei Äpfel, bitte.” – “Ich will” sounds very blunt.",
+  "ctx": "ask a1_moechte"
+ },
+ {
+  "en": "Right! “Halb zwölf” is the half hour before twelve.",
+  "ctx": "ask a1_halb"
+ },
+ {
+  "en": "Careful: “halb zwölf” is 11:30 – the half hour before twelve!",
+  "ctx": "ask a1_halb"
+ },
+ {
+  "en": "Right! With movement (gehen, fahren, kommen) the Perfekt takes “sein”: Ich bin gegangen.",
+  "ctx": "ask a2_sein"
+ },
+ {
+  "en": "With movement the Perfekt takes “sein”: Gestern bin ich ins Amt gegangen.",
+  "ctx": "ask a2_sein"
+ },
+ {
+  "en": "Exactly! To whom? → Dativ: dem Beamten.",
+  "ctx": "ask a2_dativ"
+ },
+ {
+  "en": "To whom do I give the form? → Dativ: Ich gebe dem Beamten das Formular.",
+  "ctx": "ask a2_dativ"
+ },
+ {
+  "en": "Exactly! Colleagues often say “du” – and then: kannst du …?",
+  "ctx": "ask b1_du"
+ },
+ {
+  "en": "Colleagues mostly say “du”: “Kannst du mir helfen?” (du → kannst).",
+  "ctx": "ask b1_du"
+ },
+ {
+  "en": "Perfect! In a weil-clause the verbs go to the end – the modal verb last of all.",
+  "ctx": "ask b1_weil"
+ },
+ {
+  "en": "In a weil-clause the verbs go to the end, the modal last: …, weil ich morgen präsentieren muss.",
+  "ctx": "ask b1_weil"
+ },
+ {
+  "en": "Right! die Zeitung, die Freiheit, die Möglichkeit – always “die”.",
+  "ctx": "ask c_ung"
+ },
+ {
+  "en": "Words ending in -ung, -heit, -keit are always “die”: die Zeitung, die Freiheit.",
+  "ctx": "ask c_ung"
+ },
+ {
+  "en": "Exactly! das Mädchen, das Brötchen – “-chen” makes everything small and neuter.",
+  "ctx": "ask c_chen"
+ },
+ {
+  "en": "Words ending in -chen are always “das”: das Mädchen, das Brötchen.",
+  "ctx": "ask c_chen"
+ },
+ {
+  "en": "Exactly! In German you HAVE hunger, thirst and fear.",
+  "ctx": "ask c_hunger"
+ },
+ {
+  "en": "In German you HAVE hunger: “Ich habe Hunger.” (also: Ich habe Durst, ich habe Angst.)",
+  "ctx": "ask c_hunger"
+ },
+ {
+  "en": "Right! Waiting isn't movement → haben: Ich habe gewartet.",
+  "ctx": "ask c_warten"
+ },
+ {
+  "en": "Waiting isn't movement, so “haben”: Ich habe lange gewartet.",
+  "ctx": "ask c_warten"
+ },
+ {
+  "en": "Exactly! das Formular → die Formulare. Many words add -e in the plural.",
+  "ctx": "ask c_plural"
+ },
+ {
+  "en": "The plural is “die Formulare” – in the plural the article is always “die”.",
+  "ctx": "ask c_plural"
+ },
+ {
+  "en": "Right! mit dem Bus, mit der Straßenbahn – “mit” is always followed by Dativ.",
+  "ctx": "ask c_mit"
+ },
+ {
+  "en": "“mit” is always followed by Dativ: mit dem Bus, mit der Straßenbahn.",
+  "ctx": "ask c_mit"
+ },
+ {
+  "en": "Exactly! “nicht dürfen” means: not allowed. Hier darf man nicht rauchen.",
+  "ctx": "ask c_darf"
+ },
+ {
+  "en": "“nicht dürfen” = forbidden: Hier darf man nicht rauchen. (“nicht müssen” only means: not necessary!)",
+  "ctx": "ask c_darf"
+ },
+ {
+  "en": "Right! “dass” with ss starts a second clause – the verb goes to the end.",
+  "ctx": "ask c_dass"
+ },
+ {
+  "en": "This needs “dass” (with ss): Ich weiß, dass du viel arbeitest. “das” is an article or pronoun.",
+  "ctx": "ask c_dass"
+ },
+ {
+  "en": "Exactly! “wenn” = if / whenever. “wann” only asks about time: Wann kommst du?",
+  "ctx": "ask c_wenn"
+ },
+ {
+  "en": "“Wenn ich Zeit habe, …” – “wann” is only a question word: Wann kommst du?",
+  "ctx": "ask c_wenn"
+ },
+ {
+  "en": "Brazil",
+  "ctx": "hero rafa.fromEn"
+ },
+ {
+  "en": "Cook",
+  "ctx": "hero rafa.roleEn"
+ },
+ {
+  "en": "Double helping",
+  "ctx": "hero rafa.powerEn"
+ },
+ {
+  "en": "Your next 2 sentences get +50 % power.",
+  "ctx": "hero rafa.powerTextEn"
+ },
+ {
+  "en": "I want to open a restaurant in Vienna.",
+  "ctx": "hero rafa.storyEn"
+ },
+ {
+  "en": "My wooden spoon … it's glowing!",
+  "ctx": "hero rafa.magicEn"
+ },
+ {
+  "en": "For your restaurant you need a business plan – and a loan from the bank.",
+  "ctx": "hero rafa.b1needEn"
+ },
+ {
+  "en": "My own restaurant in Vienna … for that I have to write a plan!",
+  "ctx": "hero rafa.b1planEn"
+ },
+ {
+  "en": "I need an appointment because I want to open a restaurant!",
+  "ctx": "hero rafa.b1terminEn"
+ },
+ {
+  "en": "Bravo! The start-up programme has accepted you. Now you write your business plan – in an office in the Leopoldstadt.",
+  "ctx": "hero rafa.b1act2En"
+ },
+ {
+  "en": "Act 2: the office. Numbers, spreadsheets and a business plan.",
+  "ctx": "hero rafa.b1act2narrEn"
+ },
+ {
+  "en": "Tomorrow is your big day: you present your business plan at the bank.",
+  "ctx": "hero rafa.b1act3En"
+ },
+ {
+  "en": "In the bank's meeting room he sits with folded arms: the bank director.",
+  "ctx": "hero rafa.b1bossIntroEn"
+ },
+ {
+  "en": "Convince me. Why should the bank give you a loan?",
+  "ctx": "hero rafa.b1bossQEn"
+ },
+ {
+  "en": "Because my schnitzel is the best in Vienna – and because I speak better German every day!",
+  "ctx": "hero rafa.b1answerEn"
+ },
+ {
+  "en": "Hm. Convincing. You get the loan.",
+  "ctx": "hero rafa.b1yesEn"
+ },
+ {
+  "en": "I'm getting the loan! My restaurant is becoming reality!",
+  "ctx": "hero rafa.b1joyEn"
+ },
+ {
+  "en": "Taiwan",
+  "ctx": "hero mei.fromEn"
+ },
+ {
+  "en": "Programmer",
+  "ctx": "hero mei.roleEn"
+ },
+ {
+  "en": "Dictionary app",
+  "ctx": "hero mei.powerEn"
+ },
+ {
+  "en": "In your next incantation the right answers light up.",
+  "ctx": "hero mei.powerTextEn"
+ },
+ {
+  "en": "I have a new job at a Viennese company.",
+  "ctx": "hero mei.storyEn"
+ },
+ {
+  "en": "My tablet … it's a spellbook now!",
+  "ctx": "hero mei.magicEn"
+ },
+ {
+  "en": "You need a job.",
+  "ctx": "hero mei.b1needEn"
+ },
+ {
+  "en": "I'm looking for a position at a Viennese company.",
+  "ctx": "hero mei.b1planEn"
+ },
+ {
+  "en": "I need an appointment because I'm looking for a job!",
+  "ctx": "hero mei.b1terminEn"
+ },
+ {
+  "en": "Bravo! And look: a company in the Leopoldstadt is inviting you.",
+  "ctx": "hero mei.b1act2En"
+ },
+ {
+  "en": "Act 2: the office. First day at work.",
+  "ctx": "hero mei.b1act2narrEn"
+ },
+ {
+  "en": "Tomorrow is your big day: you present your project to the boss.",
+  "ctx": "hero mei.b1act3En"
+ },
+ {
+  "en": "In the conference room he sits with folded arms: the boss.",
+  "ctx": "hero mei.b1bossIntroEn"
+ },
+ {
+  "en": "Convince me. Why should I keep you?",
+  "ctx": "hero mei.b1bossQEn"
+ },
+ {
+  "en": "Because I work hard – and because I speak better German every day!",
+  "ctx": "hero mei.b1answerEn"
+ },
+ {
+  "en": "Hm. Not bad. You get the contract.",
+  "ctx": "hero mei.b1yesEn"
+ },
+ {
+  "en": "I have a job in Vienna! I can't believe it!",
+  "ctx": "hero mei.b1joyEn"
+ },
+ {
+  "en": "Ghana",
+  "ctx": "hero amara.fromEn"
+ },
+ {
+  "en": "Nurse",
+  "ctx": "hero amara.roleEn"
+ },
+ {
+  "en": "First aid",
+  "ctx": "hero amara.powerEn"
+ },
+ {
+  "en": "Heal 10 HP and gain 6 shield.",
+  "ctx": "hero amara.powerTextEn"
+ },
+ {
+  "en": "I want to work here in the hospital.",
+  "ctx": "hero amara.storyEn"
+ },
+ {
+  "en": "My bag … it's glowing!",
+  "ctx": "hero amara.magicEn"
+ },
+ {
+  "en": "Your diploma has to be recognised in Austria – only then may you work at the hospital.",
+  "ctx": "hero amara.b1needEn"
+ },
+ {
+  "en": "I finally want to work as a nurse again!",
+  "ctx": "hero amara.b1planEn"
+ },
+ {
+  "en": "I need an appointment because I have to get my diploma recognised!",
+  "ctx": "hero amara.b1terminEn"
+ },
+ {
+  "en": "Bravo! Your documents are complete. Now it's off to the hospital's administration.",
+  "ctx": "hero amara.b1act2En"
+ },
+ {
+  "en": "Act 2: the office. Forms, forms, forms.",
+  "ctx": "hero amara.b1act2narrEn"
+ },
+ {
+  "en": "Tomorrow is your big day: the job interview with the head of nursing.",
+  "ctx": "hero amara.b1act3En"
+ },
+ {
+  "en": "In the nursing director's office she sits behind a pile of files: the head of nursing.",
+  "ctx": "hero amara.b1bossIntroEn"
+ },
+ {
+  "en": "Tell me: why should we take you, of all people?",
+  "ctx": "hero amara.b1bossQEn"
+ },
+ {
+  "en": "Because I want to help people – and because I speak better German every day!",
+  "ctx": "hero amara.b1answerEn"
+ },
+ {
+  "en": "Wonderful. You can start on Monday.",
+  "ctx": "hero amara.b1yesEn"
+ },
+ {
+  "en": "I can work as a nurse again – in Vienna!",
+  "ctx": "hero amara.b1joyEn"
+ },
+ {
+  "en": "The lost tourist",
+  "ctx": "enc touristin"
+ },
+ {
+  "en": "A woman with a city map looks at you, desperate: “Excuse me … where is platform 3?”",
+  "ctx": "enc touristin"
+ },
+ {
+  "en": "Help her",
+  "ctx": "enc touristin"
+ },
+ {
+  "en": "Which answer fits?",
+  "ctx": "enc touristin"
+ },
+ {
+  "en": "“Thank you!” She gives you a tip.",
+  "ctx": "enc touristin"
+ },
+ {
+  "en": "She looks at you, confused, and walks on.",
+  "ctx": "enc touristin"
+ },
+ {
+  "en": "Walk on",
+  "ctx": "enc touristin"
+ },
+ {
+  "en": "The newspaper seller",
+  "ctx": "enc zeitung"
+ },
+ {
+  "en": "“Extra! Extra!” A boy holds out a newspaper. The headline: “Sunshine all over Vienna today!”",
+  "ctx": "enc zeitung"
+ },
+ {
+  "en": "Read the headline",
+  "ctx": "enc zeitung"
+ },
+ {
+  "en": "What's the weather like today?",
+  "ctx": "enc zeitung"
+ },
+ {
+  "en": "“Right! You're already reading the paper!”",
+  "ctx": "enc zeitung"
+ },
+ {
+  "en": "Outside, the sun is shining. Hm.",
+  "ctx": "enc zeitung"
+ },
+ {
+  "en": "Buy a newspaper",
+  "ctx": "enc zeitung"
+ },
+ {
+  "en": "New word: die Zeitung.",
+  "ctx": "enc zeitung"
+ },
+ {
+  "en": "The porter",
+  "ctx": "enc traeger"
+ },
+ {
+  "en": "“Heavy suitcase, eh? I'll carry it for you – for 20 gold.”",
+  "ctx": "enc traeger"
+ },
+ {
+  "en": "Pay and rest",
+  "ctx": "enc traeger"
+ },
+ {
+  "en": "You walk on with a spring in your step.",
+  "ctx": "enc traeger"
+ },
+ {
+  "en": "Carry it yourself",
+  "ctx": "enc traeger"
+ },
+ {
+  "en": "“My suitcase is ___ heavy.”",
+  "ctx": "enc traeger"
+ },
+ {
+  "en": "You carry it yourself – and get stronger. +4 max HP.",
+  "ctx": "enc traeger"
+ },
+ {
+  "en": "Oof. Your back hurts.",
+  "ctx": "enc traeger"
+ },
+ {
+  "en": "The conductor",
+  "ctx": "enc schaffnerin"
+ },
+ {
+  "en": "A stern conductor blocks your way: “Your ticket, please!”",
+  "ctx": "enc schaffnerin"
+ },
+ {
+  "en": "Show your ticket",
+  "ctx": "enc schaffnerin"
+ },
+ {
+  "en": "What do you say as you hand it over?",
+  "ctx": "enc schaffnerin"
+ },
+ {
+  "en": "“Very polite!” She stamps a word in your deck – it gets stronger.",
+  "ctx": "enc schaffnerin"
+ },
+ {
+  "en": "“Rude! That's a fine!”",
+  "ctx": "enc schaffnerin"
+ },
+ {
+  "en": "Run away",
+  "ctx": "enc schaffnerin"
+ },
+ {
+  "en": "You escape – but trip over a suitcase.",
+  "ctx": "enc schaffnerin"
+ },
+ {
+  "en": "The sausage stand",
+  "ctx": "enc wuerstel"
+ },
+ {
+  "en": "It smells wonderful. The sausage man wipes his hands: “What'll it be?”",
+  "ctx": "enc wuerstel"
+ },
+ {
+  "en": "Order in German",
+  "ctx": "enc wuerstel"
+ },
+ {
+  "en": "How do you order correctly? (die Wurst)",
+  "ctx": "enc wuerstel"
+ },
+ {
+  "en": "“Here you go – with extra mustard!” You feel brand new.",
+  "ctx": "enc wuerstel"
+ },
+ {
+  "en": "He laughs – but you still get a sausage.",
+  "ctx": "enc wuerstel"
+ },
+ {
+  "en": "Just point and pay",
+  "ctx": "enc wuerstel"
+ },
+ {
+  "en": "Tasty, even without words.",
+  "ctx": "enc wuerstel"
+ },
+ {
+  "en": "The spice merchant",
+  "ctx": "enc gewuerz"
+ },
+ {
+  "en": "“Psst! A magical spice blend from the Orient. Only 35 gold. You won't regret it!”",
+  "ctx": "enc gewuerz"
+ },
+ {
+  "en": "Buy it",
+  "ctx": "enc gewuerz"
+ },
+ {
+  "en": "The blend sparkles in your bag.",
+  "ctx": "enc gewuerz"
+ },
+ {
+  "en": "“No, thank you.”",
+  "ctx": "enc gewuerz"
+ },
+ {
+  "en": "The fruit stall",
+  "ctx": "enc obst"
+ },
+ {
+  "en": "“Three apples cost two euros, love. And six apples?”",
+  "ctx": "enc obst"
+ },
+ {
+  "en": "Do the maths",
+  "ctx": "enc obst"
+ },
+ {
+  "en": "Six apples cost …",
+  "ctx": "enc obst"
+ },
+ {
+  "en": "“Right! One apple's on the house.”",
+  "ctx": "enc obst"
+ },
+ {
+  "en": "“No, no … maths isn't your thing, is it?”",
+  "ctx": "enc obst"
+ },
+ {
+  "en": "Stop, thief!",
+  "ctx": "enc dieb"
+ },
+ {
+  "en": "A woman shouts: “Help! That man …” – she points at a crook running off with her bag.",
+  "ctx": "enc dieb"
+ },
+ {
+  "en": "Shout for her",
+  "ctx": "enc dieb"
+ },
+ {
+  "en": "“He has ___ bag!” (die Tasche, hers)",
+  "ctx": "enc dieb"
+ },
+ {
+  "en": "Everyone turns, the thief drops the bag. The woman rewards you.",
+  "ctx": "enc dieb"
+ },
+ {
+  "en": "Nobody understands you – and the thief knocks you over.",
+  "ctx": "enc dieb"
+ },
+ {
+  "en": "Stay out of it",
+  "ctx": "enc dieb"
+ },
+ {
+  "en": "The fortune teller",
+  "ctx": "enc wahrsagerin"
+ },
+ {
+  "en": "In a tent full of candles an old woman whispers: “I see your future … for 15 gold.”",
+  "ctx": "enc wahrsagerin"
+ },
+ {
+  "en": "She says: “Tomorrow you ___ luck.”",
+  "ctx": "enc wahrsagerin"
+ },
+ {
+  "en": "“Your future is bright!” A strong word appears in your deck.",
+  "ctx": "enc wahrsagerin"
+ },
+ {
+  "en": "The crystal ball goes dark. Your money is gone.",
+  "ctx": "enc wahrsagerin"
+ },
+ {
+  "en": "Better not",
+  "ctx": "enc wahrsagerin"
+ },
+ {
+  "en": "The shooting gallery",
+  "ctx": "enc schiessbude"
+ },
+ {
+  "en": "“Three shots, ten gold! Hit the right target and win!” The targets have words on them.",
+  "ctx": "enc schiessbude"
+ },
+ {
+  "en": "Shoot",
+  "ctx": "enc schiessbude"
+ },
+ {
+  "en": "Hit the <b>verb</b>!",
+  "ctx": "enc schiessbude"
+ },
+ {
+  "en": "Bullseye! You may upgrade a word.",
+  "ctx": "enc schiessbude"
+ },
+ {
+  "en": "Missed!",
+  "ctx": "enc schiessbude"
+ },
+ {
+  "en": "The lángos stand",
+  "ctx": "enc langos"
+ },
+ {
+  "en": "Fried bread with garlic – your stomach growls loudly.",
+  "ctx": "enc langos"
+ },
+ {
+  "en": "Say you're hungry",
+  "ctx": "enc langos"
+ },
+ {
+  "en": "“I'm hungry!”",
+  "ctx": "enc langos"
+ },
+ {
+  "en": "“Well then, enjoy!”",
+  "ctx": "enc langos"
+ },
+ {
+  "en": "“You ARE hunger? Strange.” He gives you a piece anyway.",
+  "ctx": "enc langos"
+ },
+ {
+  "en": "Buy one (8 gold)",
+  "ctx": "enc langos"
+ },
+ {
+  "en": "The ghost train",
+  "ctx": "enc geisterbahn"
+ },
+ {
+  "en": "A car waits in front of the dark tunnel. A sign: “Only for the brave. Treasure inside!”",
+  "ctx": "enc geisterbahn"
+ },
+ {
+  "en": "Get in",
+  "ctx": "enc geisterbahn"
+ },
+ {
+  "en": "Ghosts, spiders, screams – and at the end: treasure!",
+  "ctx": "enc geisterbahn"
+ },
+ {
+  "en": "Too spooky",
+  "ctx": "enc geisterbahn"
+ },
+ {
+  "en": "In the waiting room",
+  "ctx": "enc wartezimmer"
+ },
+ {
+  "en": "A man next to you sighs: “How long have you been waiting?”",
+  "ctx": "enc wartezimmer"
+ },
+ {
+  "en": "Answer",
+  "ctx": "enc wartezimmer"
+ },
+ {
+  "en": "What do you say?",
+  "ctx": "enc wartezimmer"
+ },
+ {
+  "en": "You chat – time passes faster. He gives you his waiting-room croissant.",
+  "ctx": "enc wartezimmer"
+ },
+ {
+  "en": "He looks at you, confused, and falls asleep again.",
+  "ctx": "enc wartezimmer"
+ },
+ {
+  "en": "Keep reading",
+  "ctx": "enc wartezimmer"
+ },
+ {
+  "en": "The application photo",
+  "ctx": "enc bewerbungsfoto"
+ },
+ {
+  "en": "A photographer in the corridor: “Professional application photos! Only 20 gold. Smile, please!”",
+  "ctx": "enc bewerbungsfoto"
+ },
+ {
+  "en": "Have a photo taken",
+  "ctx": "enc bewerbungsfoto"
+ },
+ {
+  "en": "Click! With the photo your application looks much stronger.",
+  "ctx": "enc bewerbungsfoto"
+ },
+ {
+  "en": "No, thanks",
+  "ctx": "enc bewerbungsfoto"
+ },
+ {
+  "en": "A phone call",
+  "ctx": "enc telefon"
+ },
+ {
+  "en": "Your phone rings: “Hello, this is the company Huber & Sons. Do you have time for an interview?”",
+  "ctx": "enc telefon"
+ },
+ {
+  "en": "Make an appointment",
+  "ctx": "enc telefon"
+ },
+ {
+  "en": "Which answer is right?",
+  "ctx": "enc telefon"
+ },
+ {
+  "en": "“Wonderful, see you tomorrow!” They even pay your travel costs.",
+  "ctx": "enc telefon"
+ },
+ {
+  "en": "“Uh … we'll get back to you.” Click.",
+  "ctx": "enc telefon"
+ },
+ {
+  "en": "Don't answer",
+  "ctx": "enc telefon"
+ },
+ {
+  "en": "The job fair",
+  "ctx": "enc jobmesse"
+ },
+ {
+  "en": "At a stand an HR manager asks: “What would you like to do with us?”",
+  "ctx": "enc jobmesse"
+ },
+ {
+  "en": "Answer (modal verb)",
+  "ctx": "enc jobmesse"
+ },
+ {
+  "en": "“Very good!” She gives you a business card – and a strong word.",
+  "ctx": "enc jobmesse"
+ },
+ {
+  "en": "“Thank you, next please!”",
+  "ctx": "enc jobmesse"
+ },
+ {
+  "en": "In the office kitchen",
+  "ctx": "enc kaffeekueche"
+ },
+ {
+  "en": "A colleague looks at you: “Why are you so tired?”",
+  "ctx": "enc kaffeekueche"
+ },
+ {
+  "en": "Answer (weil)",
+  "ctx": "enc kaffeekueche"
+ },
+ {
+  "en": "“Oh dear! Here, take my coffee.”",
+  "ctx": "enc kaffeekueche"
+ },
+ {
+  "en": "She laughs – and gives you a biscuit anyway.",
+  "ctx": "enc kaffeekueche"
+ },
+ {
+  "en": "Just drink coffee",
+  "ctx": "enc kaffeekueche"
+ },
+ {
+  "en": "Paper jam!",
+  "ctx": "enc druckerstau"
+ },
+ {
+  "en": "The printer beeps, blinks and eats your document. You call IT.",
+  "ctx": "enc druckerstau"
+ },
+ {
+  "en": "Explain the problem",
+  "ctx": "enc druckerstau"
+ },
+ {
+  "en": "What do you tell IT?",
+  "ctx": "enc druckerstau"
+ },
+ {
+  "en": "“Ah, got it – fixed!” Your word comes out of the printer sharper.",
+  "ctx": "enc druckerstau"
+ },
+ {
+  "en": "“Have you tried turning it off and on again?”",
+  "ctx": "enc druckerstau"
+ },
+ {
+  "en": "Kick the printer",
+  "ctx": "enc druckerstau"
+ },
+ {
+  "en": "Ouch! But a few coins fall out of the printer.",
+  "ctx": "enc druckerstau"
+ },
+ {
+  "en": "A birthday at the office",
+  "ctx": "enc geburtstag"
+ },
+ {
+  "en": "A colleague has his birthday. There's a huge cake on the table.",
+  "ctx": "enc geburtstag"
+ },
+ {
+  "en": "Congratulate",
+  "ctx": "enc geburtstag"
+ },
+ {
+  "en": "“Thanks! Take a big piece!”",
+  "ctx": "enc geburtstag"
+ },
+ {
+  "en": "Everyone looks at you strangely. No cake for you.",
+  "ctx": "enc geburtstag"
+ },
+ {
+  "en": "Buy a present (10 gold)",
+  "ctx": "enc geburtstag"
+ },
+ {
+  "en": "He's delighted – and you get the biggest piece.",
+  "ctx": "enc geburtstag"
+ },
+ {
+  "en": "Working from home?",
+  "ctx": "enc homeoffice"
+ },
+ {
+  "en": "The boss comes by. Tomorrow you want to work from home. You have to ask.",
+  "ctx": "enc homeoffice"
+ },
+ {
+  "en": "Ask politely (modal verb)",
+  "ctx": "enc homeoffice"
+ },
+ {
+  "en": "How do you ask?",
+  "ctx": "enc homeoffice"
+ },
+ {
+  "en": "“Of course!” At home you tidy up – a word leaves your deck.",
+  "ctx": "enc homeoffice"
+ },
+ {
+  "en": "“Pardon? Better come to the office tomorrow.”",
+  "ctx": "enc homeoffice"
+ },
+ {
+  "en": "Better not ask",
+  "ctx": "enc homeoffice"
+ },
+ {
+  "en": "Just before the presentation",
+  "ctx": "enc teepause"
+ },
+ {
+  "en": "Your colleague brings you a tea: “I think … you can do it.”",
+  "ctx": "enc teepause"
+ },
+ {
+  "en": "Complete the sentence",
+  "ctx": "enc teepause"
+ },
+ {
+  "en": "Which word is missing?",
+  "ctx": "enc teepause"
+ },
+ {
+  "en": "“Exactly! I think that you can do it.” You feel calmer.",
+  "ctx": "enc teepause"
+ },
+ {
+  "en": "She smiles anyway. The tea helps a little.",
+  "ctx": "enc teepause"
+ },
+ {
+  "en": "Take a deep breath",
+  "ctx": "enc teepause"
+ },
+ {
+  "en": "A mistake on the slide",
+  "ctx": "enc folienfehler"
+ },
+ {
+  "en": "Your most important slide says: “Our project … very successful.” A word is missing!",
+  "ctx": "enc folienfehler"
+ },
+ {
+  "en": "Fix it quickly",
+  "ctx": "enc folienfehler"
+ },
+ {
+  "en": "Perfectly fixed – one of your words gets stronger.",
+  "ctx": "enc folienfehler"
+ },
+ {
+  "en": "The mistake stays. Nobody says anything … hopefully.",
+  "ctx": "enc folienfehler"
+ },
+ {
+  "en": "Ignore it",
+  "ctx": "enc folienfehler"
+ },
+ {
+  "en": "The customer's question",
+  "ctx": "enc kundenfrage"
+ },
+ {
+  "en": "An important customer raises his hand: “When can you deliver?”",
+  "ctx": "enc kundenfrage"
+ },
+ {
+  "en": "“Excellent!” The customer signs right away – you get a bonus.",
+  "ctx": "enc kundenfrage"
+ },
+ {
+  "en": "“I see …” The customer frowns. Awkward.",
+  "ctx": "enc kundenfrage"
+ },
+ {
+  "en": "Pass it to your colleague",
+  "ctx": "enc kundenfrage"
+ },
+ {
+  "en": "In the lift with the boss",
+  "ctx": "enc fahrstuhl"
+ },
+ {
+  "en": "The lift door closes. Next to you: the boss. He asks: “How was your weekend?”",
+  "ctx": "enc fahrstuhl"
+ },
+ {
+  "en": "Try some small talk",
+  "ctx": "enc fahrstuhl"
+ },
+ {
+  "en": "He even smiles. Getting out, he gives you something: “For you. Good luck!”",
+  "ctx": "enc fahrstuhl"
+ },
+ {
+  "en": "Awkward silence up to the twelfth floor.",
+  "ctx": "enc fahrstuhl"
+ },
+ {
+  "en": "Stay silent and look at your phone",
+  "ctx": "enc fahrstuhl"
+ },
+ {
+  "en": "The coffee machine",
+  "ctx": "enc kaffeeautomat"
+ },
+ {
+  "en": "You put in a coin. The machine hums – and nothing happens. An official asks: “What happened?”",
+  "ctx": "enc kaffeeautomat"
+ },
+ {
+  "en": "Explain (Perfekt)",
+  "ctx": "enc kaffeeautomat"
+ },
+ {
+  "en": "What happened?",
+  "ctx": "enc kaffeeautomat"
+ },
+ {
+  "en": "He gives you your money back – and a coffee.",
+  "ctx": "enc kaffeeautomat"
+ },
+ {
+  "en": "“Pardon?” He shrugs.",
+  "ctx": "enc kaffeeautomat"
+ },
+ {
+  "en": "Kick the machine",
+  "ctx": "enc kaffeeautomat"
+ },
+ {
+  "en": "Ouch! But a few coins fall out.",
+  "ctx": "enc kaffeeautomat"
+ },
+ {
+  "en": "The queue number",
+  "ctx": "enc wartenummer"
+ },
+ {
+  "en": "You draw number 347. The display shows: 112. Herr Novak yawns behind his counter.",
+  "ctx": "enc wartenummer"
+ },
+ {
+  "en": "Ask politely",
+  "ctx": "enc wartenummer"
+ },
+ {
+  "en": "How do you ask politely?",
+  "ctx": "enc wartenummer"
+ },
+ {
+  "en": "“Oh, all right …” He crosses a word out of your deck – room for better ones.",
+  "ctx": "enc wartenummer"
+ },
+ {
+  "en": "“Number 347? Wait.”",
+  "ctx": "enc wartenummer"
+ },
+ {
+  "en": "Wait and doze",
+  "ctx": "enc wartenummer"
+ },
+ {
+  "en": "Three hours later you're well rested.",
+  "ctx": "enc wartenummer"
+ },
+ {
+  "en": "The colleague with the stamp",
+  "ctx": "enc stempel_kollegin"
+ },
+ {
+  "en": "An official holds her stamp in the air: “To whom are you giving the form?”",
+  "ctx": "enc stempel_kollegin"
+ },
+ {
+  "en": "Answer (Dativ)",
+  "ctx": "enc stempel_kollegin"
+ },
+ {
+  "en": "“I give the form to the official.”",
+  "ctx": "enc stempel_kollegin"
+ },
+ {
+  "en": "*STAMP!* A word in your deck becomes officially stronger.",
+  "ctx": "enc stempel_kollegin"
+ },
+ {
+  "en": "“Wrong form!” She stamps your hand.",
+  "ctx": "enc stempel_kollegin"
+ },
+ {
+  "en": "The lost form",
+  "ctx": "enc formular"
+ },
+ {
+  "en": "The caretaker whispers: “I found a filled-in form B-12. 25 gold and it's yours.”",
+  "ctx": "enc formular"
+ },
+ {
+  "en": "With the form you feel safer. +6 max HP.",
+  "ctx": "enc formular"
+ },
+ {
+  "en": "“That's illegal!”",
+  "ctx": "enc formular"
+ },
+ {
+  "en": "The ghost clerk",
+  "ctx": "enc geisterbeamter"
+ },
+ {
+  "en": "A see-through clerk floats between the shelves: “For the record: what did you do yesterday?”",
+  "ctx": "enc geisterbeamter"
+ },
+ {
+  "en": "Answer (Perfekt)",
+  "ctx": "enc geisterbeamter"
+ },
+ {
+  "en": "What did you do yesterday?",
+  "ctx": "enc geisterbeamter"
+ },
+ {
+  "en": "“Correctly recorded.” He gives you a rare word.",
+  "ctx": "enc geisterbeamter"
+ },
+ {
+  "en": "“Error in the record!” A cold wind blows through you.",
+  "ctx": "enc geisterbeamter"
+ },
+ {
+  "en": "Hurry on",
+  "ctx": "enc geisterbeamter"
+ },
+ {
+  "en": "The dusty box",
+  "ctx": "enc kiste"
+ },
+ {
+  "en": "In a corner there's a box labelled “1899 – DO NOT OPEN”.",
+  "ctx": "enc kiste"
+ },
+ {
+  "en": "Open it",
+  "ctx": "enc kiste"
+ },
+ {
+  "en": "A cloud of dust – and old gold coins!",
+  "ctx": "enc kiste"
+ },
+ {
+  "en": "The archive cat",
+  "ctx": "enc archivkatze"
+ },
+ {
+  "en": "A black cat looks at you and walks into a corridor. It knows the way.",
+  "ctx": "enc archivkatze"
+ },
+ {
+  "en": "Follow it (Dativ)",
+  "ctx": "enc archivkatze"
+ },
+ {
+  "en": "“I follow the cat.”",
+  "ctx": "enc archivkatze"
+ },
+ {
+  "en": "It leads you to a warm spot – and a few coins.",
+  "ctx": "enc archivkatze"
+ },
+ {
+  "en": "You lose sight of it.",
+  "ctx": "enc archivkatze"
+ },
+ {
+  "en": "The old diary",
+  "ctx": "enc tagebuch"
+ },
+ {
+  "en": "A diary lies on a desk. You read: “On 3 May 1900 I came to Vienna.”",
+  "ctx": "enc tagebuch"
+ },
+ {
+  "en": "Understand it",
+  "ctx": "enc tagebuch"
+ },
+ {
+  "en": "The page glows: a new ⏪ Perfekt card!",
+  "ctx": "enc tagebuch"
+ },
+ {
+  "en": "The letters blur.",
+  "ctx": "enc tagebuch"
+ },
+ {
+  "en": "Close it",
+  "ctx": "enc tagebuch"
+ },
+ {
+  "en": "The city hall ball",
+  "ctx": "enc ball"
+ },
+ {
+  "en": "Waltz music. An elegant gentleman bows to you: “Darf ich bitten?”",
+  "ctx": "enc ball"
+ },
+ {
+  "en": "Understand",
+  "ctx": "enc ball"
+ },
+ {
+  "en": "“Darf ich bitten?” means …",
+  "ctx": "enc ball"
+ },
+ {
+  "en": "You dance a waltz – you feel light as a feather.",
+  "ctx": "enc ball"
+ },
+ {
+  "en": "You hand him your wallet. He looks confused.",
+  "ctx": "enc ball"
+ },
+ {
+  "en": "Stay on the side",
+  "ctx": "enc ball"
+ },
+ {
+  "en": "The buffet",
+  "ctx": "enc buffet"
+ },
+ {
+  "en": "Cakes, rolls, sparkling wine – a waiter asks: “What would you like?”",
+  "ctx": "enc buffet"
+ },
+ {
+  "en": "Order",
+  "ctx": "enc buffet"
+ },
+ {
+  "en": "“I'd like a piece of cake.” (das Stück)",
+  "ctx": "enc buffet"
+ },
+ {
+  "en": "“With pleasure!” The Sachertorte is heavenly.",
+  "ctx": "enc buffet"
+ },
+ {
+  "en": "He brings you … a pickle. Better than nothing.",
+  "ctx": "enc buffet"
+ },
+ {
+  "en": "Tip generously (15 gold)",
+  "ctx": "enc buffet"
+ },
+ {
+  "en": "The waiter brings you the best of the buffet.",
+  "ctx": "enc buffet"
+ },
+ {
+  "en": "The coat-of-arms painter",
+  "ctx": "enc wappenmaler"
+ },
+ {
+  "en": "A painter is working on a huge coat of arms: “I'm about to show it to the mayor!”",
+  "ctx": "enc wappenmaler"
+ },
+ {
+  "en": "Repeat the sentence (Dativ)",
+  "ctx": "enc wappenmaler"
+ },
+ {
+  "en": "“I show the coat of arms to the mayor.”",
+  "ctx": "enc wappenmaler"
+ },
+ {
+  "en": "“Bravo!” He paints a golden mark on one of your words.",
+  "ctx": "enc wappenmaler"
+ },
+ {
+  "en": "He doesn't hear you – he keeps painting.",
+  "ctx": "enc wappenmaler"
+ },
+ {
+  "en": "Buy a painting (20 gold)",
+  "ctx": "enc wappenmaler"
+ },
+ {
+  "en": "The mysterious key",
+  "ctx": "enc schluessel"
+ },
+ {
+  "en": "Behind a curtain a golden key floats. It glows. Whoever takes it pays a price.",
+  "ctx": "enc schluessel"
+ },
+ {
+  "en": "Take it",
+  "ctx": "enc schluessel"
+ },
+ {
+  "en": "The key burns in your hand – and turns into a relic.",
+  "ctx": "enc schluessel"
+ },
+ {
+  "en": "Leave it",
+  "ctx": "enc schluessel"
+ },
+ {
+  "en": "Arrival",
+  "ctx": "ladder"
+ },
+ {
+  "en": "Find your way through the station. The ticket machine waits at the top.",
+  "ctx": "map a1"
+ },
+ {
+  "en": "Stalls, smells and swindlers. The Cheese Emperor sits behind the last stall.",
+  "ctx": "map a1"
+ },
+ {
+  "en": "Carousels, ghost trains – and a giant wheel that turns all by itself.",
+  "ctx": "map a1"
+ },
+ {
+  "en": "Herr Wotruba: „Das macht drei Euro fünfzig.“ How much is that?",
+  "ctx": "haggle"
+ },
+ {
+  "en": "How do you politely ask for a discount?",
+  "ctx": "haggle"
+ },
+ {
+  "en": "Könnten Sie mir einen Rabatt geben?",
+  "ctx": "haggle"
+ },
+ {
+  "en": "Gib mir Rabatt!",
+  "ctx": "haggle"
+ },
+ {
+  "en": "Rabatt, aber schnell!",
+  "ctx": "haggle"
+ },
+ {
+  "en": "„Das ist zu teuer!“ means …",
+  "ctx": "haggle"
+ },
+ {
+  "en": "That's too expensive!",
+  "ctx": "haggle"
+ },
+ {
+  "en": "That's very cheap!",
+  "ctx": "haggle"
+ },
+ {
+  "en": "That's my bag!",
+  "ctx": "haggle"
+ },
+ {
+  "en": "What do you say when you walk into a Viennese shop?",
+  "ctx": "haggle"
+ },
+ {
+  "en": "Grüß Gott!",
+  "ctx": "haggle"
+ },
+ {
+  "en": "Gute Nacht!",
+  "ctx": "haggle"
+ },
+ {
+  "en": "Tschüss!",
+  "ctx": "haggle"
+ },
+ {
+  "en": "The Office",
+  "ctx": "ladder"
+ },
+ {
+  "en": "Formulare, Stempel, Warteschlangen. Ganz oben wartet die Formular-Hydra.",
+  "ctx": "map a2"
+ },
+ {
+  "en": "Staub, Akten, Dunkelheit. Ganz unten wartet der Aktenberg.",
+  "ctx": "map a2"
+ },
+ {
+  "en": "Ballsaal, Wappen, Siegel. Auf dem Turm wartet der Rathausmann.",
+  "ctx": "map a2"
+ },
+ {
+  "en": "„Ich hätte gern …“ bedeutet …",
+  "ctx": "haggle"
+ },
+ {
+  "en": "I would like …",
+  "ctx": "haggle"
+ },
+ {
+  "en": "I had …",
+  "ctx": "haggle"
+ },
+ {
+  "en": "I hate …",
+  "ctx": "haggle"
+ },
+ {
+  "en": "Herr Wotruba: „Siebenundvierzig Euro.“",
+  "ctx": "haggle"
+ },
+ {
+  "en": "Höflich: „___ Sie mir einen Rabatt geben?“",
+  "ctx": "haggle"
+ },
+ {
+  "en": "Könnten",
+  "ctx": "haggle"
+ },
+ {
+  "en": "Konnte",
+  "ctx": "haggle"
+ },
+ {
+  "en": "Kannst",
+  "ctx": "haggle"
+ },
+ {
+  "en": "Was ist ein „Greißler“?",
+  "ctx": "haggle"
+ },
+ {
+  "en": "ein kleines Lebensmittelgeschäft",
+  "ctx": "haggle"
+ },
+ {
+  "en": "ein Busfahrer",
+  "ctx": "haggle"
+ },
+ {
+  "en": "ein Wiener Kuchen",
+  "ctx": "haggle"
+ },
+ {
+  "en": "The Job",
+  "ctx": "ladder"
+ },
+ {
+  "en": "University",
+  "ctx": "ladder"
+ },
+ {
+  "en": "The Newspaper",
+  "ctx": "ladder"
+ },
+ {
+  "en": "The Coffee House",
+  "ctx": "ladder"
+ },
+ {
+  "en": "Final boss of B1. Decides about your restaurant loan – explain WHY: sentences with weil / dass deal double damage.",
+  "ctx": "boss hint"
+ },
+ {
+  "en": "Final boss of B1. Your job interview – explain WHY: sentences with weil / dass deal double damage.",
+  "ctx": "boss hint"
+ },
+ {
+  "en": "you",
+  "ctx": "card"
+ },
+ {
+  "en": "he",
+  "ctx": "card"
+ },
+ {
+  "en": "she",
+  "ctx": "card"
+ },
+ {
+  "en": "we",
+  "ctx": "card"
+ },
+ {
+  "en": "you (all)",
+  "ctx": "card"
+ },
+ {
+  "en": "they",
+  "ctx": "card"
+ },
+ {
+  "en": "see",
+  "ctx": "card"
+ },
+ {
+  "en": "find",
+  "ctx": "card"
+ },
+ {
+  "en": "look for",
+  "ctx": "card"
+ },
+ {
+  "en": "buy",
+  "ctx": "card"
+ },
+ {
+  "en": "take",
+  "ctx": "card"
+ },
+ {
+  "en": "read",
+  "ctx": "card"
+ },
+ {
+  "en": "write",
+  "ctx": "card"
+ },
+ {
+  "en": "have",
+  "ctx": "card"
+ },
+ {
+  "en": "need",
+  "ctx": "card"
+ },
+ {
+  "en": "drink",
+  "ctx": "card"
+ },
+ {
+  "en": "eat",
+  "ctx": "card"
+ },
+ {
+  "en": "run",
+  "ctx": "card"
+ },
+ {
+  "en": "go",
+  "ctx": "card"
+ },
+ {
+  "en": "come",
+  "ctx": "card"
+ },
+ {
+  "en": "drive / ride",
+  "ctx": "card"
+ },
+ {
+  "en": "sleep",
+  "ctx": "card"
+ },
+ {
+  "en": "help",
+  "ctx": "card"
+ },
+ {
+  "en": "follow",
+  "ctx": "card"
+ },
+ {
+  "en": "thank",
+  "ctx": "card"
+ },
+ {
+  "en": "give",
+  "ctx": "card"
+ },
+ {
+  "en": "bring",
+  "ctx": "card"
+ },
+ {
+  "en": "show",
+  "ctx": "card"
+ },
+ {
+  "en": "explain",
+  "ctx": "card"
+ },
+ {
+  "en": "give (as a gift)",
+  "ctx": "card"
+ },
+ {
+  "en": "dog",
+  "ctx": "card"
+ },
+ {
+  "en": "cat",
+  "ctx": "card"
+ },
+ {
+  "en": "horse",
+  "ctx": "card"
+ },
+ {
+  "en": "pigeon",
+  "ctx": "card"
+ },
+ {
+  "en": "dragon",
+  "ctx": "card"
+ },
+ {
+  "en": "man",
+  "ctx": "card"
+ },
+ {
+  "en": "woman",
+  "ctx": "card"
+ },
+ {
+  "en": "child",
+  "ctx": "card"
+ },
+ {
+  "en": "friend",
+  "ctx": "card"
+ },
+ {
+  "en": "teacher",
+  "ctx": "card"
+ },
+ {
+  "en": "civil servant",
+  "ctx": "card"
+ },
+ {
+  "en": "neighbour",
+  "ctx": "card"
+ },
+ {
+  "en": "colleague",
+  "ctx": "card"
+ },
+ {
+  "en": "apple",
+  "ctx": "card"
+ },
+ {
+  "en": "bread",
+  "ctx": "card"
+ },
+ {
+  "en": "bread roll (AT)",
+  "ctx": "card"
+ },
+ {
+  "en": "sausage (AT)",
+  "ctx": "card"
+ },
+ {
+  "en": "pizza",
+  "ctx": "card"
+ },
+ {
+  "en": "schnitzel",
+  "ctx": "card"
+ },
+ {
+  "en": "coffee",
+  "ctx": "card"
+ },
+ {
+  "en": "milk",
+  "ctx": "card"
+ },
+ {
+  "en": "water",
+  "ctx": "card"
+ },
+ {
+  "en": "book",
+  "ctx": "card"
+ },
+ {
+  "en": "newspaper",
+  "ctx": "card"
+ },
+ {
+  "en": "letter",
+  "ctx": "card"
+ },
+ {
+  "en": "city map",
+  "ctx": "card"
+ },
+ {
+  "en": "form",
+  "ctx": "card"
+ },
+ {
+  "en": "ticket",
+  "ctx": "card"
+ },
+ {
+  "en": "key",
+  "ctx": "card"
+ },
+ {
+  "en": "bag",
+  "ctx": "card"
+ },
+ {
+  "en": "suitcase",
+  "ctx": "card"
+ },
+ {
+  "en": "phone",
+  "ctx": "card"
+ },
+ {
+  "en": "ID card",
+  "ctx": "card"
+ },
+ {
+  "en": "stamp",
+  "ctx": "card"
+ },
+ {
+  "en": "sword",
+  "ctx": "card"
+ },
+ {
+  "en": "today",
+  "ctx": "card"
+ },
+ {
+  "en": "now",
+  "ctx": "card"
+ },
+ {
+  "en": "tomorrow",
+  "ctx": "card"
+ },
+ {
+  "en": "often",
+  "ctx": "card"
+ },
+ {
+  "en": "always",
+  "ctx": "card"
+ },
+ {
+  "en": "yesterday",
+  "ctx": "card"
+ },
+ {
+  "en": "past tense",
+  "ctx": "card"
+ },
+ {
+  "en": "can",
+  "ctx": "card"
+ },
+ {
+  "en": "must / have to",
+  "ctx": "card"
+ },
+ {
+  "en": "want to",
+  "ctx": "card"
+ },
+ {
+  "en": "may / be allowed to",
+  "ctx": "card"
+ },
+ {
+  "en": "should / be supposed to",
+  "ctx": "card"
+ },
+ {
+  "en": "would like to",
+  "ctx": "card"
+ },
+ {
+  "en": "because",
+  "ctx": "card"
+ },
+ {
+  "en": "that",
+  "ctx": "card"
+ },
+ {
+  "en": "if / when",
+  "ctx": "card"
+ },
+ {
+  "en": "although",
+  "ctx": "card"
+ },
+ {
+  "en": "work",
+  "ctx": "card"
+ },
+ {
+  "en": "make a phone call",
+  "ctx": "card"
+ },
+ {
+  "en": "wait",
+  "ctx": "card"
+ },
+ {
+  "en": "print",
+  "ctx": "card"
+ },
+ {
+  "en": "answer",
+  "ctx": "card"
+ },
+ {
+  "en": "forget",
+  "ctx": "card"
+ },
+ {
+  "en": "discuss",
+  "ctx": "card"
+ },
+ {
+  "en": "earn",
+  "ctx": "card"
+ },
+ {
+  "en": "present",
+  "ctx": "card"
+ },
+ {
+  "en": "send",
+  "ctx": "card"
+ },
+ {
+  "en": "boss",
+  "ctx": "card"
+ },
+ {
+  "en": "boss (f)",
+  "ctx": "card"
+ },
+ {
+  "en": "colleague (f)",
+  "ctx": "card"
+ },
+ {
+  "en": "customer",
+  "ctx": "card"
+ },
+ {
+  "en": "report",
+  "ctx": "card"
+ },
+ {
+  "en": "email",
+  "ctx": "card"
+ },
+ {
+  "en": "contract",
+  "ctx": "card"
+ },
+ {
+  "en": "CV",
+  "ctx": "card"
+ },
+ {
+  "en": "application",
+  "ctx": "card"
+ },
+ {
+  "en": "presentation",
+  "ctx": "card"
+ },
+ {
+  "en": "appointment",
+  "ctx": "card"
+ },
+ {
+  "en": "printer",
+  "ctx": "card"
+ },
+ {
+  "en": "salary",
+  "ctx": "card"
+ },
+ {
+  "en": "project",
+  "ctx": "card"
+ },
+ {
+  "en": "laptop",
+  "ctx": "card"
+ },
+ {
+  "en": "Lives in the cracks of the station floor. A gentle warm-up.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Steals your words. Weak to Akkusativ objects (den, die, das).",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "„Fahrkarte, bitte!“ Only perfect sentences impress him (×2).",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Only sentences that START with a time word get through (Heute sehe ich …).",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Elite. Grumbles at short answers – weak to long sentences (5+ words).",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Boss. BITTE. WÄHLEN. SIE. Perfect sentences deal double damage.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Hides in the waiting room. Weak to Akkusativ objects.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Stamps everything twice. Weak to Perfekt sentences (⏪).",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Endless and slow. Weak to long sentences (5+ words).",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Repeats your mistakes and heals from them (+4 each). Weak to Dativ.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Elite. Only Dativ really hurts it (dem, der …).",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Boss. Grows new paper heads. Tell her what happened – Perfekt sentences deal double damage.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Steals your change. Weak to Akkusativ objects (den, die, das).",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Shouts over short answers. Weak to long sentences (5+ words).",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Buzzes faster and faster. Perfect sentences swat it (×2).",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Slow but heavy. Start with a time word to get past its leaves (Heute …).",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Elite. Only Akkusativ gets past her scale – everything else does half damage.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Boss. Full of holes – and full of himself. Sentences that start with a time word deal double damage.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Goes round and round. Start with a time word to jump on (Jetzt …).",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Sticky and sweet, heals itself. Perfect sentences dissolve it (×2).",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Copies short sentences back at you. Only long sentences (5+ words) break the mirror.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Swoops out of the ghost train. Weak to Akkusativ objects.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Elite. The Prater's grumpiest punching dummy – only perfect sentences hurt him.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Final boss of A1. Turns endlessly – long sentences (5+ words) deal double damage.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Nibbles on your files. Weak to Dativ (dem, der …).",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Made of old dust. Tell it what happened – Perfekt sentences (⏪) blow it away.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Looks like a harmless box. Only Akkusativ opens it.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Eight pens at once. Weak to long sentences (5+ words).",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Elite. Remembers every mistake (+4 each) – only Perfekt really hurts him.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Boss. A mountain of files. Dativ (dem, der …) deals double damage.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Steps out of the coat of arms. Start with a time word (Gestern …).",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Waltzes forever. Perfect sentences stop the music (×2).",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Pompous. Only Dativ impresses it – everything else does half damage.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Made of hot sealing wax. Perfekt sentences (⏪) crack it.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Elite. Six arms, six phones. Feeds on mistakes (+4 each). Weak to long sentences.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Final boss of A2. The iron knight of the Rathaus – tell him your story: Perfekt deals double damage.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Hides the gaps in your CV. Sentences with a modal verb (Ich kann …, Ich muss …) deal double damage.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Delivers rejection letters. Sentences with weil / dass / wenn / obwohl deal double damage.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "A form that fills itself in – wrongly. Weak to Akkusativ objects.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Guards the queue. Weak to long sentences (5+ words).",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Elite. „Was wollen Sie? Was können Sie?“ Only modal sentences convince her – everything else does half damage.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Boss. BITTE BEGRÜNDEN SIE IHR ANLIEGEN. Explain why: sentences with weil / dass deal double damage.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Jams on everything. Weak to Akkusativ objects.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "347 unread messages. Sentences with weil / dass … deal double damage.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Lives in the office coffee machine. Perfect sentences (×2).",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "The colleague who never stops talking. Interrupt him with a modal verb (Ich muss jetzt …) – everything else does half damage.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Elite. „Haben Sie es schon aus- und wieder eingeschaltet?“ Feeds on mistakes (+4 each). Weak to Dativ.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Boss. Item 47 of 312. Long sentences (5+ words) deal double damage.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Stage fright. Only perfect sentences calm it down (×2).",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Mixes up your slides. Sentences with weil / dass … deal double damage.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "One big glowing eye. Start with a time word (Heute …, Morgen …).",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Gets closer every turn. Modal sentences (Ich muss …) deal double damage.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Elite. Wants your job. Only Dativ impresses him – everything else does half damage.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "Final boss of B1. Never satisfied – explain WHY: sentences with weil / dass deal double damage.",
+  "ctx": "enemy hint"
+ },
+ {
+  "en": "+1 energy on the first turn of each fight.",
+  "ctx": "relic"
+ },
+ {
+  "en": "Draw 1 extra card each turn.",
+  "ctx": "relic"
+ },
+ {
+  "en": "Your first grammar mistake in each fight counts as correct.",
+  "ctx": "relic"
+ },
+ {
+  "en": "+10 max HP.",
+  "ctx": "relic"
+ },
+ {
+  "en": "Heal 4 HP after every fight.",
+  "ctx": "relic"
+ },
+ {
+  "en": "Perfect sentences give +3 extra power.",
+  "ctx": "relic"
+ },
+ {
+  "en": "Perfekt sentences give +4 extra power.",
+  "ctx": "relic"
+ },
+ {
+  "en": "Correct Dativ objects give +3 extra power.",
+  "ctx": "relic"
+ },
+ {
+  "en": "Sentences that start with a time word draw a card.",
+  "ctx": "relic"
+ },
+ {
+  "en": "Sentences with 5+ words also give 5 shield.",
+  "ctx": "relic"
+ },
+ {
+  "en": "You're dealt 3 pronouns each turn instead of 2.",
+  "ctx": "relic"
+ },
+ {
+  "en": "Your first sentence each turn gets +3 power.",
+  "ctx": "relic"
+ },
+ {
+  "en": "A mistake only lowers your perfect streak by 1 instead of resetting it.",
+  "ctx": "relic"
+ },
+ {
+  "en": "Healing sentences heal +4.",
+  "ctx": "relic"
+ },
+ {
+  "en": "Start every fight with 6 shield.",
+  "ctx": "relic"
+ },
+ {
+  "en": "Your hero power recharges after 2 perfect sentences instead of 3.",
+  "ctx": "relic"
+ },
+ {
+  "en": "Strong forms (du siehst, gesehen …) give +4 instead of +2.",
+  "ctx": "relic"
+ },
+ {
+  "en": "At the top you see what the monster does next: <b>Attack 5</b>. You go first!",
+  "ctx": "tutorial"
+ },
+ {
+  "en": "This is your <b>energy ⚡</b>: 3 per turn. The red number on a card is its cost. Verbs and nouns cost 1, pronouns and short time words like <b>heute</b> 0.",
+  "ctx": "tutorial"
+ },
+ {
+  "en": "Verbs go on the <b>field</b> – one verb per turn, for free. Tap <b>sehen</b> (to see).",
+  "ctx": "tutorial"
+ },
+ {
+  "en": "A verb stays on the field for <b>3 turns</b> (the hourglass dots). Then it goes back to your deck. You have 3 slots.",
+  "ctx": "tutorial"
+ },
+ {
+  "en": "Each turn you're dealt <b>2 pronouns</b>. Today: <b>ich</b> and <b>du</b>. Careful: the verb form depends on the pronoun!",
+  "ctx": "tutorial"
+ },
+ {
+  "en": "A sentence starts with the subject – who? Tap <b>ich</b> (I).",
+  "ctx": "tutorial"
+ },
+ {
+  "en": "Now the verb from the field – it always goes in <b>position 2</b>.",
+  "ctx": "tutorial"
+ },
+ {
+  "en": "What do you see? “sehen” needs an object (+ what?). Tap <b>Hund</b> (dog).",
+  "ctx": "tutorial"
+ },
+ {
+  "en": "The sentence is ready – and costs 2 ⚡ (see the glowing orbs?). Now <b>forge</b> it!",
+  "ctx": "tutorial"
+ },
+ {
+  "en": "Hit! A <b>perfect sentence</b> (everything right) is <b>×1.5</b> stronger. Mistakes make it weaker – but you learn the right form.",
+  "ctx": "tutorial"
+ },
+ {
+  "en": "Many monsters have a <b>weakness</b> (×2), e.g. Akkusativ or sentences starting with a time word. Tap ⓘ in a fight to see it.",
+  "ctx": "tutorial"
+ },
+ {
+  "en": "And this is your <b>special power</b>. It starts ready – after that, <b>3 perfect sentences</b> recharge it. Perfect sentences in a row also get stronger and stronger 🔥.",
+  "ctx": "tutorial"
+ },
+ {
+  "en": "Each verb works only once per turn – <b>sehen</b> is resting now. Leftover energy is lost. End your turn.",
+  "ctx": "tutorial"
+ },
+ {
+  "en": "Ouch! New turn: new cards, new pronouns (<b>ich</b>, <b>wir</b>). <b>laufen</b> (to run) gives 🛡️ shield against attacks. Put it on the field.",
+  "ctx": "tutorial"
+ },
+ {
+  "en": "Two verbs! Pro tip: start with a time word – the verb stays in position 2: <b>Heute sehe ich …</b> (Today I see …). Defeat the woodlouse!",
+  "ctx": "tutorial"
+ }
+]
