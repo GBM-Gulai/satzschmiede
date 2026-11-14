@@ -28,6 +28,7 @@ function Shrink($file, $max) {
 
 # ---------- images: shrink once, use for both versions ----------
 $images = @{}   # "assets/enemies/taube.jpg" -> bytes
+$sources = @{}  # same key -> original file
 $assetDir = Join-Path $root "assets"
 if (Test-Path $assetDir) {
   Get-ChildItem $assetDir -Recurse -Include *.png, *.jpg, *.jpeg | ForEach-Object {
@@ -35,13 +36,17 @@ if (Test-Path $assetDir) {
     $rel = [IO.Path]::ChangeExtension($rel, ".jpg").ToLower()   # the game always asks for lowercase .jpg (the web is case-sensitive)
     $max = if ($rel -like "assets/bg/*" -or $rel -like "assets/tower/*") { 1400 } else { 640 }   # backgrounds fill big PC screens too
     $images[$rel] = Shrink $_.FullName $max
+    $sources[$rel] = $_.FullName
   }
 }
 
 # ---------- 1) one-file version ----------
 # the one-file version stays under the artifact size limit: no PC-only wide backgrounds, no backgrounds of unbuilt ladders
 $oneFile = $images.Keys | Where-Object { $_ -notlike "*-wide.jpg" -and $_ -notmatch "^assets/bg/(b1|b2|c1|c2)\.jpg$" }
-$assetJs = "window.ASSET_DATA = {" + (($oneFile | Sort-Object | ForEach-Object { '"' + $_ + '":"data:image/jpeg;base64,' + [Convert]::ToBase64String($images[$_]) + '"' }) -join ",") + "};"
+$assetJs = "window.ASSET_DATA = {" + (($oneFile | Sort-Object | ForEach-Object {
+  # backgrounds a bit smaller here (900 px) so the one file stays under the 16 MB artifact limit
+  $bytes = if ($_ -like "assets/bg/*" -or $_ -like "assets/tower/*") { Shrink $sources[$_] 900 } else { $images[$_] }
+  '"' + $_ + '":"data:image/jpeg;base64,' + [Convert]::ToBase64String($bytes) + '"' }) -join ",") + "};"
 $index = Read-Text "index.html"
 $fonts = [regex]::Match($index, '<link href="https://fonts\.googleapis\.com[^>]*>').Value
 $out = @"
